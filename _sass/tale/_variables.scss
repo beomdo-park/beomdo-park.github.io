@@ -1,0 +1,32 @@
+// Colors
+$default-color: #f8f8f2 !default;
+$default-shade: #f1fa8c !default;
+$default-tint: #aaa !default;
+$header-color: #dbc7f8;
+$grey-1: #979797 !default;
+$grey-2: #e5e5e5 !default;
+$grey-3: #44475a !default;
+$white: rgb(255, 255, 255) !default;
+$blue: #8be9fd !default;
+$shadow-color: rgba(0, 0, 0, 0.2) !default;
+$code-color: #bf616a !default;
+$background: #282a36;
+
+// Fonts
+$serif-primary: "MaruBuri", serif !default;
+$serif-secondary: Palatino, "Palatino LT STD", "Palatino Linotype",
+  "Book Antiqua", "Georgia", serif !default;
+$sans-serif: "NanumSquareRound", sans-serif !default;
+$monospaced: "NanumGothicCoding", monospace !default;
+
+@mixin box-sizing($type: border-box) {
+  -webkit-box-sizing: $type;
+  -moz-box-sizing: $type;
+  box-sizing: $type;
+}
+
+@mixin transition($args...) {
+  -webkit-transition: $args;
+  -moz-transition: $args;
+  transition: $args;
+}
