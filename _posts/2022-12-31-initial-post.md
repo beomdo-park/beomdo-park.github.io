@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 첫 글
-categories: Dummy
+tags: 미분류
 ---
 
 깃허브 블로그를 시작했다.
