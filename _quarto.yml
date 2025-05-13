@@ -1,0 +1,39 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "beomdo-park's ml/dl blog"
+  description: "머신러닝, 데이터 분석, AI 블로그"
+
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - text: "My Tech Stacks" # 드롭다운 메뉴 예시
+        menu: # "My Tech Stacks"의 하위 메뉴로 들여쓰기
+          - text: "Python"
+            href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
+          - text: "Machine Learning"
+            href: "/posts/index.html?category=MachineLearning" # 카테고리별 필터링 링크 예시
+    right:
+      - icon: github
+        href: https://github.com/beomdo-park
+
+  page-footer:
+    left: "© 2025, Beomdo-Park. Powered by Quarto."
+    right:
+      - icon: github
+        href: https://github.com/beomdo-park/your-repo-name # 저장소 이름으로 변경해주세요
+
+format:
+  html:
+    theme: pulse
+    css: styles.css
+    toc: true
+    # code-fold: true
+    # code-tools: true
+
+editor: visual
