@@ -1,9 +1,11 @@
 ---
-title: "beomdo-park's ml dl blog"
+# title: "beomdo-park's ml dl blog" # 이 부분을 주석 처리합니다.
 listing:
   contents: posts
   sort: "date desc"
   type: default
+  # type: grid
+  # grid-columns: 1
   feed: true
   categories: true
   sort-ui: false

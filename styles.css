@@ -1,4 +1,12 @@
 /* css styles */
+
+@import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css");
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap");
+
+body {
+  font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif;
+}
+
 /* 블로그 목록 아이템 내 카테고리(태그) 스타일 */
 .listing-item .categories a,
 .quarto-listing-category a {
