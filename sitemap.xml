@@ -2,18 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://beomdo-park.github.io/posts/my-first-post/index.html</loc>
-    <lastmod>2025-05-24T07:23:38.571Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/index.html</loc>
-    <lastmod>2025-05-24T07:23:38.571Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/about.html</loc>
-    <lastmod>2025-05-24T07:23:38.559Z</lastmod>
+    <lastmod>2025-05-24T07:30:25.867Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/posts/ABC_week01_data analysis/index.html</loc>
-    <lastmod>2025-05-24T07:23:38.571Z</lastmod>
+    <lastmod>2025-05-24T07:30:25.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/about.html</loc>
+    <lastmod>2025-05-24T07:30:25.855Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/index.html</loc>
+    <lastmod>2025-05-24T07:30:25.867Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/testpost/index.html</loc>
+    <lastmod>2025-05-24T07:30:25.867Z</lastmod>
   </url>
 </urlset>
