@@ -17,6 +17,15 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11" # 프로젝트에 맞는 Python 버전을 명시하세요 (예: '3.9', '3.10', '3.11')
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install jupyter nbformat
+
       - name: Publish to GitHub Pages (gh-pages branch)
         uses: quarto-dev/quarto-actions/publish@v2
         with:
