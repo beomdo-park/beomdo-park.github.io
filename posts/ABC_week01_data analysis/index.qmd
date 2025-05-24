@@ -40,16 +40,29 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
-
-import os
-import sys
-sys.path.append(os.getcwd())
 import matplotlib.font_manager as fm
+import platform # 운영체제 확인을 위해 추가
 
-font_path = '/usr/share/fonts/truetype/nanum/NanumGothic.ttf' 
-font_name = fm.FontProperties(fname=font_path).get_name()
-plt.rc('font', family=font_name)
-plt.rcParams['axes.unicode_minus'] = False
+# --- Matplotlib 한글 폰트 설정 ---
+try:
+    if platform.system() == 'Windows':
+        plt.rc('font', family='NanumGothic')
+    elif platform.system() == 'Darwin': 
+        plt.rc('font', family='AppleGothic') 
+    else:
+        plt.rc('font', family='NanumGothic')
+
+    plt.rcParams['axes.unicode_minus'] = False # 마이너스 부호 깨짐 방지
+    print(f"Matplotlib font configured for Korean on {platform.system()}.")
+
+except Exception as e:
+    print(f"Error setting up Matplotlib font: {e}")
+    print("Please ensure a Korean-supporting font (like NanumGothic) is installed.")
+    if platform.system() == 'Windows':
+        print("On Windows, please install Nanum fonts (e.g., from Naver Hangeul Hangeul) and restart your kernel.")
+        print("You might also need to clear Matplotlib's font cache (delete the .json file in ~/.matplotlib).")
+    elif platform.system() == 'Linux':
+        print("On Linux, ensure 'fonts-nanum' is installed (e.g., via apt-get) and Matplotlib's font cache is updated.")
 ```
 
 ### 2. 샘플 시계열 데이터 생성
