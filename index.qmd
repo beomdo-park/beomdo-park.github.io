@@ -1,5 +1,8 @@
 ---
-# title: "beomdo-park's ml dl blog" # 이 부분을 주석 처리합니다.
+subtitle: "Posts"
+
+
+
 listing:
   contents: posts
   sort: "date desc"
@@ -11,5 +14,63 @@ listing:
   sort-ui: false
   filter-ui: true
 page-layout: full
-title-block-banner: true
 ---
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subtitleElement = document.querySelector('.quarto-title-block .subtitle');
+    const categoryLinksContainer = document.querySelector('.quarto-listing-categories-links');
+
+    if (subtitleElement && categoryLinksContainer) {
+        const originalSubtitleText = subtitleElement.textContent.trim(); // "Posts"
+
+        const updateSubtitle = () => {
+            const activeFilterLink = categoryLinksContainer.querySelector('a.active');
+            if (activeFilterLink) {
+                const categoryName = activeFilterLink.textContent.trim();
+                // Quarto의 'All' 필터는 data-filter-category="All" 속성을 가집니다.
+                const isAllFilter = activeFilterLink.dataset.filterCategory === "All" || categoryName.toLowerCase() === "all";
+
+                if (isAllFilter) {
+                    subtitleElement.textContent = originalSubtitleText;
+                } else {
+                    subtitleElement.textContent = `${categoryName} ${originalSubtitleText}`;
+                }
+            } else {
+                subtitleElement.textContent = originalSubtitleText;
+            }
+        };
+
+        const observer = new MutationObserver((mutationsList, observer) => {
+            for(const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (mutation.target.matches('.quarto-listing-category')) {
+                         updateSubtitle();
+                         return; 
+                    }
+                } else if (mutation.type === 'childList') {
+                    updateSubtitle(); // 카테고리 링크 목록 자체가 변경될 경우 (드문 경우)
+                    return;
+                }
+            }
+        });
+
+        observer.observe(categoryLinksContainer, {
+            attributes: true, 
+            childList: true,  
+            subtree: true     
+        });
+
+        // 페이지 로드 시 초기 업데이트 (URL 등으로 필터가 이미 활성화된 경우 대비)
+        updateSubtitle();
+
+    } else {
+        if (!subtitleElement) {
+            console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found.');
+        }
+        if (!categoryLinksContainer) {
+            console.warn('Dynamic subtitle: Category links container (.quarto-listing-categories-links) not found.');
+        }
+    }
+});
+</script>

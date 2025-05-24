@@ -1,8 +1,8 @@
 {
-  "hash": "d1ae826e3b1ec45a97ba1a8ca39363d2",
+  "hash": "4aef33b9fad8e364e6f02b8b4f81788c",
   "result": {
     "engine": "jupyter",
-    "markdown": "---\ntitle: \"Blog Posts\"\ndate: \"2025-05-14\"\nauthor: \"Beomdo Park\"\ncategories: [news, code, analysis]\nimage: \"image.jpg\"\npage-layout: full\n---\n\n여기에 마크다운으로 내용을 작성합니다. Quarto는 Pandoc 마크다운을 확장하여 다양한 기능을 제공합니다.\n\n## 코드 실행\n\nPython 코드 셀 예시입니다.\n\n::: {#cell-fig-simple-plot .cell execution_count=1}\n``` {.python .cell-code}\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 2 * np.pi, 100)\ny = np.sin(x)\n\nplt.plot(x, y)\nplt.title(\"Sine Wave\")\nplt.xlabel(\"X-axis\")\nplt.ylabel(\"Y-axis\")\nplt.show()\n\nprint(\"Hello World\")\n```\n\n::: {.cell-output .cell-output-display}\n![간단한 Matplotlib 플롯](index_files/figure-html/fig-simple-plot-output-1.png){#fig-simple-plot width=608 height=449}\n:::\n\n::: {.cell-output .cell-output-stdout}\n```\nHello World\n```\n:::\n:::\n\n\n",
+    "markdown": "---\ntitle: \"Blog Posts\"\ndate: \"2025-05-14\"\nauthor: \"Beomdo Park\"\ncategories: [news, code, analysis]\nimage: \"image.jpg\"\npage-layout: full\ndraft: true\n---\n\n여기에 마크다운으로 내용을 작성합니다. Quarto는 Pandoc 마크다운을 확장하여 다양한 기능을 제공합니다.\n\n## 코드 실행\n\nPython 코드 셀 예시입니다.\n\n::: {#cell-fig-simple-plot .cell execution_count=1}\n``` {.python .cell-code}\nimport matplotlib.pyplot as plt\nimport numpy as np\n\nx = np.linspace(0, 2 * np.pi, 100)\ny = np.sin(x)\n\nplt.plot(x, y)\nplt.title(\"Sine Wave\")\nplt.xlabel(\"X-axis\")\nplt.ylabel(\"Y-axis\")\nplt.show()\n\nprint(\"Hello World\")\n```\n\n::: {.cell-output .cell-output-display}\n![간단한 Matplotlib 플롯](index_files/figure-html/fig-simple-plot-output-1.png){#fig-simple-plot width=608 height=449}\n:::\n\n::: {.cell-output .cell-output-stdout}\n```\nHello World\n```\n:::\n:::\n\n\n",
     "supporting": [
       "index_files"
     ],

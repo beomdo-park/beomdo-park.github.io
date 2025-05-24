@@ -3,7 +3,7 @@ project:
   output-dir: docs
 
 website:
-  title: "beomdo-park's ml/dl blog"
+  title: "beomdo's ML-DL blog"
   # description: "머신러닝, 데이터 분석, AI 블로그"
 
   navbar:
@@ -14,10 +14,11 @@ website:
         text: About
       - text: "My Tech Stacks" # 드롭다운 메뉴 예시
         menu: # "My Tech Stacks"의 하위 메뉴로 들여쓰기
-          - text: "Python"
-            href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
-          - text: "Machine Learning"
-            href: "/posts/index.html?category=MachineLearning" # 카테고리별 필터링 링크 예시
+          - text: "포스트 더 작성 후 추가 예정"
+          # - text: "Python"
+          #   href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
+          # - text: "Machine Learning"
+          #   href: "/posts/index.html?category=MachineLearning" # 카테고리별 필터링 링크 예시
 
     right:
       - icon: github
