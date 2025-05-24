@@ -250,43 +250,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>sys.path.append(os.getcwd())</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.font_manager <span class="im">as</span> fm</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>font_path <span class="op">=</span> <span class="st">'/usr/share/fonts/truetype/nanum/NanumGothic.ttf'</span> </span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>font_name <span class="op">=</span> fm.FontProperties(fname<span class="op">=</span>font_path).get_name()</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>plt.rc(<span class="st">'font'</span>, family<span class="op">=</span>font_name)</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>plt.rcParams[<span class="st">'axes.unicode_minus'</span>] <span class="op">=</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.font_manager <span class="im">as</span> fm</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> platform <span class="co"># 운영체제 확인을 위해 추가</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Matplotlib 한글 폰트 설정 ---</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> platform.system() <span class="op">==</span> <span class="st">'Windows'</span>:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>        plt.rc(<span class="st">'font'</span>, family<span class="op">=</span><span class="st">'NanumGothic'</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> platform.system() <span class="op">==</span> <span class="st">'Darwin'</span>: </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        plt.rc(<span class="st">'font'</span>, family<span class="op">=</span><span class="st">'AppleGothic'</span>) </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        plt.rc(<span class="st">'font'</span>, family<span class="op">=</span><span class="st">'NanumGothic'</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    plt.rcParams[<span class="st">'axes.unicode_minus'</span>] <span class="op">=</span> <span class="va">False</span> <span class="co"># 마이너스 부호 깨짐 방지</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Matplotlib font configured for Korean on </span><span class="sc">{</span>platform<span class="sc">.</span>system()<span class="sc">}</span><span class="ss">."</span>)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">Exception</span> <span class="im">as</span> e:</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Error setting up Matplotlib font: </span><span class="sc">{</span>e<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Please ensure a Korean-supporting font (like NanumGothic) is installed."</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> platform.system() <span class="op">==</span> <span class="st">'Windows'</span>:</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"On Windows, please install Nanum fonts (e.g., from Naver Hangeul Hangeul) and restart your kernel."</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"You might also need to clear Matplotlib's font cache (delete the .json file in ~/.matplotlib)."</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> platform.system() <span class="op">==</span> <span class="st">'Linux'</span>:</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"On Linux, ensure 'fonts-nanum' is installed (e.g., via apt-get) and Matplotlib's font cache is updated."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Matplotlib font configured for Korean on Windows.</code></pre>
+</div>
 </div>
 </section>
 <section id="샘플-시계열-데이터-생성" class="level3">
 <h3 class="anchored" data-anchor-id="샘플-시계열-데이터-생성">2. 샘플 시계열 데이터 생성</h3>
 <p>분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2023년 1월 1일부터 100일간의 가상 데이터를 만듭니다.</p>
 <div id="generate-sample-data" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 날짜 범위 생성</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-04-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 프레임 생성</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 임의의 데이터 생성 (예: 웹사이트 방문자 수)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'visitors'</span>] <span class="op">=</span> np.random.randint(<span class="dv">50</span>, <span class="dv">200</span>, size<span class="op">=</span>(<span class="bu">len</span>(date_rng)))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 'date' 컬럼을 인덱스로 설정</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>data.set_index(<span class="st">'date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 날짜 범위 생성</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-04-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 프레임 생성</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 임의의 데이터 생성 (예: 웹사이트 방문자 수)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'visitors'</span>] <span class="op">=</span> np.random.randint(<span class="dv">50</span>, <span class="dv">200</span>, size<span class="op">=</span>(<span class="bu">len</span>(date_rng)))</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 'date' 컬럼을 인덱스로 설정</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>data.set_index(<span class="st">'date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2023-01-01        51
-2023-01-02        78
-2023-01-03       169
-2023-01-04       163
-2023-01-05       112</code></pre>
+2023-01-01       192
+2023-01-02       144
+2023-01-03       159
+2023-01-04       186
+2023-01-05       114</code></pre>
 </div>
 </div>
 </section>
@@ -294,19 +310,19 @@ date
 <h3 class="anchored" data-anchor-id="시계열-데이터-시각화">3. 시계열 데이터 시각화</h3>
 <p>생성된 시계열 데이터를 시각화하여 전반적인 추세를 파악합니다.</p>
 <div id="cell-fig-time-series-plot" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수'</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-time-series-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-time-series-plot-output-1.png" class="img-fluid figure-img">
+<img src="index_files/figure-html/fig-time-series-plot-output-1.png" width="964" height="524" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: 일별 웹사이트 방문자 수
@@ -320,25 +336,25 @@ Figure&nbsp;1: 일별 웹사이트 방문자 수
 <h3 class="anchored" data-anchor-id="이동-평균moving-average-계산-및-시각화">4. 이동 평균(Moving Average) 계산 및 시각화</h3>
 <p>이동 평균은 단기적인 변동을 완화하여 장기적인 추세를 파악하는 데 도움을 줍니다. 7일 이동 평균을 계산하고 시각화해 보겠습니다.</p>
 <div id="cell-fig-moving-average" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7일 이동 평균 계산</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'rolling_mean_7'</span>] <span class="op">=</span> data[<span class="st">'visitors'</span>].rolling(window<span class="op">=</span><span class="dv">7</span>).mean()</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'rolling_mean_7'</span>], label<span class="op">=</span><span class="st">'7일 이동 평균'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수 및 7일 이동 평균'</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head(<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7일 이동 평균 계산</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'rolling_mean_7'</span>] <span class="op">=</span> data[<span class="st">'visitors'</span>].rolling(window<span class="op">=</span><span class="dv">7</span>).mean()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">6</span>))</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'rolling_mean_7'</span>], label<span class="op">=</span><span class="st">'7일 이동 평균'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수 및 7일 이동 평균'</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head(<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-moving-average" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-moving-average-output-1.png" class="img-fluid figure-img">
+<img src="index_files/figure-html/fig-moving-average-output-1.png" width="964" height="524" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
@@ -349,16 +365,16 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2023-01-01        51             NaN
-2023-01-02        78             NaN
-2023-01-03       169             NaN
-2023-01-04       163             NaN
-2023-01-05       112             NaN
-2023-01-06       197             NaN
-2023-01-07        76      120.857143
-2023-01-08       182      139.571429
-2023-01-09       134      147.571429
-2023-01-10        70      133.428571</code></pre>
+2023-01-01       192             NaN
+2023-01-02       144             NaN
+2023-01-03       159             NaN
+2023-01-04       186             NaN
+2023-01-05       114             NaN
+2023-01-06       145             NaN
+2023-01-07       165      157.857143
+2023-01-08       187      157.142857
+2023-01-09       139      156.428571
+2023-01-10       142      154.000000</code></pre>
 </div>
 </div>
 </section>
@@ -366,35 +382,35 @@ date
 <h3 class="anchored" data-anchor-id="시계열-분해-decomposition---선택-사항">5. 시계열 분해 (Decomposition) - (선택 사항)</h3>
 <p>더 고급 분석에서는 시계열 데이터를 추세(Trend), 계절성(Seasonality), 잔차(Residual)로 분해하여 각 구성 요소를 분석할 수 있습니다. <code>statsmodels</code> 라이브러리를 사용하면 이를 수행할 수 있습니다.</p>
 <div id="cell-fig-decomposition" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> seasonal_decompose</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시계열 분해 (덧셈 모델)</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>decomposition <span class="op">=</span> seasonal_decompose(data[<span class="st">'visitors'</span>], model<span class="op">=</span><span class="st">'additive'</span>, period<span class="op">=</span><span class="dv">7</span>) <span class="co"># period는 데이터의 주기에 따라 설정</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>trend <span class="op">=</span> decomposition.trend</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>seasonal <span class="op">=</span> decomposition.seasonal</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> decomposition.resid</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">411</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>plt.plot(data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'Original'</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">412</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>plt.plot(trend, label<span class="op">=</span><span class="st">'Trend'</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">413</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>plt.plot(seasonal,label<span class="op">=</span><span class="st">'Seasonality'</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">414</span>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>plt.plot(residual, label<span class="op">=</span><span class="st">'Residuals'</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> seasonal_decompose</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시계열 분해 (덧셈 모델)</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>decomposition <span class="op">=</span> seasonal_decompose(data[<span class="st">'visitors'</span>], model<span class="op">=</span><span class="st">'additive'</span>, period<span class="op">=</span><span class="dv">7</span>) <span class="co"># period는 데이터의 주기에 따라 설정</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>trend <span class="op">=</span> decomposition.trend</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>seasonal <span class="op">=</span> decomposition.seasonal</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> decomposition.resid</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>, <span class="dv">8</span>))</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">411</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>plt.plot(data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'Original'</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">412</span>)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>plt.plot(trend, label<span class="op">=</span><span class="st">'Trend'</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">413</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>plt.plot(seasonal,label<span class="op">=</span><span class="st">'Seasonality'</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">414</span>)</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>plt.plot(residual, label<span class="op">=</span><span class="st">'Residuals'</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-decomposition" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-decomposition-output-1.png" class="img-fluid figure-img">
+<img src="index_files/figure-html/fig-decomposition-output-1.png" width="1142" height="758" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: 시계열 분해 결과
