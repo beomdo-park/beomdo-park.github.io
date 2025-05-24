@@ -4,7 +4,7 @@ project:
 
 website:
   title: "beomdo-park's ml/dl blog"
-  description: "머신러닝, 데이터 분석, AI 블로그"
+  # description: "머신러닝, 데이터 분석, AI 블로그"
 
   navbar:
     left:
@@ -18,6 +18,7 @@ website:
             href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
           - text: "Machine Learning"
             href: "/posts/index.html?category=MachineLearning" # 카테고리별 필터링 링크 예시
+
     right:
       - icon: github
         href: https://github.com/beomdo-park
@@ -26,14 +27,16 @@ website:
     left: "© 2025, Beomdo-Park. Powered by Quarto."
     right:
       - icon: github
-        href: https://github.com/beomdo-park/your-repo-name # 저장소 이름으로 변경해주세요
+        href: https://github.com/beomdo-park/
 
 format:
   html:
-    theme: pulse
+    theme:
+      light: cosmo # pulse, flatly, journal, readable, sandstone, simplex, slate, spacelab, united, yeti
+      dark: darkly # darkly, cyborg, lumen, paper, superhero, united
     css: styles.css
     toc: true
-    # code-fold: true
-    # code-tools: true
 
-editor: visual
+    respect-user-color-scheme: true # 사용자 시스템 설정 존중
+
+# editor: visual

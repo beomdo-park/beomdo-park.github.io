@@ -2,10 +2,10 @@
 title: "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차" 
 date: "2025-05-24" 
 author: "Beomdo Park" 
-categories: [ABC 프로젝트 멘토링] 
-tags: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
-# image: "image.jpg" 
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
 page-layout: full
+freeze: false
+
 ---
 
 1주차로 기초 시계열 분석을 진행
@@ -33,11 +33,12 @@ page-layout: full
 #| include: false
 #| eval: true
 
+### 포스트의 한글 폰트를 불러오는 코드. 배포 시 보이지 않도록 echo, include: false
 import os
 import sys
 
 # Path to the setup script, assuming Quarto's CWD is the project root.
-font_setup_script_path = "scripts/matplotlib_font_setup.py" # ProjectRoot/scripts/matplotlib_font_setup.py
+font_setup_script_path = "../../scripts/matplotlib_font_setup.py" # Corrected path
 
 try:
     if os.path.exists(font_setup_script_path):
@@ -109,7 +110,7 @@ print(data.head())
 #| echo: true
 #| eval: true
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(9, 5))
 plt.plot(data.index, data['visitors'], label='일별 방문자 수')
 plt.title('일별 웹사이트 방문자 수')
 plt.xlabel('날짜')
@@ -132,7 +133,7 @@ plt.show()
 # 7일 이동 평균 계산
 data['rolling_mean_7'] = data['visitors'].rolling(window=7).mean()
 
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(9, 5))
 plt.plot(data.index, data['visitors'], label='일별 방문자 수')
 plt.plot(data.index, data['rolling_mean_7'], label='7일 이동 평균', color='red')
 plt.title('일별 웹사이트 방문자 수 및 7일 이동 평균')
@@ -158,13 +159,13 @@ print(data.head(10))
 from statsmodels.tsa.seasonal import seasonal_decompose
 
 # 시계열 분해 (덧셈 모델)
-decomposition = seasonal_decompose(data['visitors'], model='additive', period=7) # period는 데이터의 주기에 따라 설정
+decomposition = seasonal_decompose(data['visitors'], model='additive', period=7)
 
 trend = decomposition.trend
 seasonal = decomposition.seasonal
 residual = decomposition.resid
 
-plt.figure(figsize=(12, 8))
+plt.figure(figsize=(9, 8))
 plt.subplot(411)
 plt.plot(data['visitors'], label='Original')
 plt.legend(loc='upper left')
