@@ -5,6 +5,7 @@ author: "Beomdo Park"
 categories: [news, code, analysis]
 image: "image.jpg"
 page-layout: full
+draft: true
 ---
 
 여기에 마크다운으로 내용을 작성합니다. Quarto는 Pandoc 마크다운을 확장하여 다양한 기능을 제공합니다.
