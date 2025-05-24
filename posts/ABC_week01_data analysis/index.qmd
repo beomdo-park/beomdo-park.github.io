@@ -8,7 +8,7 @@ tags: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "
 page-layout: full
 ---
 
-이 프로젝트를 진행을 위해 1주차로 기초 시계열 분석을 진행해봤습니다.
+1주차로 기초 시계열 분석을 진행
 
 ## 시계열 데이터란?
 
@@ -40,6 +40,16 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
+
+import os
+import sys
+sys.path.append(os.getcwd())
+import matplotlib.font_manager as fm
+
+font_path = '/usr/share/fonts/truetype/nanum/NanumGothic.ttf' 
+font_name = fm.FontProperties(fname=font_path).get_name()
+plt.rc('font', family=font_name)
+plt.rcParams['axes.unicode_minus'] = False
 ```
 
 ### 2. 샘플 시계열 데이터 생성
@@ -120,35 +130,34 @@ print(data.head(10))
 #| label: fig-decomposition
 #| fig-cap: "시계열 분해 결과"
 #| echo: true
-#| eval: false # statsmodels 설치 필요
+#| eval: true
 
-# from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.seasonal import seasonal_decompose
 
-# # 시계열 분해 (덧셈 모델)
-# decomposition = seasonal_decompose(data['visitors'], model='additive', period=7) # period는 데이터의 주기에 따라 설정
+# 시계열 분해 (덧셈 모델)
+decomposition = seasonal_decompose(data['visitors'], model='additive', period=7) # period는 데이터의 주기에 따라 설정
 
-# trend = decomposition.trend
-# seasonal = decomposition.seasonal
-# residual = decomposition.resid
+trend = decomposition.trend
+seasonal = decomposition.seasonal
+residual = decomposition.resid
 
-# plt.figure(figsize=(12, 8))
-# plt.subplot(411)
-# plt.plot(data['visitors'], label='Original')
-# plt.legend(loc='upper left')
-# plt.subplot(412)
-# plt.plot(trend, label='Trend')
-# plt.legend(loc='upper left')
-# plt.subplot(413)
-# plt.plot(seasonal,label='Seasonality')
-# plt.legend(loc='upper left')
-# plt.subplot(414)
-# plt.plot(residual, label='Residuals')
-# plt.legend(loc='upper left')
-# plt.tight_layout()
-# plt.show()
+plt.figure(figsize=(12, 8))
+plt.subplot(411)
+plt.plot(data['visitors'], label='Original')
+plt.legend(loc='upper left')
+plt.subplot(412)
+plt.plot(trend, label='Trend')
+plt.legend(loc='upper left')
+plt.subplot(413)
+plt.plot(seasonal,label='Seasonality')
+plt.legend(loc='upper left')
+plt.subplot(414)
+plt.plot(residual, label='Residuals')
+plt.legend(loc='upper left')
+plt.tight_layout()
+plt.show()
 ```
 
-**참고:** 시계열 분해를 실행하려면 `statsmodels` 라이브러리가 설치되어 있어야 합니다. (`pip install statsmodels`) 위 코드 셀의 `eval` 옵션이 `false`로 설정되어 있어, 실행하려면 `true`로 변경하고 라이브러리를 설치해야 합니다.
 
 ## 결론
 
