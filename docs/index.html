@@ -387,59 +387,83 @@ window.Quarto = {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const subtitleElement = document.querySelector('.quarto-title-block .subtitle');
-    const categoryLinksContainer = document.querySelector('.quarto-listing-categories-links');
+    let subtitleElement = null;
+    let categoryLinksContainer = null;
+    const maxAttempts = 20; // 최대 20번 시도 (0.5초 간격으로 약 10초)
+    let attempts = 0;
 
-    if (subtitleElement && categoryLinksContainer) {
-        const originalSubtitleText = subtitleElement.textContent.trim(); // "Posts"
+    const findElementsInterval = setInterval(function() {
+        subtitleElement = document.querySelector('.quarto-title-block .subtitle');
+        const marginSidebar = document.querySelector('#quarto-margin-sidebar');
+        attempts++;
+
+        if (marginSidebar) {
+            // console.log('Dynamic subtitle: Found #quarto-margin-sidebar.'); // 로그 확인용
+            categoryLinksContainer = marginSidebar.querySelector('div.quarto-listing-category');
+        } else if (attempts === 1) { // 첫 시도에서 못찾으면 바로 로그 남기기
+            console.warn('Dynamic subtitle: #quarto-margin-sidebar not found on first attempt.');
+        }
+
+        if ((subtitleElement && categoryLinksContainer) || attempts >= maxAttempts) {
+            clearInterval(findElementsInterval);
+            if (subtitleElement && categoryLinksContainer) {
+                console.log('Dynamic subtitle: Successfully found subtitleElement and categoryLinksContainer.');
+                initializeDynamicSubtitle(subtitleElement, categoryLinksContainer);
+            } else {
+                if (!subtitleElement) {
+                    console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found after multiple attempts.');
+                }
+                if (!categoryLinksContainer) {
+                    console.warn('Dynamic subtitle: Category links container (div.quarto-listing-category within #quarto-margin-sidebar) not found after multiple attempts.');
+                    if (marginSidebar) {
+                        console.log('Dynamic subtitle: InnerHTML of #quarto-margin-sidebar:');
+                        console.log(marginSidebar.innerHTML);
+                    } else {
+                        console.warn('Dynamic subtitle: #quarto-margin-sidebar was also not found.');
+                    }
+                }
+            }
+        }
+    }, 500); // 500ms (0.5초) 간격으로 확인
+
+    function initializeDynamicSubtitle(subtitleElem, categoriesContainer) {
+        const originalSubtitleText = subtitleElem.textContent.trim();
 
         const updateSubtitle = () => {
-            const activeFilterLink = categoryLinksContainer.querySelector('a.active');
-            if (activeFilterLink) {
-                const categoryName = activeFilterLink.textContent.trim();
-                // Quarto의 'All' 필터는 data-filter-category="All" 속성을 가집니다.
-                const isAllFilter = activeFilterLink.dataset.filterCategory === "All" || categoryName.toLowerCase() === "all";
-
-                if (isAllFilter) {
-                    subtitleElement.textContent = originalSubtitleText;
-                } else {
-                    subtitleElement.textContent = `${categoryName} ${originalSubtitleText}`;
-                }
+            const activeFilterElement = categoriesContainer.querySelector('div.category.active');
+            if (activeFilterElement) {
+              let categoryName = activeFilterElement.textContent.trim(); // 예: "All (1)" 또는 "News (3)"
+              const categoryNameOnly = categoryName.replace(/\s*\(\d+\)$/, '').trim(); // 숫자 제거 -> "All" 또는 "News"
+              
+              if (categoryNameOnly === "All") {
+                subtitleElem.textContent = originalSubtitleText;
+              } else {
+                subtitleElem.textContent = `Posts by [${categoryNameOnly}]`;
+              }
             } else {
-                subtitleElement.textContent = originalSubtitleText;
+              // 활성 필터가 없으면 원래 부제목으로 되돌립니다.
+              subtitleElem.textContent = originalSubtitleText;
             }
         };
 
-        const observer = new MutationObserver((mutationsList, observer) => {
+        const observer = new MutationObserver((mutationsList) => {
             for(const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    if (mutation.target.matches('.quarto-listing-category')) {
-                         updateSubtitle();
-                         return; 
-                    }
-                } else if (mutation.type === 'childList') {
-                    updateSubtitle(); // 카테고리 링크 목록 자체가 변경될 경우 (드문 경우)
-                    return;
+                if (mutation.type === 'attributes' && 
+                    mutation.attributeName === 'class' && 
+                    mutation.target.matches('div.category')) { // categoriesContainer의 자식인 div.category를 감지
+                    updateSubtitle();
+                    return; 
                 }
             }
         });
 
-        observer.observe(categoryLinksContainer, {
+        observer.observe(categoriesContainer, { // 찾은 categoriesContainer를 관찰
             attributes: true, 
-            childList: true,  
+            childList: false, 
             subtree: true     
         });
 
-        // 페이지 로드 시 초기 업데이트 (URL 등으로 필터가 이미 활성화된 경우 대비)
-        updateSubtitle();
-
-    } else {
-        if (!subtitleElement) {
-            console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found.');
-        }
-        if (!categoryLinksContainer) {
-            console.warn('Dynamic subtitle: Category links container (.quarto-listing-categories-links) not found.');
-        }
+        updateSubtitle(); // 초기 업데이트
     }
 });
 </script>

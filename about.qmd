@@ -14,8 +14,7 @@ about:
       text: Github
       href: https://github.com/beomdo-park
     - icon: email
-      text: Email
-      href: pbeomdo@gmail.com
+      text: pbeomdo@gmail.com
 ---
 
 About this blog

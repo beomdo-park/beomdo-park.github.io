@@ -40,12 +40,5 @@
     "title": "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차",
     "section": "결론",
     "text": "결론\n이 튜토리얼에서는 Python을 사용하여 시계열 데이터를 생성하고, 시각화하며, 이동 평균을 계산하는 기본적인 방법을 살펴보았습니다. 시계열 분석은 매우 광범위한 분야이며, 이 튜토리얼은 그 시작점에 불과합니다. 더 나아가 ARIMA, SARIMA, Prophet과 같은 고급 모델을 학습하여 더 정교한 예측 및 분석을 수행할 수 있습니다."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this blog"
   }
 ]
