@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>beomdo-park’s ml/dl blog</title>
+<title>beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -134,7 +134,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="styles.css">
-<link rel="alternate" type="application/rss+xml" title="beomdo-park's ml/dl blog" href="index.xml" data-external="1"></head>
+<link rel="alternate" type="application/rss+xml" title="beomdo's ML-DL blog" href="index.xml" data-external="1"></head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
@@ -310,12 +310,12 @@ window.Quarto = {
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+  <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">beomdo-park’s ml/dl blog</span>
+    <span class="navbar-title">beomdo’s ML-DL blog</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -337,14 +337,7 @@ window.Quarto = {
  <span class="menu-text">My Tech Stacks</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-my-tech-stacks">    
-        <li>
-    <a class="dropdown-item" href="./posts/index.html?category=Python">
- <span class="dropdown-text">Python</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./posts/index.html?category=MachineLearning">
- <span class="dropdown-text">Machine Learning</span></a>
-  </li>  
+        <li class="dropdown-header">포스트 더 작성 후 추가 예정</li>
     </ul>
   </li>
 </ul>
@@ -363,19 +356,93 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<header id="title-block-header" class="quarto-title-block"></header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
     <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(1)</span></div><div class="category" data-category="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx">ABC프로젝트멘토링 <span class="quarto-category-count">(1)</span></div><div class="category" data-category="JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw">고용노동부 <span class="quarto-category-count">(1)</span></div><div class="category" data-category="JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD">대한상공회의소 <span class="quarto-category-count">(1)</span></div><div class="category" data-category="JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1">미래내일일경험사업 <span class="quarto-category-count">(1)</span></div><div class="category" data-category="JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4">유클리드소프트 <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
-<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<p class="subtitle lead">Posts</p>
+</div>
 
 
 
+<div class="quarto-title-meta column-page-left">
+
+    
+  
+    
+  </div>
+  
 
 
+</header>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const subtitleElement = document.querySelector('.quarto-title-block .subtitle');
+    const categoryLinksContainer = document.querySelector('.quarto-listing-categories-links');
+
+    if (subtitleElement && categoryLinksContainer) {
+        const originalSubtitleText = subtitleElement.textContent.trim(); // "Posts"
+
+        const updateSubtitle = () => {
+            const activeFilterLink = categoryLinksContainer.querySelector('a.active');
+            if (activeFilterLink) {
+                const categoryName = activeFilterLink.textContent.trim();
+                // Quarto의 'All' 필터는 data-filter-category="All" 속성을 가집니다.
+                const isAllFilter = activeFilterLink.dataset.filterCategory === "All" || categoryName.toLowerCase() === "all";
+
+                if (isAllFilter) {
+                    subtitleElement.textContent = originalSubtitleText;
+                } else {
+                    subtitleElement.textContent = `${categoryName} ${originalSubtitleText}`;
+                }
+            } else {
+                subtitleElement.textContent = originalSubtitleText;
+            }
+        };
+
+        const observer = new MutationObserver((mutationsList, observer) => {
+            for(const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (mutation.target.matches('.quarto-listing-category')) {
+                         updateSubtitle();
+                         return; 
+                    }
+                } else if (mutation.type === 'childList') {
+                    updateSubtitle(); // 카테고리 링크 목록 자체가 변경될 경우 (드문 경우)
+                    return;
+                }
+            }
+        });
+
+        observer.observe(categoryLinksContainer, {
+            attributes: true, 
+            childList: true,  
+            subtree: true     
+        });
+
+        // 페이지 로드 시 초기 업데이트 (URL 등으로 필터가 이미 활성화된 경우 대비)
+        updateSubtitle();
+
+    } else {
+        if (!subtitleElement) {
+            console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found.');
+        }
+        if (!categoryLinksContainer) {
+            console.warn('Dynamic subtitle: Category links container (.quarto-listing-categories-links) not found.');
+        }
+    }
+});
+</script>
 
 
 
@@ -388,7 +455,7 @@ window.Quarto = {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748044800000" data-listing-file-modified-sort="1748077284482" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="625">
+<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748044800000" data-listing-file-modified-sort="1748079417733" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="4" data-listing-word-count-sort="625">
 <div class="thumbnail"><a href="./posts/ABC_week01_data analysis/index.html" class="no-external">
 
 <p class="card-img-top"><img src="posts/ABC_week01_data analysis/index_files/figure-html/fig-time-series-plot-output-1.png"  class="thumbnail-image card-img"/></p>

@@ -5,7 +5,7 @@
       xmlns:dc="http://purl.org/dc/elements/1.1/" 
       version="2.0">
 <channel>
-<title>beomdo-park&#39;s ml/dl blog</title>
+<title>beomdo&#39;s ML-DL blog</title>
 <link>https://beomdo-park.github.io/</link>
 <atom:link href="https://beomdo-park.github.io/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
@@ -134,11 +134,11 @@ font-style: inherit;">print</span>(data.head())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2023-01-01       129
-2023-01-02        67
-2023-01-03       161
-2023-01-04       188
-2023-01-05        80</code></pre>
+2023-01-01        89
+2023-01-02       110
+2023-01-03       179
+2023-01-04       196
+2023-01-05       142</code></pre>
 </div>
 </div>
 </section>
@@ -267,16 +267,16 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2023-01-01       129             NaN
-2023-01-02        67             NaN
-2023-01-03       161             NaN
-2023-01-04       188             NaN
-2023-01-05        80             NaN
-2023-01-06       166             NaN
-2023-01-07       118      129.857143
-2023-01-08        61      120.142857
-2023-01-09       101      125.000000
-2023-01-10       158      124.571429</code></pre>
+2023-01-01        89             NaN
+2023-01-02       110             NaN
+2023-01-03       179             NaN
+2023-01-04       196             NaN
+2023-01-05       142             NaN
+2023-01-06       105             NaN
+2023-01-07       112      133.285714
+2023-01-08       121      137.857143
+2023-01-09       140      142.142857
+2023-01-10        58      124.857143</code></pre>
 </div>
 </div>
 </section>
