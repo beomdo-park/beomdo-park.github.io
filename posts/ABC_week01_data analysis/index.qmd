@@ -27,6 +27,39 @@ page-layout: full
 
 이 튜토리얼에서는 Python의 `pandas`와 `matplotlib` 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.
 
+```{python}
+#| label: matplotlib-font-setup
+#| echo: false
+#| include: false
+#| eval: true
+
+import os
+import sys
+
+# Path to the setup script, assuming Quarto's CWD is the project root.
+font_setup_script_path = "scripts/matplotlib_font_setup.py" # ProjectRoot/scripts/matplotlib_font_setup.py
+
+try:
+    if os.path.exists(font_setup_script_path):
+        exec(open(font_setup_script_path, encoding='utf-8').read())
+    else:
+        # This case should ideally not happen if the file structure is correct.
+        print(f"WARNING: Font setup script '{font_setup_script_path}' not found at '{os.path.abspath(font_setup_script_path)}'. CWD: '{os.getcwd()}'. Using fallback font settings.")
+        # Fallback font settings (minimal)
+        import platform
+        import matplotlib.pyplot as plt 
+        if platform.system() == 'Windows':
+            plt.rc('font', family='Malgun Gothic')
+        elif platform.system() == 'Darwin':
+            plt.rc('font', family='AppleGothic')
+        plt.rcParams['axes.unicode_minus'] = False
+except Exception as e:
+    print(f"ERROR executing font setup script '{font_setup_script_path}': {e}")
+    # Fallback to ensure subsequent cells don't fail due to plt not being configured
+    import matplotlib.pyplot as plt
+    plt.rcParams['axes.unicode_minus'] = False
+```
+
 ### 1. 필요한 라이브러리 불러오기
 
 먼저, 데이터 분석에 필요한 라이브러리들을 불러옵니다.
@@ -38,31 +71,8 @@ page-layout: full
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt # matplotlib_font_setup.py 에서도 import 하지만, 여기서도 명시적으로 import 하는 것이 좋음
 from datetime import datetime
-import matplotlib.font_manager as fm
-import platform # 운영체제 확인을 위해 추가
-
-# --- Matplotlib 한글 폰트 설정 ---
-try:
-    if platform.system() == 'Windows':
-        plt.rc('font', family='NanumGothic')
-    elif platform.system() == 'Darwin': 
-        plt.rc('font', family='AppleGothic') 
-    else:
-        plt.rc('font', family='NanumGothic')
-
-    plt.rcParams['axes.unicode_minus'] = False # 마이너스 부호 깨짐 방지
-    print(f"Matplotlib font configured for Korean on {platform.system()}.")
-
-except Exception as e:
-    print(f"Error setting up Matplotlib font: {e}")
-    print("Please ensure a Korean-supporting font (like NanumGothic) is installed.")
-    if platform.system() == 'Windows':
-        print("On Windows, please install Nanum fonts (e.g., from Naver Hangeul Hangeul) and restart your kernel.")
-        print("You might also need to clear Matplotlib's font cache (delete the .json file in ~/.matplotlib).")
-    elif platform.system() == 'Linux':
-        print("On Linux, ensure 'fonts-nanum' is installed (e.g., via apt-get) and Matplotlib's font cache is updated.")
 ```
 
 ### 2. 샘플 시계열 데이터 생성
