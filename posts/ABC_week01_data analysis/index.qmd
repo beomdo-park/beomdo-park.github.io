@@ -71,7 +71,7 @@ except Exception as e:
 
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt # matplotlib_font_setup.py 에서도 import 하지만, 여기서도 명시적으로 import 하는 것이 좋음
+import matplotlib.pyplot as plt
 from datetime import datetime
 ```
 
