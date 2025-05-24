@@ -42,7 +42,7 @@
 <section id="필요한-라이브러리-불러오기" class="level3">
 <h3 class="anchored" data-anchor-id="필요한-라이브러리-불러오기">1. 필요한 라이브러리 불러오기</h3>
 <p>먼저, 데이터 분석에 필요한 라이브러리들을 불러옵니다.</p>
-<div id="load-libraries" class="cell" data-execution_count="1">
+<div id="load-libraries" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> pandas <span class="im" style="color: #00769E;
@@ -62,158 +62,17 @@ font-style: inherit;">as</span> plt</span>
 background-color: null;
 font-style: inherit;">from</span> datetime <span class="im" style="color: #00769E;
 background-color: null;
-font-style: inherit;">import</span> datetime</span>
-<span id="cb1-5"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> matplotlib.font_manager <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> fm</span>
-<span id="cb1-6"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> platform <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 운영체제 확인을 위해 추가</span></span>
-<span id="cb1-7"></span>
-<span id="cb1-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># --- Matplotlib 한글 폰트 설정 ---</span></span>
-<span id="cb1-9"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">try</span>:</span>
-<span id="cb1-10">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> platform.system() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Windows'</span>:</span>
-<span id="cb1-11">        plt.rc(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'font'</span>, family<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NanumGothic'</span>)</span>
-<span id="cb1-12">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">elif</span> platform.system() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Darwin'</span>: </span>
-<span id="cb1-13">        plt.rc(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'font'</span>, family<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'AppleGothic'</span>) </span>
-<span id="cb1-14">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span>:</span>
-<span id="cb1-15">        plt.rc(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'font'</span>, family<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NanumGothic'</span>)</span>
-<span id="cb1-16"></span>
-<span id="cb1-17">    plt.rcParams[<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'axes.unicode_minus'</span>] <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">False</span> <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># 마이너스 부호 깨짐 방지</span></span>
-<span id="cb1-18">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Matplotlib font configured for Korean on </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>platform<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">.</span>system()<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">."</span>)</span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">except</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">Exception</span> <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> e:</span>
-<span id="cb1-21">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">f"Error setting up Matplotlib font: </span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span>e<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span><span class="ss" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>)</span>
-<span id="cb1-22">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Please ensure a Korean-supporting font (like NanumGothic) is installed."</span>)</span>
-<span id="cb1-23">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> platform.system() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Windows'</span>:</span>
-<span id="cb1-24">        <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"On Windows, please install Nanum fonts (e.g., from Naver Hangeul Hangeul) and restart your kernel."</span>)</span>
-<span id="cb1-25">        <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"You might also need to clear Matplotlib's font cache (delete the .json file in ~/.matplotlib)."</span>)</span>
-<span id="cb1-26">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">elif</span> platform.system() <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'Linux'</span>:</span>
-<span id="cb1-27">        <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"On Linux, ensure 'fonts-nanum' is installed (e.g., via apt-get) and Matplotlib's font cache is updated."</span>)</span></code></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Matplotlib font configured for Korean on Windows.</code></pre>
-</div>
+font-style: inherit;">import</span> datetime</span></code></pre></div>
 </div>
 </section>
 <section id="샘플-시계열-데이터-생성" class="level3">
 <h3 class="anchored" data-anchor-id="샘플-시계열-데이터-생성">2. 샘플 시계열 데이터 생성</h3>
 <p>분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2023년 1월 1일부터 100일간의 가상 데이터를 만듭니다.</p>
-<div id="generate-sample-data" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+<div id="generate-sample-data" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 날짜 범위 생성</span></span>
-<span id="cb3-2">date_rng <span class="op" style="color: #5E5E5E;
+<span id="cb2-2">date_rng <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.date_range(start<span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -228,22 +87,22 @@ background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'D'</span>)</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 데이터 프레임 생성</span></span>
-<span id="cb3-5">data <span class="op" style="color: #5E5E5E;
+<span id="cb2-5">data <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> pd.DataFrame(date_rng, columns<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'date'</span>])</span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 임의의 데이터 생성 (예: 웹사이트 방문자 수)</span></span>
-<span id="cb3-8">data[<span class="st" style="color: #20794D;
+<span id="cb2-8">data[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'visitors'</span>] <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -256,69 +115,95 @@ background-color: null;
 font-style: inherit;">=</span>(<span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">len</span>(date_rng)))</span>
-<span id="cb3-9"></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 'date' 컬럼을 인덱스로 설정</span></span>
-<span id="cb3-11">data.set_index(<span class="st" style="color: #20794D;
+<span id="cb2-11">data.set_index(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'date'</span>, inplace<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">True</span>)</span>
-<span id="cb3-12"></span>
-<span id="cb3-13"><span class="bu" style="color: null;
+<span id="cb2-12"></span>
+<span id="cb2-13"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">print</span>(data.head())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2023-01-01       192
-2023-01-02       144
-2023-01-03       159
-2023-01-04       186
-2023-01-05       114</code></pre>
+2023-01-01       158
+2023-01-02       110
+2023-01-03       102
+2023-01-04       189
+2023-01-05       119</code></pre>
 </div>
 </div>
 </section>
 <section id="시계열-데이터-시각화" class="level3">
 <h3 class="anchored" data-anchor-id="시계열-데이터-시각화">3. 시계열 데이터 시각화</h3>
 <p>생성된 시계열 데이터를 시각화하여 전반적인 추세를 파악합니다.</p>
-<div id="cell-fig-time-series-plot" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+<div id="cell-fig-time-series-plot" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1">plt.figure(figsize<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">6</span>))</span>
-<span id="cb5-2">plt.plot(data.index, data[<span class="st" style="color: #20794D;
+<span id="cb4-2">plt.plot(data.index, data[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'visitors'</span>], label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'일별 방문자 수'</span>)</span>
-<span id="cb5-3">plt.title(<span class="st" style="color: #20794D;
+<span id="cb4-3">plt.title(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'일별 웹사이트 방문자 수'</span>)</span>
-<span id="cb5-4">plt.xlabel(<span class="st" style="color: #20794D;
+<span id="cb4-4">plt.xlabel(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'날짜'</span>)</span>
-<span id="cb5-5">plt.ylabel(<span class="st" style="color: #20794D;
+<span id="cb4-5">plt.ylabel(<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'방문자 수'</span>)</span>
-<span id="cb5-6">plt.legend()</span>
-<span id="cb5-7">plt.grid(<span class="va" style="color: #111111;
+<span id="cb4-6">plt.legend()</span>
+<span id="cb4-7">plt.grid(<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">True</span>)</span>
-<span id="cb5-8">plt.show()</span></code></pre></div>
+<span id="cb4-8">plt.show()</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48169 (\N{HANGUL SYLLABLE BANG}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 47928 (\N{HANGUL SYLLABLE MUN}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51088 (\N{HANGUL SYLLABLE JA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 49688 (\N{HANGUL SYLLABLE SU}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51068 (\N{HANGUL SYLLABLE IL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48324 (\N{HANGUL SYLLABLE BYEOL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 50937 (\N{HANGUL SYLLABLE WEB}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 49324 (\N{HANGUL SYLLABLE SA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51060 (\N{HANGUL SYLLABLE I}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 53944 (\N{HANGUL SYLLABLE TEU}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 45216 (\N{HANGUL SYLLABLE NAL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51676 (\N{HANGUL SYLLABLE JJA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div id="fig-time-series-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-time-series-plot-output-1.png" width="964" height="524" class="figure-img">
+<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-time-series-plot-output-2.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: 일별 웹사이트 방문자 수
@@ -331,7 +216,7 @@ Figure&nbsp;1: 일별 웹사이트 방문자 수
 <section id="이동-평균moving-average-계산-및-시각화" class="level3">
 <h3 class="anchored" data-anchor-id="이동-평균moving-average-계산-및-시각화">4. 이동 평균(Moving Average) 계산 및 시각화</h3>
 <p>이동 평균은 단기적인 변동을 완화하여 장기적인 추세를 파악하는 데 도움을 줍니다. 7일 이동 평균을 계산하고 시각화해 보겠습니다.</p>
-<div id="cell-fig-moving-average" class="cell" data-execution_count="4">
+<div id="cell-fig-moving-average" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 7일 이동 평균 계산</span></span>
@@ -392,11 +277,45 @@ background-color: null;
 font-style: inherit;">print</span>(data.head(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">10</span>))</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48169 (\N{HANGUL SYLLABLE BANG}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 47928 (\N{HANGUL SYLLABLE MUN}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51088 (\N{HANGUL SYLLABLE JA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 49688 (\N{HANGUL SYLLABLE SU}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51068 (\N{HANGUL SYLLABLE IL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48324 (\N{HANGUL SYLLABLE BYEOL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 50937 (\N{HANGUL SYLLABLE WEB}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 49324 (\N{HANGUL SYLLABLE SA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51060 (\N{HANGUL SYLLABLE I}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 53944 (\N{HANGUL SYLLABLE TEU}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48143 (\N{HANGUL SYLLABLE MIC}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 46041 (\N{HANGUL SYLLABLE DONG}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 54217 (\N{HANGUL SYLLABLE PYEONG}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 44512 (\N{HANGUL SYLLABLE GYUN}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 45216 (\N{HANGUL SYLLABLE NAL}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)
+/opt/hostedtoolcache/Python/3.11.12/x64/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51676 (\N{HANGUL SYLLABLE JJA}) missing from font(s) DejaVu Sans.
+  fig.canvas.print_figure(bytes_io, **kw)</code></pre>
+</div>
 <div class="cell-output cell-output-display">
 <div id="fig-moving-average" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-moving-average-output-1.png" width="964" height="524" class="figure-img">
+<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-moving-average-output-2.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
@@ -407,33 +326,33 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2023-01-01       192             NaN
-2023-01-02       144             NaN
-2023-01-03       159             NaN
-2023-01-04       186             NaN
-2023-01-05       114             NaN
-2023-01-06       145             NaN
-2023-01-07       165      157.857143
-2023-01-08       187      157.142857
-2023-01-09       139      156.428571
-2023-01-10       142      154.000000</code></pre>
+2023-01-01       158             NaN
+2023-01-02       110             NaN
+2023-01-03       102             NaN
+2023-01-04       189             NaN
+2023-01-05       119             NaN
+2023-01-06       197             NaN
+2023-01-07       180      150.714286
+2023-01-08       166      151.857143
+2023-01-09       116      152.714286
+2023-01-10        94      151.571429</code></pre>
 </div>
 </div>
 </section>
 <section id="시계열-분해-decomposition---선택-사항" class="level3">
 <h3 class="anchored" data-anchor-id="시계열-분해-decomposition---선택-사항">5. 시계열 분해 (Decomposition) - (선택 사항)</h3>
 <p>더 고급 분석에서는 시계열 데이터를 추세(Trend), 계절성(Seasonality), 잔차(Residual)로 분해하여 각 구성 요소를 분석할 수 있습니다. <code>statsmodels</code> 라이브러리를 사용하면 이를 수행할 수 있습니다.</p>
-<div id="cell-fig-decomposition" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><span class="im" style="color: #00769E;
+<div id="cell-fig-decomposition" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">from</span> statsmodels.tsa.seasonal <span class="im" style="color: #00769E;
 background-color: null;
 font-style: inherit;">import</span> seasonal_decompose</span>
-<span id="cb8-2"></span>
-<span id="cb8-3"><span class="co" style="color: #5E5E5E;
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># 시계열 분해 (덧셈 모델)</span></span>
-<span id="cb8-4">decomposition <span class="op" style="color: #5E5E5E;
+<span id="cb9-4">decomposition <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> seasonal_decompose(data[<span class="st" style="color: #20794D;
 background-color: null;
@@ -448,85 +367,85 @@ background-color: null;
 font-style: inherit;">7</span>) <span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># period는 데이터의 주기에 따라 설정</span></span>
-<span id="cb8-5"></span>
-<span id="cb8-6">trend <span class="op" style="color: #5E5E5E;
+<span id="cb9-5"></span>
+<span id="cb9-6">trend <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> decomposition.trend</span>
-<span id="cb8-7">seasonal <span class="op" style="color: #5E5E5E;
+<span id="cb9-7">seasonal <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> decomposition.seasonal</span>
-<span id="cb8-8">residual <span class="op" style="color: #5E5E5E;
+<span id="cb9-8">residual <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> decomposition.resid</span>
-<span id="cb8-9"></span>
-<span id="cb8-10">plt.figure(figsize<span class="op" style="color: #5E5E5E;
+<span id="cb9-9"></span>
+<span id="cb9-10">plt.figure(figsize<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span>(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">12</span>, <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">8</span>))</span>
-<span id="cb8-11">plt.subplot(<span class="dv" style="color: #AD0000;
+<span id="cb9-11">plt.subplot(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">411</span>)</span>
-<span id="cb8-12">plt.plot(data[<span class="st" style="color: #20794D;
+<span id="cb9-12">plt.plot(data[<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'visitors'</span>], label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Original'</span>)</span>
-<span id="cb8-13">plt.legend(loc<span class="op" style="color: #5E5E5E;
+<span id="cb9-13">plt.legend(loc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'upper left'</span>)</span>
-<span id="cb8-14">plt.subplot(<span class="dv" style="color: #AD0000;
+<span id="cb9-14">plt.subplot(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">412</span>)</span>
-<span id="cb8-15">plt.plot(trend, label<span class="op" style="color: #5E5E5E;
+<span id="cb9-15">plt.plot(trend, label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Trend'</span>)</span>
-<span id="cb8-16">plt.legend(loc<span class="op" style="color: #5E5E5E;
+<span id="cb9-16">plt.legend(loc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'upper left'</span>)</span>
-<span id="cb8-17">plt.subplot(<span class="dv" style="color: #AD0000;
+<span id="cb9-17">plt.subplot(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">413</span>)</span>
-<span id="cb8-18">plt.plot(seasonal,label<span class="op" style="color: #5E5E5E;
+<span id="cb9-18">plt.plot(seasonal,label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Seasonality'</span>)</span>
-<span id="cb8-19">plt.legend(loc<span class="op" style="color: #5E5E5E;
+<span id="cb9-19">plt.legend(loc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'upper left'</span>)</span>
-<span id="cb8-20">plt.subplot(<span class="dv" style="color: #AD0000;
+<span id="cb9-20">plt.subplot(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">414</span>)</span>
-<span id="cb8-21">plt.plot(residual, label<span class="op" style="color: #5E5E5E;
+<span id="cb9-21">plt.plot(residual, label<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'Residuals'</span>)</span>
-<span id="cb8-22">plt.legend(loc<span class="op" style="color: #5E5E5E;
+<span id="cb9-22">plt.legend(loc<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">'upper left'</span>)</span>
-<span id="cb8-23">plt.tight_layout()</span>
-<span id="cb8-24">plt.show()</span></code></pre></div>
+<span id="cb9-23">plt.tight_layout()</span>
+<span id="cb9-24">plt.show()</span></code></pre></div>
 <div class="cell-output cell-output-display">
 <div id="fig-decomposition" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-decomposition-output-1.png" width="1142" height="758" class="figure-img">
+<img src="https://beomdo-park.github.io/posts/ABC_week01_data analysis/index_files/figure-html/fig-decomposition-output-1.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: 시계열 분해 결과
