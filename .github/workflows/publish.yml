@@ -1,0 +1,25 @@
+name: Publish Quarto Website to GitHub Pages
+
+on:
+  push:
+    branches: [main] # main 브랜치에 푸시될 때마다 실행
+  workflow_dispatch: # 수동 실행도 가능하도록
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # gh-pages 브랜치에 쓰기 위해 필요
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Publish to GitHub Pages (gh-pages branch)
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages # 또는 output_dir을 docs로 하고 target: simple 지정
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

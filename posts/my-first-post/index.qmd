@@ -3,15 +3,6 @@ title: "Blog Posts"
 date: "2025-05-14"
 author: "Beomdo Park"
 categories: [news, code, analysis]
-listing:
-  contents: posts # 'posts' 폴더의 내용을 가져옴
-  sort: "date desc"
-  type: grid # 또는 grid, table 등
-  categories: true
-  sort-ui: [title, date, category]
-  filter-ui: true
-  fields: [image, date, title, author, description, categories] # 목록에 표시할 필드
-  feed: true # RSS 피드 생성
 image: "image.jpg"
 # page-layout: full
 ---
