@@ -134,11 +134,11 @@ font-style: inherit;">print</span>(data.head())</span></code></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2023-01-01        70
-2023-01-02        73
-2023-01-03       184
-2023-01-04       129
-2023-01-05       131</code></pre>
+2023-01-01       129
+2023-01-02        67
+2023-01-03       161
+2023-01-04       188
+2023-01-05        80</code></pre>
 </div>
 </div>
 </section>
@@ -267,16 +267,16 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2023-01-01        70             NaN
-2023-01-02        73             NaN
-2023-01-03       184             NaN
-2023-01-04       129             NaN
-2023-01-05       131             NaN
-2023-01-06       135             NaN
-2023-01-07        72      113.428571
-2023-01-08       188      130.285714
-2023-01-09       148      141.000000
-2023-01-10       111      130.571429</code></pre>
+2023-01-01       129             NaN
+2023-01-02        67             NaN
+2023-01-03       161             NaN
+2023-01-04       188             NaN
+2023-01-05        80             NaN
+2023-01-06       166             NaN
+2023-01-07       118      129.857143
+2023-01-08        61      120.142857
+2023-01-09       101      125.000000
+2023-01-10       158      124.571429</code></pre>
 </div>
 </div>
 </section>
@@ -411,93 +411,6 @@ Figure&nbsp;3: 시계열 분해 결과
   <category>미래내일일경험사업</category>
   <guid>https://beomdo-park.github.io/posts/ABC_week01_data analysis/</guid>
   <pubDate>Sat, 24 May 2025 00:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Blog Posts</title>
-  <dc:creator>Beomdo Park</dc:creator>
-  <link>https://beomdo-park.github.io/posts/my-first-post/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-
-<p>여기에 마크다운으로 내용을 작성합니다. Quarto는 Pandoc 마크다운을 확장하여 다양한 기능을 제공합니다.</p>
-<section id="코드-실행" class="level2">
-<h2 class="anchored" data-anchor-id="코드-실행">코드 실행</h2>
-<p>Python 코드 셀 예시입니다.</p>
-<div id="cell-fig-simple-plot" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> matplotlib.pyplot <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> plt</span>
-<span id="cb1-2"><span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">import</span> numpy <span class="im" style="color: #00769E;
-background-color: null;
-font-style: inherit;">as</span> np</span>
-<span id="cb1-3"></span>
-<span id="cb1-4">x <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.linspace(<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> np.pi, <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">100</span>)</span>
-<span id="cb1-5">y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> np.sin(x)</span>
-<span id="cb1-6"></span>
-<span id="cb1-7">plt.plot(x, y)</span>
-<span id="cb1-8">plt.title(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sine Wave"</span>)</span>
-<span id="cb1-9">plt.xlabel(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"X-axis"</span>)</span>
-<span id="cb1-10">plt.ylabel(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Y-axis"</span>)</span>
-<span id="cb1-11">plt.show()</span>
-<span id="cb1-12"></span>
-<span id="cb1-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">print</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Hello World"</span>)</span></code></pre></div>
-<div class="cell-output cell-output-display">
-<div id="fig-simple-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-simple-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://beomdo-park.github.io/posts/my-first-post/index_files/figure-html/fig-simple-plot-output-1.png" width="608" height="449" class="figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-simple-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: 간단한 Matplotlib 플롯
-</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Hello World</code></pre>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>news</category>
-  <category>code</category>
-  <category>analysis</category>
-  <guid>https://beomdo-park.github.io/posts/my-first-post/</guid>
-  <pubDate>Wed, 14 May 2025 00:00:00 GMT</pubDate>
-  <media:content url="https://beomdo-park.github.io/posts/my-first-post/image.jpg" medium="image" type="image/jpeg"/>
 </item>
 </channel>
 </rss>
