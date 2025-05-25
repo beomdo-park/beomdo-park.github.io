@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Beomdo Park">
-<meta name="dcterms.date" content="2025-05-24">
-<meta name="description" content="Python을 활용한 시계열 데이터 분석 기초 및 시각화 예제를 다룹니다.">
+<meta name="dcterms.date" content="2025-05-25">
+<meta name="description" content="Python을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.">
 
-<title>[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 – beomdo’s ML-DL blog</title>
+<title>[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리 – beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -337,10 +337,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
-      <h1 class="title">[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차</h1>
+      <h1 class="title">[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리</h1>
                   <div>
         <div class="description">
-          Python을 활용한 시계열 데이터 분석 기초 및 시각화 예제를 다룹니다.
+          Python을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -366,7 +366,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">May 24, 2025</p>
+        <p class="date">May 25, 2025</p>
       </div>
     </div>
     
@@ -383,16 +383,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#시계열-데이터란" id="toc-시계열-데이터란" class="nav-link active" data-scroll-target="#시계열-데이터란">시계열 데이터란?</a></li>
-  <li><a href="#시계열-분석의-중요성" id="toc-시계열-분석의-중요성" class="nav-link" data-scroll-target="#시계열-분석의-중요성">시계열 분석의 중요성</a></li>
-  <li><a href="#python을-이용한-시계열-데이터-분석-기초" id="toc-python을-이용한-시계열-데이터-분석-기초" class="nav-link" data-scroll-target="#python을-이용한-시계열-데이터-분석-기초">Python을 이용한 시계열 데이터 분석 기초</a>
+  <li><a href="#시계열-이상-탐지에서-eda와-전처리의-중요성" id="toc-시계열-이상-탐지에서-eda와-전처리의-중요성" class="nav-link" data-scroll-target="#시계열-이상-탐지에서-eda와-전처리의-중요성">시계열 이상 탐지에서 EDA와 전처리의 중요성</a></li>
+  <li><a href="#python을-이용한-시계열-데이터-eda-및-전처리-기초" id="toc-python을-이용한-시계열-데이터-eda-및-전처리-기초" class="nav-link" data-scroll-target="#python을-이용한-시계열-데이터-eda-및-전처리-기초">Python을 이용한 시계열 데이터 EDA 및 전처리 기초</a>
   <ul class="collapse">
   <li><a href="#필요한-라이브러리-불러오기" id="toc-필요한-라이브러리-불러오기" class="nav-link" data-scroll-target="#필요한-라이브러리-불러오기">1. 필요한 라이브러리 불러오기</a></li>
-  <li><a href="#샘플-시계열-데이터-생성" id="toc-샘플-시계열-데이터-생성" class="nav-link" data-scroll-target="#샘플-시계열-데이터-생성">2. 샘플 시계열 데이터 생성</a></li>
-  <li><a href="#시계열-데이터-시각화" id="toc-시계열-데이터-시각화" class="nav-link" data-scroll-target="#시계열-데이터-시각화">3. 시계열 데이터 시각화</a></li>
-  <li><a href="#이동-평균moving-average-계산-및-시각화" id="toc-이동-평균moving-average-계산-및-시각화" class="nav-link" data-scroll-target="#이동-평균moving-average-계산-및-시각화">4. 이동 평균(Moving Average) 계산 및 시각화</a></li>
-  <li><a href="#시계열-분해-decomposition---선택-사항" id="toc-시계열-분해-decomposition---선택-사항" class="nav-link" data-scroll-target="#시계열-분해-decomposition---선택-사항">5. 시계열 분해 (Decomposition) - (선택 사항)</a></li>
+  <li><a href="#분석용-샘플-시계열-데이터-생성-가상-산업-전력-사용량" id="toc-분석용-샘플-시계열-데이터-생성-가상-산업-전력-사용량" class="nav-link" data-scroll-target="#분석용-샘플-시계열-데이터-생성-가상-산업-전력-사용량">2. 분석용 샘플 시계열 데이터 생성 (가상 산업 전력 사용량)</a></li>
+  <li><a href="#데이터-기본-탐색" id="toc-데이터-기본-탐색" class="nav-link" data-scroll-target="#데이터-기본-탐색">3. 데이터 기본 탐색</a></li>
+  <li><a href="#주요-시각화를-통한-탐색적-데이터-분석-eda" id="toc-주요-시각화를-통한-탐색적-데이터-분석-eda" class="nav-link" data-scroll-target="#주요-시각화를-통한-탐색적-데이터-분석-eda">4. 주요 시각화를 통한 탐색적 데이터 분석 (EDA)</a></li>
+  <li><a href="#이동-평균을-활용한-추세-및-변동성-관찰" id="toc-이동-평균을-활용한-추세-및-변동성-관찰" class="nav-link" data-scroll-target="#이동-평균을-활용한-추세-및-변동성-관찰">5. 이동 평균을 활용한 추세 및 변동성 관찰</a></li>
   </ul></li>
-  <li><a href="#결론" id="toc-결론" class="nav-link" data-scroll-target="#결론">결론</a></li>
+  <li><a href="#요약" id="toc-요약" class="nav-link" data-scroll-target="#요약">요약</a></li>
   </ul>
 </nav>
     </div>
@@ -405,7 +405,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 8기로 참여하게 되었습니다. <br><br> <strong>[산업 전력 데이터의 이상치 탐지 성능 향상 솔루션 구축]</strong>을 주제로 다양한 데이터 분석 및 인공지능 기법을 학습하고 실제 프로젝트에 적용해볼 예정입니다.</p>
+<p>유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 8기로 참여하게 되었습니다. &nbsp;<br><br> <strong>[산업 전력 데이터의 이상치 탐지 성능 향상 솔루션 구축]</strong>을 주제로 다양한 데이터 분석 및 인공지능 기법을 학습하고 실제 프로젝트에 적용해볼 예정입니다.</p>
 </blockquote>
 <div class="callout callout-style-default callout-tip callout-titled" title="">
 <div class="callout-header d-flex align-content-center">
@@ -417,183 +417,319 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>해당 포스트에서는 첫 주차 활동으로, 시계열 데이터의 기본 개념과 Python을 활용한 기초 분석 방법을 정리해 보았습니다. 앞으로의 과정을 통해 데이터 전처리, 이상치 탐지, 모델링 등 실무에 필요한 다양한 역량을 키워 나갈 예정입니다.</p>
+<p>해당 포스트에서는 첫 주차 활동으로, 산업 전력 데이터의 이상치 탐지를 목표로 시계열 데이터의 기본적인 탐색적 데이터 분석(EDA) 및 전처리 방법에 초점을 맞추어 정리했습니다. 효과적인 이상 탐지를 위한 데이터 이해 과정을 살펴봅니다.</p>
 </div>
 </div>
 <section id="시계열-데이터란" class="level2">
 <h2 class="anchored" data-anchor-id="시계열-데이터란">시계열 데이터란?</h2>
-<p>시계열 데이터(Time Series Data)는 시간 순서대로 정렬된 데이터 포인터들의 연속입니다. 예를 들어, 주식 가격, 월별 강수량, 웹사이트 트래픽 등이 시계열 데이터에 해당합니다. 이러한 데이터는 시간의 흐름에 따른 패턴이나 추세를 분석하는 데 사용됩니다.</p>
-</section>
-<section id="시계열-분석의-중요성" class="level2">
-<h2 class="anchored" data-anchor-id="시계열-분석의-중요성">시계열 분석의 중요성</h2>
-<p>시계열 분석은 다음과 같은 이유로 중요합니다.</p>
+<p>시계열 데이터(Time Series Data)는 일정 시간 간격으로 기록된 데이터 포인트들의 순차적인 집합입니다. 예를 들어, 시간별 산업 설비의 전력 사용량, 일별 주가, 월별 웹사이트 방문자 수 등이 시계열 데이터에 해당합니다. 이러한 데이터는 시간의 흐름에 따른 변화와 패턴을 분석하는 데 사용되며, 특히 정상적인 패턴에서 벗어나는 ’이상치’를 탐지하는 데 중요한 기초 자료가 됩니다.</p>
+<p>시계열 데이터는 주로 다음과 같은 특징을 가집니다:</p>
 <ul>
-<li><strong>예측</strong>: 과거 데이터를 기반으로 미래 값을 예측합니다. (예: 내일의 주가 예측)</li>
-<li><strong>패턴 인식</strong>: 계절성, 추세, 주기 등 데이터 내의 의미 있는 패턴을 파악합니다.</li>
-<li><strong>이상 감지</strong>: 일반적인 패턴에서 벗어나는 특이점을 탐지합니다. (예: 시스템 오류 감지)</li>
-<li><strong>정책 결정</strong>: 분석 결과를 바탕으로 더 나은 의사 결정을 내릴 수 있습니다.</li>
+<li><strong>추세 (Trend)</strong>: 데이터가 장기적으로 증가하거나 감소하는 경향.</li>
+<li><strong>계절성 (Seasonality)</strong>: 특정 주기(예: 하루, 주, 월)에 따라 반복되는 패턴.</li>
+<li><strong>주기성 (Cyclicality)</strong>: 계절성보다 긴, 고정되지 않은 주기의 변동.</li>
+<li><strong>불규칙 변동 (Irregular Fluctuations/Noise)</strong>: 위 요소들로 설명되지 않는 무작위적 변동.</li>
 </ul>
+<hr>
 </section>
-<section id="python을-이용한-시계열-데이터-분석-기초" class="level2">
-<h2 class="anchored" data-anchor-id="python을-이용한-시계열-데이터-분석-기초">Python을 이용한 시계열 데이터 분석 기초</h2>
-<p>Python의 <code>pandas</code>와 <code>matplotlib</code> 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.</p>
+<section id="시계열-이상-탐지에서-eda와-전처리의-중요성" class="level2">
+<h2 class="anchored" data-anchor-id="시계열-이상-탐지에서-eda와-전처리의-중요성">시계열 이상 탐지에서 EDA와 전처리의 중요성</h2>
+<p>이상치(Anomaly) 또는 특이점(Outlier)은 일반적인 데이터 패턴에서 현저하게 벗어나는 관측치를 의미합니다. 산업 전력 데이터에서 이상치는 설비 고장, 에너지 누수, 비정상적 공정 운영 등 중요한 문제를 시사할 수 있습니다. 효과적인 이상 탐지를 위해서는 데이터에 대한 깊이 있는 이해가 선행되어야 하며, 탐색적 데이터 분석(EDA)과 적절한 전처리는 이 과정의 핵심입니다.</p>
+<p>EDA와 전처리가 중요한 이유:</p>
+<ul>
+<li><strong>데이터 특성 파악</strong>: 데이터의 분포, 추세, 계절성 등 기본적인 통계적 특성을 이해하여 ‘정상’ 상태의 기준을 설정하는 데 도움을 줍니다.</li>
+<li><strong>잠재적 이상치 식별</strong>: 시각화 등을 통해 예상치 못한 급증, 급감 또는 패턴 변화를 초기에 발견할 수 있습니다.</li>
+<li><strong>데이터 품질 향상</strong>: 결측치 처리, 노이즈 제거 등을 통해 분석의 정확도를 높입니다.</li>
+<li><strong>피처 엔지니어링 기반 마련</strong>: 분석 목적에 맞는 새로운 변수를 생성하거나 기존 변수를 변환하는 데 필요한 통찰력을 제공합니다.</li>
+<li><strong>적절한 이상 탐지 모델 선택 지원</strong>: 데이터의 특성에 맞는 이상 탐지 알고리즘을 선택하는 데 중요한 정보를 제공합니다.</li>
+</ul>
+<hr>
+</section>
+<section id="python을-이용한-시계열-데이터-eda-및-전처리-기초" class="level2">
+<h2 class="anchored" data-anchor-id="python을-이용한-시계열-데이터-eda-및-전처리-기초">Python을 이용한 시계열 데이터 EDA 및 전처리 기초</h2>
+<p>Python의 <code>pandas</code>, <code>numpy</code>, <code>matplotlib</code>, <code>seaborn</code> 라이브러리를 사용하여 산업 전력 사용량 데이터를 가정하고, 이상 탐지를 위한 기본적인 EDA 및 전처리 과정을 살펴보겠습니다.</p>
 <section id="필요한-라이브러리-불러오기" class="level3">
 <h3 class="anchored" data-anchor-id="필요한-라이브러리-불러오기">1. 필요한 라이브러리 불러오기</h3>
-<p>먼저, 데이터 분석에 필요한 라이브러리들을 불러옵니다.</p>
+<p>데이터 분석 및 시각화에 필요한 라이브러리를 가져옵니다.</p>
 <div id="load-libraries" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns <span class="co"># 향상된 시각화를 위한 Seaborn</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> datetime <span class="im">import</span> datetime</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 경고 메시지 무시 (선택 사항)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-</section>
-<section id="샘플-시계열-데이터-생성" class="level3">
-<h3 class="anchored" data-anchor-id="샘플-시계열-데이터-생성">2. 샘플 시계열 데이터 생성</h3>
-<p>분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2025년 1월 1일부터 100일간의 가상 데이터를 만듭니다.</p>
-<div id="generate-sample-data" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 날짜 범위 생성</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2025-01-01'</span>, end<span class="op">=</span><span class="st">'2025-04-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 프레임 생성</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 임의의 데이터 생성 (예: 웹사이트 방문자 수)</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'visitors'</span>] <span class="op">=</span> np.random.randint(<span class="dv">50</span>, <span class="dv">200</span>, size<span class="op">=</span>(<span class="bu">len</span>(date_rng)))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 'date' 컬럼을 인덱스로 설정</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>data.set_index(<span class="st">'date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            visitors
-date                
-2025-01-01        63
-2025-01-02       161
-2025-01-03        57
-2025-01-04        63
-2025-01-05       163</code></pre>
-</div>
-</div>
-</section>
-<section id="시계열-데이터-시각화" class="level3">
-<h3 class="anchored" data-anchor-id="시계열-데이터-시각화">3. 시계열 데이터 시각화</h3>
-<p>생성된 시계열 데이터를 시각화하여 전반적인 추세를 파악합니다.</p>
-<div id="cell-fig-time-series-plot" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수'</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="fig-time-series-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-time-series-plot-output-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: 일별 웹사이트 방문자 수
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-<section id="이동-평균moving-average-계산-및-시각화" class="level3">
-<h3 class="anchored" data-anchor-id="이동-평균moving-average-계산-및-시각화">4. 이동 평균(Moving Average) 계산 및 시각화</h3>
-<p>이동 평균은 단기적인 변동을 완화하여 장기적인 추세를 파악하는 데 도움을 줍니다. 7일 이동 평균을 계산하고 시각화해 보겠습니다.</p>
-<div id="cell-fig-moving-average" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7일 이동 평균 계산</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'rolling_mean_7'</span>] <span class="op">=</span> data[<span class="st">'visitors'</span>].rolling(window<span class="op">=</span><span class="dv">7</span>).mean()</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'일별 방문자 수'</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'rolling_mean_7'</span>], label<span class="op">=</span><span class="st">'7일 이동 평균'</span>, color<span class="op">=</span><span class="st">'red'</span>)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 웹사이트 방문자 수 및 7일 이동 평균'</span>)</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'방문자 수'</span>)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head(<span class="dv">10</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="fig-moving-average" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-moving-average-output-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
-</figcaption>
-</figure>
-</div>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            visitors  rolling_mean_7
-date                                
-2025-01-01        63             NaN
-2025-01-02       161             NaN
-2025-01-03        57             NaN
-2025-01-04        63             NaN
-2025-01-05       163             NaN
-2025-01-06        74             NaN
-2025-01-07        59       91.428571
-2025-01-08       140      102.428571
-2025-01-09       116       96.000000
-2025-01-10       161      110.857143</code></pre>
-</div>
-</div>
-</section>
-<section id="시계열-분해-decomposition---선택-사항" class="level3">
-<h3 class="anchored" data-anchor-id="시계열-분해-decomposition---선택-사항">5. 시계열 분해 (Decomposition) - (선택 사항)</h3>
-<p>더 고급 분석에서는 시계열 데이터를 추세(Trend), 계절성(Seasonality), 잔차(Residual)로 분해하여 각 구성 요소를 분석할 수 있습니다. <code>statsmodels</code> 라이브러리를 사용하면 이를 수행할 수 있습니다.</p>
-<div id="cell-fig-decomposition" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> seasonal_decompose</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 시계열 분해 (덧셈 모델)</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>decomposition <span class="op">=</span> seasonal_decompose(data[<span class="st">'visitors'</span>], model<span class="op">=</span><span class="st">'additive'</span>, period<span class="op">=</span><span class="dv">7</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>trend <span class="op">=</span> decomposition.trend</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>seasonal <span class="op">=</span> decomposition.seasonal</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> decomposition.resid</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">8</span>))</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">411</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>plt.plot(data[<span class="st">'visitors'</span>], label<span class="op">=</span><span class="st">'Original'</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">412</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>plt.plot(trend, label<span class="op">=</span><span class="st">'Trend'</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">413</span>)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>plt.plot(seasonal,label<span class="op">=</span><span class="st">'Seasonality'</span>)</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">414</span>)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>plt.plot(residual, label<span class="op">=</span><span class="st">'Residuals'</span>)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>plt.legend(loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display">
-<div id="fig-decomposition" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-decomposition-output-1.png" class="img-fluid figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: 시계열 분해 결과
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-</section>
-</section>
-<section id="결론" class="level2">
-<h2 class="anchored" data-anchor-id="결론">결론</h2>
-<p>이 튜토리얼에서는 Python을 사용하여 시계열 데이터를 생성하고, 시각화하며, 이동 평균을 계산하는 기본적인 방법을 살펴보았습니다. 시계열 분석은 매우 광범위한 분야이며, 이 튜토리얼은 그 시작점에 불과합니다. 더 나아가 ARIMA, SARIMA, Prophet과 같은 고급 모델을 학습하여 더 정교한 예측 및 분석을 수행할 수 있습니다.</p>
 <hr>
+</section>
+<section id="분석용-샘플-시계열-데이터-생성-가상-산업-전력-사용량" class="level3">
+<h3 class="anchored" data-anchor-id="분석용-샘플-시계열-데이터-생성-가상-산업-전력-사용량">2. 분석용 샘플 시계열 데이터 생성 (가상 산업 전력 사용량)</h3>
+<p>실제 산업 전력 데이터와 유사한 특성을 갖도록 가상 데이터를 생성합니다. 여기에는 일정한 기본 사용량, 약간의 증가 추세, 주간 계절성(평일 사용량 증가, 주말 감소), 그리고 몇 개의 인위적인 이상치(스파이크 및 급감)를 포함시킵니다.</p>
+<div id="generate-sample-power-data" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 재현성을 위한 시드 설정</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 날짜 범위 생성 (약 1년)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2025-01-01'</span>, periods<span class="op">=</span><span class="dv">365</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 기본 전력 사용량 설정 및 추세 생성</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>baseline_usage <span class="op">=</span> <span class="dv">100</span>  <span class="co"># 기본 사용량 (예: kWh)</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>trend_factor <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="dv">20</span>, <span class="bu">len</span>(date_rng)) <span class="co"># 선형 증가 추세</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 주간 계절성 생성 (월:0 ~ 일:6)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 산업 데이터 특성상 평일 사용량 높고, 주말 낮음</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>day_of_week_effect <span class="op">=</span> np.array([<span class="dv">15</span>, <span class="dv">18</span>, <span class="dv">20</span>, <span class="dv">19</span>, <span class="dv">17</span>, <span class="dv">5</span>, <span class="dv">3</span>])</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>seasonal_factor <span class="op">=</span> np.array([day_of_week_effect[day.weekday()] <span class="cf">for</span> day <span class="kw">in</span> date_rng])</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 임의의 노이즈 생성</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> np.random.normal(<span class="dv">0</span>, <span class="dv">5</span>, size<span class="op">=</span>(<span class="bu">len</span>(date_rng))) <span class="co"># 평균 0, 표준편차 5</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 생성 (전력 사용량 = 기본값 + 추세 + 계절성 + 노이즈)</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'power_usage'</span>] <span class="op">=</span> baseline_usage <span class="op">+</span> trend_factor <span class="op">+</span> seasonal_factor <span class="op">+</span> noise</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 인위적인 이상치(스파이크 및 급감) 추가</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>data.loc[data.index[<span class="dv">50</span>], <span class="st">'power_usage'</span>] <span class="op">+=</span> <span class="dv">70</span>  <span class="co"># 51번째 날에 큰 스파이크</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>data.loc[data.index[<span class="dv">150</span>], <span class="st">'power_usage'</span>] <span class="op">-=</span> <span class="dv">50</span> <span class="co"># 151번째 날에 큰 폭 하락</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>data.loc[data.index[<span class="dv">250</span>], <span class="st">'power_usage'</span>] <span class="op">+=</span> <span class="dv">80</span>  <span class="co"># 251번째 날에 큰 스파이크</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 값 보정 (음수 방지 및 최소값 설정)</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'power_usage'</span>] <span class="op">=</span> data[<span class="st">'power_usage'</span>].astype(<span class="bu">float</span>).clip(lower<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="co"># 'date' 컬럼을 인덱스로 설정</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>data.set_index(<span class="st">'date'</span>, inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"생성된 가상 전력 사용량 데이터 샘플 (상위 5개):"</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.head())</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">생성된 가상 전력 사용량 데이터 샘플 (하위 5개):"</span>)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.tail())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>생성된 가상 전력 사용량 데이터 샘플 (상위 5개):
+            power_usage
+date                   
+2025-01-01   122.483571
+2025-01-02   118.363624
+2025-01-03   120.348333
+2025-01-04   112.779984
+2025-01-05   102.049013
+
+생성된 가상 전력 사용량 데이터 샘플 (하위 5개):
+            power_usage
+date                   
+2025-12-27   127.376952
+2025-12-28   130.498859
+2025-12-29   134.346309
+2025-12-30   139.953614
+2025-12-31   143.450720</code></pre>
+</div>
+</div>
+<p>이 샘플 데이터는 <code>power_usage</code>라는 이름으로 전력 사용량 정보를 가지며, EDA 과정에서 이상치를 시각적으로 탐색하는 데 사용됩니다.</p>
+<hr>
+</section>
+<section id="데이터-기본-탐색" class="level3">
+<h3 class="anchored" data-anchor-id="데이터-기본-탐색">3. 데이터 기본 탐색</h3>
+<p>데이터의 구조와 기본적인 통계적 특성을 확인합니다.</p>
+<div id="data-basic-exploration" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 정보:"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>data.info()</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">기술 통계량:"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(data.describe())</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">결측치 확인: </span><span class="sc">{</span>data<span class="sc">.</span>isnull()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">.</span><span class="bu">sum</span>()<span class="sc">}</span><span class="ss"> 개"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># data.isnull().sum() # 컬럼별 결측치 확인</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>데이터 정보:
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+DatetimeIndex: 365 entries, 2025-01-01 to 2025-12-31
+Data columns (total 1 columns):
+ #   Column       Non-Null Count  Dtype  
+---  ------       --------------  -----  
+ 0   power_usage  365 non-null    float64
+dtypes: float64(1)
+memory usage: 5.7 KB
+
+기술 통계량:
+       power_usage
+count   365.000000
+mean    124.197677
+std      11.877300
+min      64.494222
+25%     117.423353
+50%     124.093359
+75%     131.043033
+max     202.431844
+
+결측치 확인: 0 개</code></pre>
+</div>
+</div>
+<p><code>info()</code>는 데이터 타입, 인덱스 정보, 메모리 사용량 등을 보여줍니다. <code>describe()</code>는 평균, 표준편차, 최소/최대값, 사분위수 등 주요 기술 통계량을 제공하여 데이터의 전반적인 분포를 파악하는 데 도움을 줍니다. 결측치가 있다면 이상 탐지 분석 전에 적절히 처리(예: 보간, 제거)해야 합니다. 이 샘플에서는 결측치가 없습니다.</p>
+<hr>
+</section>
+<section id="주요-시각화를-통한-탐색적-데이터-분석-eda" class="level3">
+<h3 class="anchored" data-anchor-id="주요-시각화를-통한-탐색적-데이터-분석-eda">4. 주요 시각화를 통한 탐색적 데이터 분석 (EDA)</h3>
+<p>시각화는 시계열 데이터의 패턴과 잠재적 이상치를 발견하는 데 매우 효과적입니다.</p>
+<section id="기본-시계열-플롯" class="level4">
+<h4 class="anchored" data-anchor-id="기본-시계열-플롯">4.1. 기본 시계열 플롯</h4>
+<p>전체 기간에 대한 전력 사용량 변화를 시각화하여 추세, 계절성, 그리고 눈에 띄는 이상 패턴을 관찰합니다.</p>
+<div id="cell-fig-time-series-plot-power" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'power_usage'</span>], label<span class="op">=</span><span class="st">'일별 전력 사용량'</span>, color<span class="op">=</span><span class="st">'dodgerblue'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 가상 산업 전력 사용량'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'전력 사용량 (kWh)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="fig-time-series-plot-power" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-time-series-plot-power-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-time-series-plot-power-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-series-plot-power-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: 일별 가상 산업 전력 사용량
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>위 그래프에서 전반적인 증가 추세와 주기적인 변동(계절성) 외에도, 몇몇 지점에서 급격한 스파이크나 하락(우리가 삽입한 이상치)이 시각적으로 확인됩니다. 실제 데이터 분석 시 이러한 지점들이 조사 대상이 됩니다.</p>
+<hr>
+</section>
+<section id="데이터-분포-확인-히스토그램-및-kde" class="level4">
+<h4 class="anchored" data-anchor-id="데이터-분포-확인-히스토그램-및-kde">4.2. 데이터 분포 확인 (히스토그램 및 KDE)</h4>
+<p>전력 사용량 값들의 분포를 확인하여 데이터가 특정 구간에 집중되어 있는지, 또는 분포에서 벗어나는 값들이 있는지 살펴봅니다.</p>
+<div id="cell-fig-power-distribution-plot" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>sns.histplot(data[<span class="st">'power_usage'</span>], kde<span class="op">=</span><span class="va">True</span>, color<span class="op">=</span><span class="st">'mediumseagreen'</span>, bins<span class="op">=</span><span class="dv">30</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'전력 사용량 분포 (히스토그램 및 KDE)'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'전력 사용량 (kWh)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'빈도'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="fig-power-distribution-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-power-distribution-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-power-distribution-plot-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-power-distribution-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: 전력 사용량 분포
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>히스토그램과 KDE(Kernel Density Estimate) 플롯은 데이터 값의 분포를 보여줍니다. 만약 분포의 꼬리 부분에 값이 드물게 나타난다면 이는 이상치일 가능성이 있습니다. 우리가 삽입한 인위적인 스파이크 값들이 분포의 오른쪽 꼬리 부분에 나타날 수 있습니다.</p>
+<hr>
+</section>
+<section id="주기적-패턴-확인-요일별-box-plot" class="level4">
+<h4 class="anchored" data-anchor-id="주기적-패턴-확인-요일별-box-plot">4.3. 주기적 패턴 확인 (요일별 Box Plot)</h4>
+<p>산업 데이터는 요일이나 월별로 뚜렷한 주기성을 가질 수 있습니다. Box plot을 사용하면 이러한 주기성 내에서 평소와 다른 패턴을 보이는 시점을 파악하는 데 유용합니다.</p>
+<div id="cell-fig-power-boxplot-seasonality" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 분석을 위해 'day_of_week' 컬럼 추가 (월요일=0, 일요일=6)</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'day_of_week'</span>] <span class="op">=</span> data.index.dayofweek</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">5</span>))</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>sns.boxplot(x<span class="op">=</span><span class="st">'day_of_week'</span>, y<span class="op">=</span><span class="st">'power_usage'</span>, data<span class="op">=</span>data, palette<span class="op">=</span><span class="st">'coolwarm'</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'요일별 전력 사용량 분포'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'요일 (0:월, 1:화, 2:수, 3:목, 4:금, 5:토, 6:일)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'전력 사용량 (kWh)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>plt.xticks(ticks<span class="op">=</span><span class="bu">range</span>(<span class="dv">7</span>), labels<span class="op">=</span>[<span class="st">'월'</span>, <span class="st">'화'</span>, <span class="st">'수'</span>, <span class="st">'목'</span>, <span class="st">'금'</span>, <span class="st">'토'</span>, <span class="st">'일'</span>])</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="fig-power-boxplot-seasonality" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-power-boxplot-seasonality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-power-boxplot-seasonality-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-power-boxplot-seasonality-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: 요일별 전력 사용량 분포
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>요일별 Box plot은 각 요일의 전력 사용량 분포를 보여줍니다. 각 박스는 해당 요일 데이터의 중앙 50%(IQR: Interquartile Range)를 나타내며, 박스 외부의 점들은 잠재적인 이상치(outliers)를 의미합니다. 이 샘플에서는 주말(토, 일) 사용량이 평일보다 낮은 패턴이 뚜렷하며, 우리가 인위적으로 삽입한 이상치들이 특정 요일의 일반적인 범위를 벗어나 점으로 표시될 수 있습니다. 예를 들어, 화요일(1)에 발생시킨 스파이크는 화요일의 박스 플롯에서 상단 이상치로 나타날 가능성이 큽니다.</p>
+<hr>
+</section>
+</section>
+<section id="이동-평균을-활용한-추세-및-변동성-관찰" class="level3">
+<h3 class="anchored" data-anchor-id="이동-평균을-활용한-추세-및-변동성-관찰">5. 이동 평균을 활용한 추세 및 변동성 관찰</h3>
+<p>이동 평균(Moving Average)은 단기적인 변동을 완화하여 장기적인 추세를 파악하거나, 데이터의 일반적인 수준을 나타내는 기준으로 활용될 수 있습니다. 원본 데이터와 이동 평균선을 함께 시각화하면, 이동 평균에서 크게 벗어나는 지점들을 이상치 후보로 간주할 수 있습니다.</p>
+<div id="cell-fig-power-moving-average-plot1" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 7일 이동 평균 계산</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'rolling_mean_7'</span>] <span class="op">=</span> data[<span class="st">'power_usage'</span>].rolling(window<span class="op">=</span><span class="dv">7</span>, center<span class="op">=</span><span class="va">True</span>).mean() <span class="co"># center=True로 설정하여 lag 감소 효과</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'power_usage'</span>], label<span class="op">=</span><span class="st">'일별 전력 사용량'</span>, color<span class="op">=</span><span class="st">'lightskyblue'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'rolling_mean_7'</span>], label<span class="op">=</span><span class="st">'7일 이동 평균 (중앙 정렬)'</span>, color<span class="op">=</span><span class="st">'orangered'</span>, linewidth<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'일별 전력 사용량 및 7일 이동 평균'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'전력 사용량 (kWh)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="fig-power-moving-average-plot1" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-power-moving-average-plot1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-power-moving-average-plot1-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-power-moving-average-plot1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4: 전력 사용량과 7일 이동 평균
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-fig-power-moving-average-plot2" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 이동 평균과의 차이(잔차와 유사한 개념)를 통해 이상치 강조</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>data[<span class="st">'deviation_from_ma'</span>] <span class="op">=</span> data[<span class="st">'power_usage'</span>] <span class="op">-</span> data[<span class="st">'rolling_mean_7'</span>]</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">9</span>,<span class="dv">5</span>))</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>plt.plot(data.index, data[<span class="st">'deviation_from_ma'</span>], label<span class="op">=</span><span class="st">'이동 평균과의 편차'</span>, color<span class="op">=</span><span class="st">'teal'</span>, linewidth<span class="op">=</span><span class="dv">1</span>, marker<span class="op">=</span><span class="st">'o'</span>, markersize<span class="op">=</span><span class="dv">3</span>, linestyle<span class="op">=</span><span class="st">'None'</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>plt.axhline(<span class="dv">0</span>, color<span class="op">=</span><span class="st">'black'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>) <span class="co"># 기준선</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 편차의 임계값을 설정하여 이상치 후보 시각화 (예: 편차의 표준편차 기반)</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 이동 평균 계산 시 초반/후반 NaN 값이 있을 수 있으므로 dropna() 사용</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>deviation_std <span class="op">=</span> data[<span class="st">'deviation_from_ma'</span>].dropna().std()</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>upper_threshold <span class="op">=</span> <span class="dv">3</span> <span class="op">*</span> deviation_std</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>lower_threshold <span class="op">=</span> <span class="op">-</span><span class="dv">3</span> <span class="op">*</span> deviation_std</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>plt.axhline(upper_threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, label<span class="op">=</span><span class="ss">f'+3σ (</span><span class="sc">{</span>upper_threshold<span class="sc">:.2f}</span><span class="ss">)'</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>plt.axhline(lower_threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">':'</span>, linewidth<span class="op">=</span><span class="fl">1.5</span>, label<span class="op">=</span><span class="ss">f'-3σ (</span><span class="sc">{</span>lower_threshold<span class="sc">:.2f}</span><span class="ss">)'</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'이동 평균과의 편차 (이상치 탐색 보조)'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'편차 (kWh)'</span>, fontsize<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="fig-power-moving-average-plot2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-power-moving-average-plot2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-power-moving-average-plot2-output-1.png" class="img-fluid figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-power-moving-average-plot2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: 이동 평균과의 편차 (이상치 탐색 보조)
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>7일 이동 평균선은 데이터의 단기적 변동을 평탄화하여 보여줍니다. <code>rolling()</code> 함수에서 <code>center=True</code> 옵션을 사용하면 이동 평균 계산 시 윈도우의 중앙에 값을 위치시켜 시각화 시 원본 데이터와의 지연(lag)을 줄이는 데 도움이 됩니다.</p>
+<p>두 번째 그래프는 원본 데이터와 이동 평균과의 편차를 보여줍니다. 이 편차가 특정 임계값(예: 편차의 3 표준편차, ±3σ)을 넘어서는 지점들은 잠재적인 이상치로 간주할 수 있습니다. 우리가 삽입한 인위적인 스파이크와 급감 지점에서 편차가 크게 나타나는 것을 확인할 수 있습니다. 이러한 방법은 간단하면서도 효과적인 이상치 탐색의 기초가 됩니다.</p>
+<hr>
+</section>
+</section>
+<section id="요약" class="level2">
+<h2 class="anchored" data-anchor-id="요약">요약</h2>
+<p>이 포스트에서는 Python을 사용하여 가상의 산업 전력 사용량 데이터를 생성하고, 이상 탐지를 위한 기본적인 탐색적 데이터 분석(EDA) 및 전처리 과정을 살펴보았습니다. 시계열 플롯, 분포 확인, 주기성 분석(요일별 Box Plot), 이동 평균 활용 등은 데이터의 특성을 이해하고 잠재적인 이상치를 식별하는 데 효과적인 방법입니다.</p>
 
 
 </section>
