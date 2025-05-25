@@ -134,7 +134,6 @@ code {
   font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif !important;
   text-decoration: none !important;
   background-color: var(--quarto-light); /* 테마의 연한 배경색 */
-  border-radius: 4px; /* 둥근 모서리 */
   font-size: 0.85em; /* 다른 메타 정보보다 약간 작게 */
   display: inline-block; /* 패딩, 배경 등 적용 */
   line-height: 1.2; /* 줄 높이 조정으로 아이콘과 정렬 개선 */
