@@ -1,0 +1,34 @@
+---
+title: "CSV 데이터 테스트"
+date: "2025-05-25"
+categories: ["Test", "CSV"]
+draft: true
+description: "이 포스트는 CSV 파일을 읽고 출력하는 예제입니다."
+---
+
+이 포스트는 CSV 파일을 읽고 출력하는 예제입니다.
+
+```{python}
+#| echo: true
+#| eval: true
+import pandas as pd
+
+# 데이터 로드
+try:
+    # GitHub Pages 배포 시 또는 로컬 preview 시 상대 경로
+    df = pd.read_csv('../../data/sample_grades.csv') 
+except FileNotFoundError:
+    # 로컬에서 직접 .qmd 파일을 실행하거나, 경로가 다른 경우를 위한 예외 처리
+    # 실제 프로젝트에서는 경로 관리를 더 견고하게 해야 합니다.
+    try:
+        df = pd.read_csv('data/sample_grades.csv') # 프로젝트 루트 기준
+    except FileNotFoundError:
+        df = pd.DataFrame({
+            'error': ['File not found. Please check the path.']
+        })
+
+print("CSV 데이터 출력:")
+print(df.head())
+```
+
+위 코드 블록은 `sample_grades.csv` 파일의 내용을 읽어 Pandas DataFrame으로 변환한 후, 처음 5개 행을 출력합니다.
