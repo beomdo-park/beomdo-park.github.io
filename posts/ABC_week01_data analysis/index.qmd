@@ -1,5 +1,6 @@
 --- 
 title: "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차" 
+description: "ABC 프로젝트 멘토링 Python을 활용한 시계열 데이터 분석 기초 및 시각화 예제를 다룹니다."
 date: "2025-05-24" 
 author: "Beomdo Park" 
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
@@ -7,8 +8,13 @@ page-layout: full
 freeze: false
 
 ---
+유클리드소프트에서 진행하는 [ABC 프로젝트 멘토링](https://abcbootcamp.kr/abc_mentor/)에 8기로 참여하게 되었습니다.
 
-1주차로 기초 시계열 분석을 진행
+> **[산업 전력 데이터의 이상치 탐지 성능 향상 솔루션 구축]**을 주제로 다양한 데이터 분석 및 인공지능 기법을 학습하고 실제 프로젝트에 적용해볼 예정입니다.
+
+::: {.callout}
+해당 포스트에서는 첫 주차 활동으로, 시계열 데이터의 기본 개념과 Python을 활용한 기초 분석 방법을 정리해 보았습니다. 앞으로의 과정을 통해 데이터 전처리, 이상치 탐지, 모델링 등 실무에 필요한 다양한 역량을 키워 나갈 예정입니다.
+:::
 
 ## 시계열 데이터란?
 
@@ -25,7 +31,7 @@ freeze: false
 
 ## Python을 이용한 시계열 데이터 분석 기초
 
-이 튜토리얼에서는 Python의 `pandas`와 `matplotlib` 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.
+Python의 `pandas`와 `matplotlib` 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.
 
 ```{python}
 #| label: matplotlib-font-setup
@@ -78,7 +84,7 @@ from datetime import datetime
 
 ### 2. 샘플 시계열 데이터 생성
 
-분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2023년 1월 1일부터 100일간의 가상 데이터를 만듭니다.
+분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2025년 1월 1일부터 100일간의 가상 데이터를 만듭니다.
 
 ```{python}
 #| label: generate-sample-data
@@ -86,7 +92,7 @@ from datetime import datetime
 #| eval: true
 
 # 날짜 범위 생성
-date_rng = pd.date_range(start='2023-01-01', end='2023-04-10', freq='D')
+date_rng = pd.date_range(start='2025-01-01', end='2025-04-10', freq='D')
 
 # 데이터 프레임 생성
 data = pd.DataFrame(date_rng, columns=['date'])

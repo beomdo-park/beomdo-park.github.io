@@ -8,6 +8,7 @@
 
 <meta name="author" content="Beomdo Park">
 <meta name="dcterms.date" content="2025-05-24">
+<meta name="description" content="ABC 프로젝트 멘토링 Python을 활용한 시계열 데이터 분석 기초 및 시각화 예제">
 
 <title>[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 – beomdo’s ML-DL blog</title>
 <style>
@@ -337,7 +338,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
       <h1 class="title">[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차</h1>
-                                <div class="quarto-categories">
+                  <div>
+        <div class="description">
+          ABC 프로젝트 멘토링 Python을 활용한 시계열 데이터 분석 기초 및 시각화 예제
+        </div>
+      </div>
+                          <div class="quarto-categories">
                 <div class="quarto-category">ABC프로젝트멘토링</div>
                 <div class="quarto-category">유클리드소프트</div>
                 <div class="quarto-category">고용노동부</div>
@@ -398,7 +404,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<p>1주차로 기초 시계열 분석을 진행</p>
+<p>유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 8기로 참여하게 되었습니다.</p>
+<blockquote class="blockquote">
+<p><strong>[산업 전력 데이터의 이상치 탐지 성능 향상 솔루션 구축]</strong>을 주제로 다양한 데이터 분석 및 인공지능 기법을 학습하고 실제 프로젝트에 적용해볼 예정입니다.</p>
+</blockquote>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>해당 포스트에서는 첫 주차 활동으로, 시계열 데이터의 기본 개념과 Python을 활용한 기초 분석 방법을 정리해 보았습니다. 앞으로의 과정을 통해 데이터 전처리, 이상치 탐지, 모델링 등 실무에 필요한 다양한 역량을 키워 나갈 예정입니다.</p>
+</div>
+</div>
+</div>
 <section id="시계열-데이터란" class="level2">
 <h2 class="anchored" data-anchor-id="시계열-데이터란">시계열 데이터란?</h2>
 <p>시계열 데이터(Time Series Data)는 시간 순서대로 정렬된 데이터 포인터들의 연속입니다. 예를 들어, 주식 가격, 월별 강수량, 웹사이트 트래픽 등이 시계열 데이터에 해당합니다. 이러한 데이터는 시간의 흐름에 따른 패턴이나 추세를 분석하는 데 사용됩니다.</p>
@@ -415,7 +434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="python을-이용한-시계열-데이터-분석-기초" class="level2">
 <h2 class="anchored" data-anchor-id="python을-이용한-시계열-데이터-분석-기초">Python을 이용한 시계열 데이터 분석 기초</h2>
-<p>이 튜토리얼에서는 Python의 <code>pandas</code>와 <code>matplotlib</code> 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.</p>
+<p>Python의 <code>pandas</code>와 <code>matplotlib</code> 라이브러리를 사용하여 기본적인 시계열 데이터 분석을 수행하는 방법을 알아봅니다.</p>
 <section id="필요한-라이브러리-불러오기" class="level3">
 <h3 class="anchored" data-anchor-id="필요한-라이브러리-불러오기">1. 필요한 라이브러리 불러오기</h3>
 <p>먼저, 데이터 분석에 필요한 라이브러리들을 불러옵니다.</p>
@@ -428,10 +447,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="샘플-시계열-데이터-생성" class="level3">
 <h3 class="anchored" data-anchor-id="샘플-시계열-데이터-생성">2. 샘플 시계열 데이터 생성</h3>
-<p>분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2023년 1월 1일부터 100일간의 가상 데이터를 만듭니다.</p>
+<p>분석을 위해 간단한 샘플 시계열 데이터를 생성하겠습니다. 2025년 1월 1일부터 100일간의 가상 데이터를 만듭니다.</p>
 <div id="generate-sample-data" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 날짜 범위 생성</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2023-01-01'</span>, end<span class="op">=</span><span class="st">'2023-04-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>date_rng <span class="op">=</span> pd.date_range(start<span class="op">=</span><span class="st">'2025-01-01'</span>, end<span class="op">=</span><span class="st">'2025-04-10'</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 프레임 생성</span></span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame(date_rng, columns<span class="op">=</span>[<span class="st">'date'</span>])</span>
@@ -446,11 +465,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2023-01-01       138
-2023-01-02       171
-2023-01-03       173
-2023-01-04        98
-2023-01-05       177</code></pre>
+2025-01-01       164
+2025-01-02       171
+2025-01-03        70
+2025-01-04       134
+2025-01-05       145</code></pre>
 </div>
 </div>
 </section>
@@ -470,7 +489,7 @@ date
 <div id="fig-time-series-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-time-series-plot-output-1.png" width="741" height="450" class="figure-img">
+<img src="index_files/figure-html/fig-time-series-plot-output-1.png" width="766" height="465" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-time-series-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: 일별 웹사이트 방문자 수
@@ -502,7 +521,7 @@ Figure&nbsp;1: 일별 웹사이트 방문자 수
 <div id="fig-moving-average" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-moving-average-output-1.png" width="741" height="450" class="figure-img">
+<img src="index_files/figure-html/fig-moving-average-output-1.png" width="766" height="465" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moving-average-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
@@ -513,16 +532,16 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2023-01-01       138             NaN
-2023-01-02       171             NaN
-2023-01-03       173             NaN
-2023-01-04        98             NaN
-2023-01-05       177             NaN
-2023-01-06        56             NaN
-2023-01-07       162      139.285714
-2023-01-08       140      139.571429
-2023-01-09        67      124.714286
-2023-01-10       176      125.142857</code></pre>
+2025-01-01       164             NaN
+2025-01-02       171             NaN
+2025-01-03        70             NaN
+2025-01-04       134             NaN
+2025-01-05       145             NaN
+2025-01-06       110             NaN
+2025-01-07       170      137.714286
+2025-01-08        64      123.428571
+2025-01-09        56      107.000000
+2025-01-10       152      118.714286</code></pre>
 </div>
 </div>
 </section>
@@ -558,7 +577,7 @@ date
 <div id="fig-decomposition" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="index_files/figure-html/fig-decomposition-output-1.png" width="854" height="758" class="figure-img">
+<img src="index_files/figure-html/fig-decomposition-output-1.png" width="889" height="790" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-decomposition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;3: 시계열 분해 결과

@@ -3,6 +3,14 @@
 @import url("https://hangeul.pstatic.net/hangeul_static/css/nanum-barun-gothic.css");
 @import url("https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700&display=swap");
 
+@font-face {
+  font-family: "D2Coding";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_three@1.0/D2Coding.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+
 body {
   font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif;
 }
@@ -97,4 +105,10 @@ body {
 
 .quarto-title-block.banner .quarto-title-meta {
   margin-top: 1rem; /* 메타 정보 위 마진 조절 */
+}
+
+/* 코드 블록에 D2Coding 폰트 적용 */
+pre,
+code {
+  font-family: "D2Coding", monospace;
 }

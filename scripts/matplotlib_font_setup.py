@@ -84,7 +84,7 @@ setup_korean_fonts()
 set_rcparams(
     {
         "figure.figsize": (10, 6),  # Default figure size
-        "figure.dpi": 300,  # Default DPI
+        "figure.dpi": 100,  # Default DPI
         "axes.titlesize": "large",  # Title size for axes
         "axes.labelsize": "medium",  # Label size for axes
         "xtick.labelsize": "small",  # X-tick label size
