@@ -112,3 +112,31 @@ pre,
 code {
   font-family: "D2Coding", monospace;
 }
+
+/* index.qmd의 포스트 목록에서 읽기 시간 스타일 수정 */
+.quarto-listing-default .quarto-post .metadata a .listing-reading-time::before {
+  content: "📖: "; /* 책 아이콘과 변경된 문구 */
+  font-style: normal;
+  color: var(
+    --quarto-text-color
+  ) !important; /* 배경이 있으므로 조금 더 진한 색상 */
+  margin-right: 0.2em; /* 아이콘과 시간 사이 간격 약간 줄임 */
+  text-decoration: none !important;
+  font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif !important;
+  vertical-align: middle; /* 아이콘과 텍스트 수직 정렬 */
+}
+
+.quarto-listing-default .quarto-post .metadata a .listing-reading-time {
+  font-style: italic; /* 시간 부분은 이탤릭 유지 */
+  color: var(
+    --quarto-text-color
+  ) !important; /* 배경이 있으므로 조금 더 진한 색상 */
+  font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif !important;
+  text-decoration: none !important;
+  background-color: var(--quarto-light); /* 테마의 연한 배경색 */
+  border-radius: 4px; /* 둥근 모서리 */
+  font-size: 0.85em; /* 다른 메타 정보보다 약간 작게 */
+  display: inline-block; /* 패딩, 배경 등 적용 */
+  line-height: 1.2; /* 줄 높이 조정으로 아이콘과 정렬 개선 */
+  vertical-align: middle; /* 아이콘과 텍스트 수직 정렬 */
+}
