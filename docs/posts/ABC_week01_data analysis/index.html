@@ -407,14 +407,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <blockquote class="blockquote">
 <p>유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 8기로 참여하게 되었습니다. <br><br> <strong>[산업 전력 데이터의 이상치 탐지 성능 향상 솔루션 구축]</strong>을 주제로 다양한 데이터 분석 및 인공지능 기법을 학습하고 실제 프로젝트에 적용해볼 예정입니다.</p>
 </blockquote>
-<div class="callout callout-style-simple callout-none no-icon">
-<div class="callout-body d-flex">
+<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
+<i class="callout-icon"></i>
 </div>
-<div class="callout-body-container">
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>해당 포스트에서는 첫 주차 활동으로, 시계열 데이터의 기본 개념과 Python을 활용한 기초 분석 방법을 정리해 보았습니다. 앞으로의 과정을 통해 데이터 전처리, 이상치 탐지, 모델링 등 실무에 필요한 다양한 역량을 키워 나갈 예정입니다.</p>
-</div>
 </div>
 </div>
 <section id="시계열-데이터란" class="level2">
@@ -464,11 +467,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors
 date                
-2025-01-01       137
-2025-01-02        94
-2025-01-03       109
-2025-01-04        54
-2025-01-05        64</code></pre>
+2025-01-01       163
+2025-01-02       149
+2025-01-03        54
+2025-01-04       160
+2025-01-05        52</code></pre>
 </div>
 </div>
 </section>
@@ -531,16 +534,16 @@ Figure&nbsp;2: 7일 이동 평균을 포함한 방문자 수
 <div class="cell-output cell-output-stdout">
 <pre><code>            visitors  rolling_mean_7
 date                                
-2025-01-01       137             NaN
-2025-01-02        94             NaN
-2025-01-03       109             NaN
-2025-01-04        54             NaN
-2025-01-05        64             NaN
-2025-01-06       130             NaN
-2025-01-07       119      101.000000
-2025-01-08       169      105.571429
-2025-01-09        59      100.571429
-2025-01-10       135      104.285714</code></pre>
+2025-01-01       163             NaN
+2025-01-02       149             NaN
+2025-01-03        54             NaN
+2025-01-04       160             NaN
+2025-01-05        52             NaN
+2025-01-06       184             NaN
+2025-01-07       115      125.285714
+2025-01-08       102      116.571429
+2025-01-09       105      110.285714
+2025-01-10       101      117.000000</code></pre>
 </div>
 </div>
 </section>
