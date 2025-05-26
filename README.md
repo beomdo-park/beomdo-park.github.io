@@ -14,15 +14,14 @@
 
 ---
 
-## 🗂️ 레포지토리 구조
+<table width="100%">
+  <tr>
+    <td align="center" width="49%"><img src="assets/repo_structure.png" alt="레포지토리 구조" width="100%"/><br><b>레포지토리 구조</b></td>
+    <td align="center" width="49%"><img src="assets/deployment_process.png" alt="배포 과정" width="100%"/><br><b>배포 과정</b></td>
+  </tr>
+</table>
 
-![레포지토리 구조](assets/repo_structure.png)
-
-## 🚀 배포 과정
-
-![배포 과정](assets/deployment_process.png)
-
-### 🔗 구조와 배포의 연결
+### 구조와 배포의 연결
 
 이 블로그의 배포 과정은 위 두 다이어그램에 나타난 레포지토리 구조와 긴밀하게 연결되어 있습니다.
 
