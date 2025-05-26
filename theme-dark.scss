@@ -1,0 +1,214 @@
+/*-- scss:defaults --*/
+// Base document colors (inspired by Quarto docs dark theme)
+$body-bg: #181a1b;
+$body-color: #cfd8dc;
+$link-color: #80cbc4;
+$secondary: lighten(
+  $body-bg,
+  15%
+); // A slightly lighter shade for secondary elements
+
+// Code blocks (inspired by Quarto docs dark theme)
+$pre-bg: rgba(48, 56, 64, 0.85); // Dark background with transparency
+$pre-color: #cfd8dc; // Light text for code, same as body
+$code-color: #f06292; // A pinkish color for inline code (e.g., `<code>`)
+$code-bg: $pre-bg; // Same as pre_bg for consistency within code blocks
+
+// Bootstrap variable for border color, often needs adjustment for dark themes
+$border-color: #45494a; // Slightly lighter than default dark for better visibility
+
+// Navbar styles
+$navbar-bg: #212529; // A common dark navbar background color
+$navbar-dark-color: rgba(
+  255,
+  255,
+  255,
+  0.8
+); // Increased alpha for better readability
+$navbar-dark-hover-color: #fff;
+$navbar-dark-active-color: #fff;
+$navbar-dark-toggler-border-color: rgba(255, 255, 255, 0.15);
+
+// Footer
+$footer-bg: $navbar-bg; // Consistent with navbar
+$footer-color: $navbar-dark-color;
+
+/*-- scss:rules --*/
+// General body and links
+body {
+  color: $body-color;
+  background-color: $body-bg;
+}
+
+a {
+  color: $link-color;
+  &:hover {
+    color: lighten($link-color, 10%);
+  }
+}
+
+// Title banner adjustments for dark mode
+.quarto-title-block.banner {
+  background: $navbar-bg; // Consistent dark background
+  color: $body-color;
+  padding-top: 2rem; // Adjusted padding from styles.css
+  padding-bottom: 1rem; // Adjusted padding
+
+  .title {
+    color: #fff; // Bright title
+    margin-bottom: 0.5rem;
+  }
+
+  .subtitle {
+    color: $navbar-dark-color; // Readable subtitle
+    margin-top: 0rem;
+    margin-bottom: 1rem;
+  }
+
+  .quarto-title-meta {
+    margin-top: 1rem;
+    color: $navbar-dark-color; // Meta text color
+  }
+
+  // Category tags within the title banner
+  .quarto-categories a,
+  .article-categories a {
+    color: $link-color;
+    background-color: lighten(
+      $navbar-bg,
+      8%
+    ); // Slightly lighter than banner bg
+    border: 1px solid lighten($navbar-bg, 15%);
+    padding: 0.25em 0.65em;
+    font-size: 0.8em;
+    &:hover {
+      background-color: lighten($navbar-bg, 12%);
+      color: lighten($link-color, 5%);
+    }
+    &::before {
+      content: "#";
+      margin-right: 0.2em;
+      color: darken($link-color, 10%);
+    }
+  }
+}
+
+// Category/Tag styles for listings and metadata (dark mode adjustments)
+.listing-item .categories a,
+.quarto-listing-category a,
+.article-meta .article-categories a, // Already covered by title banner, but good for consistency
+.quarto-title-meta .quarto-category a {
+  // Already covered by title banner
+  display: inline-block;
+  padding: 0.25em 0.65em; // Slightly more padding
+  margin: 0.2em 0.3em 0.2em 0;
+  background-color: $secondary; // Use the secondary background color
+  color: $body-color; // Use body text color for contrast
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.85em;
+  border: 1px solid lighten($secondary, 10%);
+
+  &::before {
+    content: "#";
+    margin-right: 0.2em;
+    color: darken($body-color, 20%); // Slightly darker '#'
+  }
+
+  &:hover {
+    background-color: lighten($secondary, 5%);
+    color: lighten($body-color, 10%);
+    border-color: lighten($secondary, 15%);
+  }
+}
+
+// Category filter list styles for dark mode
+.quarto-categories .category a {
+  background-color: $secondary;
+  color: $link-color; // Use link color for better visibility
+  border: 1px solid lighten($secondary, 10%);
+  padding: 0.3em 0.7em;
+  font-size: 0.9em;
+
+  &::before {
+    content: "#";
+    margin-right: 0.2em;
+    color: darken($link-color, 10%);
+  }
+
+  &:hover {
+    background-color: lighten($secondary, 7%);
+    color: lighten($link-color, 7%);
+  }
+}
+
+// Code block and inline code font (already in styles.css, but good to be aware)
+pre,
+code {
+  font-family: "D2Coding", monospace;
+  background-color: $code-bg; // Ensure code background is applied
+  color: $pre-color; // Ensure code text color is applied
+}
+
+pre {
+  padding: 1em;
+  border-radius: 4px;
+  border: 1px solid $border-color;
+}
+
+code {
+  // For inline code
+  padding: 0.2em 0.4em;
+  font-size: 85%;
+  color: $code-color; // Specific color for inline code
+  background-color: lighten(
+    $body-bg,
+    5%
+  ); // Slightly lighter, solid bg for inline code
+  border-radius: 3px;
+}
+
+// Reading time styles for dark mode
+.quarto-listing-default .quarto-post .metadata a .listing-reading-time {
+  font-style: italic;
+  color: $body-color !important; // Use body color
+  font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif !important;
+  text-decoration: none !important;
+  background-color: $secondary; // Use secondary background
+  font-size: 0.85em;
+  display: inline-block;
+  line-height: 1.2;
+  vertical-align: middle;
+  padding: 0.15em 0.4em; // Adjusted padding
+  border-radius: 3px;
+
+  &::before {
+    content: "📖: ";
+    font-style: normal;
+    color: $body-color !important; // Use body color
+    margin-right: 0.2em;
+    text-decoration: none !important;
+    font-family: "NanumBarunGothic", "Nanum Gothic", sans-serif !important;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    background-color: lighten($secondary, 5%);
+  }
+}
+
+// Ensure page footer is also styled for dark mode
+.page-footer {
+  background-color: $footer-bg;
+  color: $footer-color;
+  border-top: 1px solid $border-color;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+  a {
+    color: $link-color;
+    &:hover {
+      color: lighten($link-color, 10%);
+    }
+  }
+}
