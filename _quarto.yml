@@ -14,7 +14,7 @@ website:
         text: About
       - text: "My Tech Stacks" # 드롭다운 메뉴 예시
         menu: # "My Tech Stacks"의 하위 메뉴로 들여쓰기
-          - text: "포스트 더 작성 후 추가 예정"
+          - text: "포스트 작성 후 추가 예정"
           # - text: "Python"
           #   href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
           # - text: "Machine Learning"
@@ -33,8 +33,8 @@ website:
 format:
   html:
     theme:
-      light: cosmo # pulse, flatly, journal, readable, sandstone, simplex, slate, spacelab, united, yeti
-      dark: darkly # darkly, cyborg, lumen, paper, superhero, united
+      light: cosmo
+      dark: [cosmo, theme-dark.scss]
     css: styles.css
     toc: true
 
