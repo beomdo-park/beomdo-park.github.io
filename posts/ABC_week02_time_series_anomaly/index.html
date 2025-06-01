@@ -385,9 +385,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#데이터-준비" id="toc-데이터-준비" class="nav-link active" data-scroll-target="#데이터-준비">1. 데이터 준비</a></li>
   <li><a href="#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" id="toc-머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" class="nav-link" data-scroll-target="#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm">2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)</a>
   <ul class="collapse">
+  <li><a href="#모델별-특징-및-한계" id="toc-모델별-특징-및-한계" class="nav-link" data-scroll-target="#모델별-특징-및-한계">모델별 특징 및 한계</a></li>
   <li><a href="#isolation-forest" id="toc-isolation-forest" class="nav-link" data-scroll-target="#isolation-forest">Isolation Forest</a></li>
   <li><a href="#dbscan-밀도-기반-이상-탐지" id="toc-dbscan-밀도-기반-이상-탐지" class="nav-link" data-scroll-target="#dbscan-밀도-기반-이상-탐지">DBSCAN (밀도 기반 이상 탐지)</a></li>
   <li><a href="#one-class-svm-서포트-벡터-머신-기반-이상-탐지" id="toc-one-class-svm-서포트-벡터-머신-기반-이상-탐지" class="nav-link" data-scroll-target="#one-class-svm-서포트-벡터-머신-기반-이상-탐지">One-Class SVM (서포트 벡터 머신 기반 이상 탐지)</a></li>
+  <li><a href="#이상치-탐지-및-평가지표precision-recall-f1" id="toc-이상치-탐지-및-평가지표precision-recall-f1" class="nav-link" data-scroll-target="#이상치-탐지-및-평가지표precision-recall-f1">이상치 탐지 및 평가지표(Precision, Recall, F1)</a></li>
   </ul></li>
   <li><a href="#결과-해석-및-정리" id="toc-결과-해석-및-정리" class="nav-link" data-scroll-target="#결과-해석-및-정리">3. 결과 해석 및 정리</a></li>
   </ul>
@@ -414,7 +416,7 @@ Tip
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.</p>
+<p>이 포스트는 <a href="https://beomdo-park.github.io/posts/ABC_week01_data%20analysis/">week01</a>에서 진행했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.</p>
 </div>
 </div>
 <section id="데이터-준비" class="level2">
@@ -457,6 +459,40 @@ Tip
 </section>
 <section id="머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" class="level2">
 <h2 class="anchored" data-anchor-id="머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm">2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)</h2>
+<section id="모델별-특징-및-한계" class="level3">
+<h3 class="anchored" data-anchor-id="모델별-특징-및-한계">모델별 특징 및 한계</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 19%">
+<col style="width: 42%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>모델</th>
+<th>장점</th>
+<th>한계/주의점</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Isolation Forest</td>
+<td>대용량/고차원 데이터에 강함, 빠름</td>
+<td>이상치 비율(contamination) 추정 필요</td>
+</tr>
+<tr class="even">
+<td>DBSCAN</td>
+<td>군집/밀도 기반, 파라미터 직관적</td>
+<td>eps, min_samples에 민감, 1차원 한계</td>
+</tr>
+<tr class="odd">
+<td>One-Class SVM</td>
+<td>비선형 경계, 소규모 데이터에 적합</td>
+<td>느릴 수 있음, 파라미터 튜닝 필요</td>
+</tr>
+</tbody>
+</table>
+</section>
 <section id="isolation-forest" class="level3">
 <h3 class="anchored" data-anchor-id="isolation-forest">Isolation Forest</h3>
 <div id="fit-isolation-forest" class="cell" data-execution_count="5">
@@ -512,8 +548,9 @@ Tip
 <h3 class="anchored" data-anchor-id="one-class-svm-서포트-벡터-머신-기반-이상-탐지">One-Class SVM (서포트 벡터 머신 기반 이상 탐지)</h3>
 <div id="fit-ocsvm" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> OneClassSVM</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ocsvm <span class="op">=</span> OneClassSVM(nu<span class="op">=</span><span class="fl">0.05</span>, kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma<span class="op">=</span><span class="st">'auto'</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_ocsvm'</span>] <span class="op">=</span> ocsvm.fit_predict(df[[<span class="st">'value'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 기본 파라미터로는 이상치 탐지가 잘 안 됨 (F1이 0.14 수준)</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ocsvm <span class="op">=</span> OneClassSVM(nu<span class="op">=</span><span class="fl">0.05</span>, kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma<span class="op">=</span><span class="st">'auto'</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_ocsvm'</span>] <span class="op">=</span> ocsvm.fit_predict(df[[<span class="st">'value'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="cell-plot-anomaly-ocsvm" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
@@ -531,14 +568,74 @@ Tip
 </div>
 </div>
 </div>
+<section id="svm-파라미터-튜닝-시도" class="level4">
+<h4 class="anchored" data-anchor-id="svm-파라미터-튜닝-시도">SVM 파라미터 튜닝 시도</h4>
+<div id="fit-ocsvm-tuned" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># gamma 값을 더 크게, nu 값을 더 높게 조정해서 민감도를 높임</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ocsvm_tuned <span class="op">=</span> OneClassSVM(nu<span class="op">=</span><span class="fl">0.12</span>, kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_ocsvm_tuned'</span>] <span class="op">=</span> ocsvm_tuned.fit_predict(df[[<span class="st">'value'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-plot-anomaly-ocsvm-tuned" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df[df[<span class="st">'anomaly_ocsvm_tuned'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'time'</span>], df[df[<span class="st">'anomaly_ocsvm_tuned'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'value'</span>], color<span class="op">=</span><span class="st">'blue'</span>, label<span class="op">=</span><span class="st">'탐지된 이상값(튜닝 SVM)'</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'튜닝된 One-Class SVM 기반 이상 탐지 결과'</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="plot-anomaly-ocsvm-tuned" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-anomaly-ocsvm-tuned-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>튜닝된 One-Class SVM 이상 탐지 결과</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="이상치-탐지-및-평가지표precision-recall-f1" class="level3">
+<h3 class="anchored" data-anchor-id="이상치-탐지-및-평가지표precision-recall-f1">이상치 탐지 및 평가지표(Precision, Recall, F1)</h3>
+<div id="anomaly-metrics" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_score, recall_score, f1_score</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> anomaly_metrics(true_outliers, pred_outliers, n):</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    true <span class="op">=</span> [<span class="dv">1</span> <span class="cf">if</span> i <span class="kw">in</span> true_outliers <span class="cf">else</span> <span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> [<span class="dv">1</span> <span class="cf">if</span> i <span class="kw">in</span> pred_outliers <span class="cf">else</span> <span class="dv">0</span> <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(n)]</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    p <span class="op">=</span> precision_score(true, pred)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    r <span class="op">=</span> recall_score(true, pred)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    f1 <span class="op">=</span> f1_score(true, pred)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> p, r, f1</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="bu">len</span>(df)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>true_outliers <span class="op">=</span> outlier_indices</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>pred_isof <span class="op">=</span> df.index[df[<span class="st">'anomaly_isof'</span>]<span class="op">==-</span><span class="dv">1</span>].tolist()</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>p_isof, r_isof, f1_isof <span class="op">=</span> anomaly_metrics(true_outliers, pred_isof, n)</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>pred_dbscan <span class="op">=</span> df.index[df[<span class="st">'anomaly_dbscan'</span>]<span class="op">==-</span><span class="dv">1</span>].tolist()</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>p_dbscan, r_dbscan, f1_dbscan <span class="op">=</span> anomaly_metrics(true_outliers, pred_dbscan, n)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>pred_ocsvm <span class="op">=</span> df.index[df[<span class="st">'anomaly_ocsvm'</span>]<span class="op">==-</span><span class="dv">1</span>].tolist()</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>p_ocsvm, r_ocsvm, f1_ocsvm <span class="op">=</span> anomaly_metrics(true_outliers, pred_ocsvm, n)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>pred_ocsvm_tuned <span class="op">=</span> df.index[df[<span class="st">'anomaly_ocsvm_tuned'</span>]<span class="op">==-</span><span class="dv">1</span>].tolist()</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>p_ocsvm_t, r_ocsvm_t, f1_ocsvm_t <span class="op">=</span> anomaly_metrics(true_outliers, pred_ocsvm_tuned, n)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Isolation Forest - Precision: </span><span class="sc">{</span>p_isof<span class="sc">:.2f}</span><span class="ss">, Recall: </span><span class="sc">{</span>r_isof<span class="sc">:.2f}</span><span class="ss">, F1: </span><span class="sc">{</span>f1_isof<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DBSCAN           - Precision: </span><span class="sc">{</span>p_dbscan<span class="sc">:.2f}</span><span class="ss">, Recall: </span><span class="sc">{</span>r_dbscan<span class="sc">:.2f}</span><span class="ss">, F1: </span><span class="sc">{</span>f1_dbscan<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"One-Class SVM    - Precision: </span><span class="sc">{</span>p_ocsvm<span class="sc">:.2f}</span><span class="ss">, Recall: </span><span class="sc">{</span>r_ocsvm<span class="sc">:.2f}</span><span class="ss">, F1: </span><span class="sc">{</span>f1_ocsvm<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"튜닝 SVM         - Precision: </span><span class="sc">{</span>p_ocsvm_t<span class="sc">:.2f}</span><span class="ss">, Recall: </span><span class="sc">{</span>r_ocsvm_t<span class="sc">:.2f}</span><span class="ss">, F1: </span><span class="sc">{</span>f1_ocsvm_t<span class="sc">:.2f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Isolation Forest - Precision: 1.00, Recall: 1.00, F1: 1.00
+DBSCAN           - Precision: 1.00, Recall: 1.00, F1: 1.00
+One-Class SVM    - Precision: 0.14, Recall: 0.40, F1: 0.21
+튜닝 SVM         - Precision: 0.21, Recall: 1.00, F1: 0.34</code></pre>
+</div>
+</div>
 </section>
 </section>
 <section id="결과-해석-및-정리" class="level2">
 <h2 class="anchored" data-anchor-id="결과-해석-및-정리">3. 결과 해석 및 정리</h2>
 <ul>
-<li>Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.</li>
-<li>각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식 기반으로 해석하는 게 중요한 것 같아요.</li>
-<li>다음엔 더 실제 산업 데이터에 적용하고자 합니다.</li>
+<li>One-Class SVM은 기본 파라미터로는 이상치 탐지가 잘 되지 않았으나, gamma와 nu를 조정해 튜닝하면 성능이 개선되는 것을 확인할 수 있다. 이 과정에서 파라미터 튜닝의 중요성을 경험했다.</li>
+<li>각 모델별로 이상치 탐지 결과와 평가지표(Precision, Recall, F1)가 다르게 나타난다. Isolation Forest는 인위적으로 넣은 이상치를 대부분 탐지했고, DBSCAN은 파라미터에 따라 민감하게 반응한다. One-Class SVM은 데이터 분포와 파라미터에 따라 결과가 크게 달라진다.</li>
+<li>Precision(정밀도), Recall(재현율), F1-score는 모델의 이상치 탐지 성능을 종합적으로 평가하는 지표로, 실제 데이터 분석에서는 여러 방법을 비교하고 도메인 지식과 함께 해석하는 것이 중요하다.</li>
 </ul>
 
 
