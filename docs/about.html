@@ -73,6 +73,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="About – beomdo’s ML-DL blog">
+<meta property="og:image" content="https://beomdo-park.github.io/profile.jpg">
+<meta property="og:site_name" content="beomdo's ML-DL blog">
 </head>
 
 <body class="nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -276,7 +279,8 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">My Tech Stacks</span>
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-my-tech-stacks">    
-        <li class="dropdown-header">포스트 작성 후 추가 예정</li>
+        <li class="dropdown-header">Python</li>
+        <li class="dropdown-header">Machine Learning</li>
     </ul>
   </li>
 </ul>
@@ -410,7 +414,7 @@ ul.task-list li input[type="checkbox"] {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/beomdo-park\.github\.io");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
