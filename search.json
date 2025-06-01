@@ -53,14 +53,14 @@
     "href": "posts/ABC_week02_time_series_anomaly/index.html",
     "title": "[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용",
     "section": "",
-    "text": "안녕하세요 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록입니다. 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다. ::: {.callout-tip title=““} 이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다. :::"
+    "text": "안녕하세요 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록입니다. 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다."
   },
   {
     "objectID": "posts/ABC_week02_time_series_anomaly/index.html#데이터-준비",
     "href": "posts/ABC_week02_time_series_anomaly/index.html#데이터-준비",
     "title": "[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용",
     "section": "1. 데이터 준비",
-    "text": "1. 데이터 준비\n\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.ensemble import IsolationForest\nimport warnings\nwarnings.filterwarnings('ignore')\n\n\nnp.random.seed(42)\nt = np.arange(0, 100, 1)\ny = np.sin(0.2 * t) + np.random.normal(0, 0.2, size=len(t))\n# 여러 위치에 인위적으로 이상치 추가\noutlier_indices = [15, 35, 55, 75, 90]\noutlier_values = [2, -2, 2.5, -2.5, 3]\nfor idx, val in zip(outlier_indices, outlier_values):\n    y[idx] += val\ndf = pd.DataFrame({'time': t, 'value': y})\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter(df.loc[outlier_indices, 'time'], df.loc[outlier_indices, 'value'], color='red', label='이상값')\nplt.legend()\nplt.title('이상값이 포함된 시계열 데이터')\nplt.show()\n\n\n\n\n이상값이 포함된 시계열 데이터"
+    "text": "1. 데이터 준비\n\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.ensemble import IsolationForest\nimport warnings\nwarnings.filterwarnings('ignore')\n\n\nnp.random.seed(42)\nt = np.arange(0, 100, 1)\ny = np.sin(0.2 * t) + np.random.normal(0, 0.2, size=len(t))\n# 여러 위치에 인위적으로 이상치 추가\noutlier_indices = [15, 35, 55, 75, 90]\noutlier_values = [2, -2, 2.5, -2.5, 3]\nfor idx, val in zip(outlier_indices, outlier_values):\n    y[idx] += val\ndf = pd.DataFrame({'time': t, 'value': y})\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter(df.loc[outlier_indices, 'time'], df.loc[outlier_indices, 'value'], color='red', label='부여한 이상값')\nplt.legend()\nplt.title('이상값이 포함된 시계열 데이터')\nplt.show()\n\n\n\n\n이상값이 포함된 시계열 데이터"
   },
   {
     "objectID": "posts/ABC_week02_time_series_anomaly/index.html#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm",
@@ -74,6 +74,6 @@
     "href": "posts/ABC_week02_time_series_anomaly/index.html#결과-해석-및-정리",
     "title": "[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용",
     "section": "3. 결과 해석 및 정리",
-    "text": "3. 결과 해석 및 정리\n\nIsolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.\n각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식이랑 같이 해석하는 게 중요한 것 같아요.\n다음엔 더 실제 산업 데이터에 적용하고자 합니다."
+    "text": "3. 결과 해석 및 정리\n\nIsolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.\n각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식 기반으로 해석하는 게 중요한 것 같아요.\n다음엔 더 실제 산업 데이터에 적용하고자 합니다."
   }
 ]

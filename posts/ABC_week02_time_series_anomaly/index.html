@@ -402,8 +402,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>안녕하세요 이번 포스트는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a> 8기 2주차 실습 기록입니다. 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다. ::: {.callout-tip title=““} 이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다. :::</p>
+<p>안녕하세요 이번 포스트는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a> 8기 2주차 실습 기록입니다. 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다.</p>
 </blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.</p>
+</div>
+</div>
 <section id="데이터-준비" class="level2">
 <h2 class="anchored" data-anchor-id="데이터-준비">1. 데이터 준비</h2>
 <div id="load-libraries" class="cell" data-execution_count="2">
@@ -428,7 +441,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div id="cell-plot-sample-data" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df.loc[outlier_indices, <span class="st">'time'</span>], df.loc[outlier_indices, <span class="st">'value'</span>], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'이상값'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df.loc[outlier_indices, <span class="st">'time'</span>], df.loc[outlier_indices, <span class="st">'value'</span>], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'부여한 이상값'</span>)</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'이상값이 포함된 시계열 데이터'</span>)</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -524,7 +537,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="결과-해석-및-정리">3. 결과 해석 및 정리</h2>
 <ul>
 <li>Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.</li>
-<li>각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식이랑 같이 해석하는 게 중요한 것 같아요.</li>
+<li>각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식 기반으로 해석하는 게 중요한 것 같아요.</li>
 <li>다음엔 더 실제 산업 데이터에 적용하고자 합니다.</li>
 </ul>
 
