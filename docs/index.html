@@ -136,7 +136,6 @@ window.Quarto = {
 <link rel="stylesheet" href="styles.css">
 <meta property="og:title" content="beomdo’s ML-DL blog">
 <meta property="og:description" content="Posts">
-<meta property="og:image" content="https://beomdo-park.github.io/posts/my-first-post/image.jpg">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
 </head>
 
@@ -366,7 +365,7 @@ window.Quarto = {
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(3)</span></div><div class="category" data-category="JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw">고용노동부 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD">대한상공회의소 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1">미래내일일경험사업 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4">유클리드소프트 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx">ABC프로젝트멘토링 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="YW5hbHlzaXM=">analysis <span class="quarto-category-count">(1)</span></div><div class="category" data-category="Y29kZQ==">code <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bmV3cw==">news <span class="quarto-category-count">(1)</span></div></div></div>
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw">고용노동부 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD">대한상공회의소 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1">미래내일일경험사업 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4">유클리드소프트 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx">ABC프로젝트멘토링 <span class="quarto-category-count">(2)</span></div></div></div>
 <!-- main -->
 <main class="content column-page-left" id="quarto-document-content">
 
@@ -392,17 +391,20 @@ window.Quarto = {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+  var head = document.head;
+  var first = head.firstChild;
+
   // Google site verification
   var googleMeta = document.createElement('meta');
   googleMeta.name = "google-site-verification";
   googleMeta.content = "tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo";
-  document.head.appendChild(googleMeta);
+  head.insertBefore(googleMeta, first);
 
   // Naver site verification
   var naverMeta = document.createElement('meta');
   naverMeta.name = "naver-site-verification";
   naverMeta.content = "6c1006d6edf85b99c51f1f82aabd2a4fd68ec739";
-  document.head.appendChild(naverMeta);
+  head.insertBefore(naverMeta, first);
 });
 </script>
 <script>
@@ -574,41 +576,6 @@ May 25, 2025
 Beomdo Park
 </div>
 <div class="listing-reading-time">8 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="bmV3cyUyQ2NvZGUlMkNhbmFseXNpcw==" data-listing-date-sort="1747148400000" data-listing-file-modified-sort="1748253210972" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="49">
-<div class="thumbnail"><a href="./posts/my-first-post/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/my-first-post/image.jpg" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/my-first-post/index.html" class="no-external">Blog Posts</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('bmV3cw=='); return false;">news</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('Y29kZQ=='); return false;">code</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('YW5hbHlzaXM='); return false;">analysis</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/my-first-post/index.html" class="no-external">
-
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/my-first-post/index.html" class="no-external">
-<div class="listing-date">
-May 14, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">1 min</div>
 </a>
 </div>
 </div>
