@@ -1,19 +1,5 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리\n\n\n\nABC프로젝트멘토링\n\n유클리드소프트\n\n고용노동부\n\n대한상공회의소\n\n미래내일일경험사업\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.\n\n\n\n\n\nMay 25, 2025\n\n\nBeomdo Park\n\n8 min\n\n\n\n\nNo matching items"
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "컴퓨터공학과 3학년입니다.\n\nData Scientist AI-powered problem solver who applies research and technology to real-world challenges."
-  },
-  {
     "objectID": "posts/ABC_week01_data analysis/index.html",
     "href": "posts/ABC_week01_data analysis/index.html",
     "title": "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리",
@@ -47,5 +33,47 @@
     "title": "[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리",
     "section": "요약",
     "text": "요약\n이 포스트에서는 Python을 사용하여 가상의 산업 전력 사용량 데이터를 생성하고, 이상 탐지를 위한 기본적인 탐색적 데이터 분석(EDA) 및 전처리 과정을 살펴보았습니다. 시계열 플롯, 분포 확인, 주기성 분석(요일별 Box Plot), 이동 평균 활용 등은 데이터의 특성을 이해하고 잠재적인 이상치를 식별하는 데 효과적인 방법입니다."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "컴퓨터공학과 3학년입니다.\n\nData Scientist AI-powered problem solver who applies research and technology to real-world challenges."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "beomdo's ML-DL blog",
+    "section": "",
+    "text": "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용\n\n\n\nABC프로젝트멘토링\n\n유클리드소프트\n\n고용노동부\n\n대한상공회의소\n\n미래내일일경험사업\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습\n\n\n\n\n\nJun 1, 2025\n\n\nBeomdo Park\n\n3 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리\n\n\n\nABC프로젝트멘토링\n\n유클리드소프트\n\n고용노동부\n\n대한상공회의소\n\n미래내일일경험사업\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.\n\n\n\n\n\nMay 25, 2025\n\n\nBeomdo Park\n\n8 min\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/ABC_week02_time_series_anomaly/index.html",
+    "href": "posts/ABC_week02_time_series_anomaly/index.html",
+    "title": "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용",
+    "section": "",
+    "text": "안녕하세요! 한밭대 컴퓨터공학과 3학년 박범도입니다. 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.\n지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 진짜 머신러닝 모델로 이상치 탐지까지 해봤습니다. (코딩하면서 신기했음)"
+  },
+  {
+    "objectID": "posts/ABC_week02_time_series_anomaly/index.html#데이터-준비",
+    "href": "posts/ABC_week02_time_series_anomaly/index.html#데이터-준비",
+    "title": "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용",
+    "section": "1. 데이터 준비",
+    "text": "1. 데이터 준비\n\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom sklearn.ensemble import IsolationForest\nimport warnings\nwarnings.filterwarnings('ignore')\n\n\nnp.random.seed(42)\nt = np.arange(0, 100, 1)\ny = np.sin(0.2 * t) + np.random.normal(0, 0.2, size=len(t))\ny[20] += 2  # 인위적으로 이상치 추가 (이런 게 실제로 잘 잡히는지 궁금해서!)\ny[70] -= 2\ndf = pd.DataFrame({'time': t, 'value': y})\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter([20, 70], [y[20], y[70]], color='red', label='이상값')\nplt.legend()\nplt.title('이상값이 포함된 시계열 데이터')\nplt.show()\n\n\n\n\n이상값이 포함된 시계열 데이터"
+  },
+  {
+    "objectID": "posts/ABC_week02_time_series_anomaly/index.html#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm",
+    "href": "posts/ABC_week02_time_series_anomaly/index.html#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm",
+    "title": "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용",
+    "section": "2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)",
+    "text": "2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)\n\nIsolation Forest\n\nfrom sklearn.ensemble import IsolationForest\nmodel = IsolationForest(contamination=0.05, random_state=42)\ndf['anomaly_isof'] = model.fit_predict(df[['value']])\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter(df[df['anomaly_isof']==-1]['time'], df[df['anomaly_isof']==-1]['value'], color='red', label='탐지된 이상값')\nplt.legend()\nplt.title('Isolation Forest 기반 이상 탐지 결과')\nplt.show()\n\n\n\n\nIsolation Forest 기반 이상 탐지 결과\n\n\n\n\n\n\nDBSCAN (밀도 기반 이상 탐지)\n\nfrom sklearn.cluster import DBSCAN\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\nX_scaled = scaler.fit_transform(df[['value']])\ndbscan = DBSCAN(eps=0.5, min_samples=5)\ndf['anomaly_dbscan'] = dbscan.fit_predict(X_scaled)\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter(df[df['anomaly_dbscan']==-1]['time'], df[df['anomaly_dbscan']==-1]['value'], color='orange', label='탐지된 이상값(DBSCAN)')\nplt.legend()\nplt.title('DBSCAN 기반 이상 탐지 결과')\nplt.show()\n\n\n\n\nDBSCAN 기반 이상 탐지 결과\n\n\n\n\n\n\nOne-Class SVM (서포트 벡터 머신 기반 이상 탐지)\n\nfrom sklearn.svm import OneClassSVM\nocsvm = OneClassSVM(nu=0.05, kernel='rbf', gamma='auto')\ndf['anomaly_ocsvm'] = ocsvm.fit_predict(df[['value']])\n\n\nplt.figure(figsize=(10,4))\nplt.plot(df['time'], df['value'], label='시계열 데이터')\nplt.scatter(df[df['anomaly_ocsvm']==-1]['time'], df[df['anomaly_ocsvm']==-1]['value'], color='purple', label='탐지된 이상값(OCSVM)')\nplt.legend()\nplt.title('One-Class SVM 기반 이상 탐지 결과')\nplt.show()\n\n\n\n\nOne-Class SVM 기반 이상 탐지 결과"
+  },
+  {
+    "objectID": "posts/ABC_week02_time_series_anomaly/index.html#결과-해석-및-정리",
+    "href": "posts/ABC_week02_time_series_anomaly/index.html#결과-해석-및-정리",
+    "title": "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용",
+    "section": "3. 결과 해석 및 정리",
+    "text": "3. 결과 해석 및 정리\n\nIsolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.\n각 방법마다 잡히는 이상치가 조금씩 다르더라고요. 실제 데이터 쓸 땐 여러 방법 돌려보고, 도메인 지식이랑 같이 해석하는 게 진짜 중요한 것 같아요.\n다음엔 더 복잡한 데이터나, 여러 변수 쓸 때도 해보고 싶네요!"
   }
 ]

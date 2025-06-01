@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://beomdo-park.github.io/index.html</loc>
-    <lastmod>2025-05-27T04:46:38.872Z</lastmod>
+    <loc>https://beomdo-park.github.io/posts/ABC_week01_data analysis/index.html</loc>
+    <lastmod>2025-06-01T14:33:23.300Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/about.html</loc>
-    <lastmod>2025-05-27T04:46:38.839Z</lastmod>
+    <lastmod>2025-06-01T14:33:23.283Z</lastmod>
   </url>
   <url>
-    <loc>https://beomdo-park.github.io/posts/ABC_week01_data analysis/index.html</loc>
-    <lastmod>2025-05-27T04:46:38.875Z</lastmod>
+    <loc>https://beomdo-park.github.io/index.html</loc>
+    <lastmod>2025-06-01T14:33:23.296Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/ABC_week02_time_series_anomaly/index.html</loc>
+    <lastmod>2025-06-01T14:33:23.300Z</lastmod>
   </url>
 </urlset>

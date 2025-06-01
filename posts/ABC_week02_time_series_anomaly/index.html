@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2025-06-01">
+<meta name="description" content="Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습">
 
-<title>beomdo’s ML-DL blog</title>
+<title>ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용 – beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,32 +23,65 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-73f59b168be9ce609f464f53eef18749.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-73f59b168be9ce609f464f53eef18749.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -73,67 +109,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -310,11 +288,11 @@ window.Quarto = {
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">beomdo’s ML-DL blog</span>
     </a>
   </div>
@@ -325,11 +303,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -356,210 +334,215 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용</h1>
+                  <div>
+        <div class="description">
+          Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">ABC프로젝트멘토링</div>
+                <div class="quarto-category">유클리드소프트</div>
+                <div class="quarto-category">고용노동부</div>
+                <div class="quarto-category">대한상공회의소</div>
+                <div class="quarto-category">미래내일일경험사업</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 1, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(2)</span></div><div class="category" data-category="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx">ABC프로젝트멘토링 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw">고용노동부 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD">대한상공회의소 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1">미래내일일경험사업 <span class="quarto-category-count">(2)</span></div><div class="category" data-category="JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4">유클리드소프트 <span class="quarto-category-count">(2)</span></div></div></div>
-<!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<p class="subtitle lead">Posts</p>
-</div>
-
-
-
-<div class="quarto-title-meta column-page-left">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let subtitleElement = null;
-    let categoryLinksContainer = null;
-    const maxAttempts = 20; // 최대 20번 시도 (0.5초 간격으로 약 10초)
-    let attempts = 0;
-
-    const findElementsInterval = setInterval(function() {
-        subtitleElement = document.querySelector('.quarto-title-block .subtitle');
-        const marginSidebar = document.querySelector('#quarto-margin-sidebar');
-        attempts++;
-
-        if (marginSidebar) {
-            // console.log('Dynamic subtitle: Found #quarto-margin-sidebar.'); // 로그 확인용
-            categoryLinksContainer = marginSidebar.querySelector('div.quarto-listing-category');
-        } else if (attempts === 1) { // 첫 시도에서 못찾으면 바로 로그 남기기
-            console.warn('Dynamic subtitle: #quarto-margin-sidebar not found on first attempt.');
-        }
-
-        if ((subtitleElement && categoryLinksContainer) || attempts >= maxAttempts) {
-            clearInterval(findElementsInterval);
-            if (subtitleElement && categoryLinksContainer) {
-                console.log('Dynamic subtitle: Successfully found subtitleElement and categoryLinksContainer.');
-                initializeDynamicSubtitle(subtitleElement, categoryLinksContainer);
-            } else {
-                if (!subtitleElement) {
-                    console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found after multiple attempts.');
-                }
-                if (!categoryLinksContainer) {
-                    console.warn('Dynamic subtitle: Category links container (div.quarto-listing-category within #quarto-margin-sidebar) not found after multiple attempts.');
-                    if (marginSidebar) {
-                        console.log('Dynamic subtitle: InnerHTML of #quarto-margin-sidebar:');
-                        console.log(marginSidebar.innerHTML);
-                    } else {
-                        console.warn('Dynamic subtitle: #quarto-margin-sidebar was also not found.');
-                    }
-                }
-            }
-        }
-    }, 500); // 500ms (0.5초) 간격으로 확인
-
-    function initializeDynamicSubtitle(subtitleElem, categoriesContainer) {
-        const originalSubtitleText = subtitleElem.textContent.trim();
-
-        const updateSubtitle = () => {
-            const activeFilterElement = categoriesContainer.querySelector('div.category.active');
-            if (activeFilterElement) {
-              let categoryName = activeFilterElement.textContent.trim(); // 예: "All (1)" 또는 "News (3)"
-              const categoryNameOnly = categoryName.replace(/\s*\(\d+\)$/, '').trim(); // 숫자 제거 -> "All" 또는 "News"
-              
-              if (categoryNameOnly === "All") {
-                subtitleElem.textContent = originalSubtitleText;
-              } else {
-                subtitleElem.textContent = `Posts by [${categoryNameOnly}]`;
-              }
-            } else {
-              // 활성 필터가 없으면 원래 부제목으로 되돌립니다.
-              subtitleElem.textContent = originalSubtitleText;
-            }
-        };
-
-        const observer = new MutationObserver((mutationsList) => {
-            for(const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && 
-                    mutation.attributeName === 'class' && 
-                    mutation.target.matches('div.category')) { // categoriesContainer의 자식인 div.category를 감지
-                    updateSubtitle();
-                    return; 
-                }
-            }
-        });
-
-        observer.observe(categoriesContainer, { // 찾은 categoriesContainer를 관찰
-            attributes: true, 
-            childList: false, 
-            subtree: true     
-        });
-
-        updateSubtitle(); // 초기 업데이트
-    }
-});
-</script>
-
-
-
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#데이터-준비" id="toc-데이터-준비" class="nav-link active" data-scroll-target="#데이터-준비">1. 데이터 준비</a></li>
+  <li><a href="#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" id="toc-머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" class="nav-link" data-scroll-target="#머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm">2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)</a>
+  <ul class="collapse">
+  <li><a href="#isolation-forest" id="toc-isolation-forest" class="nav-link" data-scroll-target="#isolation-forest">Isolation Forest</a></li>
+  <li><a href="#dbscan-밀도-기반-이상-탐지" id="toc-dbscan-밀도-기반-이상-탐지" class="nav-link" data-scroll-target="#dbscan-밀도-기반-이상-탐지">DBSCAN (밀도 기반 이상 탐지)</a></li>
+  <li><a href="#one-class-svm-서포트-벡터-머신-기반-이상-탐지" id="toc-one-class-svm-서포트-벡터-머신-기반-이상-탐지" class="nav-link" data-scroll-target="#one-class-svm-서포트-벡터-머신-기반-이상-탐지">One-Class SVM (서포트 벡터 머신 기반 이상 탐지)</a></li>
+  </ul></li>
+  <li><a href="#결과-해석-및-정리" id="toc-결과-해석-및-정리" class="nav-link" data-scroll-target="#결과-해석-및-정리">3. 결과 해석 및 정리</a></li>
+  </ul>
+</nav>
     </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
+
+
+
+
+
+<blockquote class="blockquote">
+<p>안녕하세요! 한밭대 컴퓨터공학과 3학년 박범도입니다. 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.<br>
+지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 진짜 머신러닝 모델로 이상치 탐지까지 해봤습니다. (코딩하면서 신기했음)</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
 </div>
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748736000000" data-listing-file-modified-sort="1748788403300" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="3" data-listing-word-count-sort="449">
-<div class="thumbnail"><a href="./posts/ABC_week02_time_series_anomaly/index.html" class="no-external">
-
-<p class="card-img-top"><img src="posts/ABC_week02_time_series_anomaly/index_files/figure-html/plot-sample-data-output-1.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ABC_week02_time_series_anomaly/index.html" class="no-external">ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4'); return false;">유클리드소프트</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw'); return false;">고용노동부</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD'); return false;">대한상공회의소</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1'); return false;">미래내일일경험사업</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/ABC_week02_time_series_anomaly/index.html" class="no-external">
-<p>Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/ABC_week02_time_series_anomaly/index.html" class="no-external">
-<div class="listing-date">
-Jun 1, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">3 min</div>
-</a>
+<div class="callout-title-container flex-fill">
+Tip
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748131200000" data-listing-file-modified-sort="1748788403300" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1483">
-<div class="thumbnail"><a href="./posts/ABC_week01_data analysis/index.html" class="no-external">
-
-<p class="card-img-top"><img src="posts/ABC_week01_data analysis/index_files/figure-html/fig-time-series-plot-power-output-1.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/ABC_week01_data analysis/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 프로젝트 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4'); return false;">유클리드소프트</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgw'); return false;">고용노동부</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThD'); return false;">대한상공회의소</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('JUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1'); return false;">미래내일일경험사업</div>
-
+<div class="callout-body-container callout-body">
+<p>이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄어요.</p>
 </div>
-<div class="delink listing-description"><a href="./posts/ABC_week01_data analysis/index.html" class="no-external">
-<p>Python을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.</p>
-</a></div>
 </div>
-<div class="metadata">
-<a href="./posts/ABC_week01_data analysis/index.html" class="no-external">
-<div class="listing-date">
-May 25, 2025
+<section id="데이터-준비" class="level2">
+<h2 class="anchored" data-anchor-id="데이터-준비">1. 데이터 준비</h2>
+<div id="load-libraries" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> IsolationForest</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">'ignore'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="listing-author">
-Beomdo Park
+<div id="generate-sample-data" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> np.arange(<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">1</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.sin(<span class="fl">0.2</span> <span class="op">*</span> t) <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="fl">0.2</span>, size<span class="op">=</span><span class="bu">len</span>(t))</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">20</span>] <span class="op">+=</span> <span class="dv">2</span>  <span class="co"># 인위적으로 이상치 추가 (이런 게 실제로 잘 잡히는지 궁금해서!)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>y[<span class="dv">70</span>] <span class="op">-=</span> <span class="dv">2</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">'time'</span>: t, <span class="st">'value'</span>: y})</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div class="listing-reading-time">8 min</div>
-</a>
+<div id="cell-plot-sample-data" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>plt.scatter([<span class="dv">20</span>, <span class="dv">70</span>], [y[<span class="dv">20</span>], y[<span class="dv">70</span>]], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'이상값'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'이상값이 포함된 시계열 데이터'</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="plot-sample-data" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-sample-data-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>이상값이 포함된 시계열 데이터</figcaption>
+</figure>
 </div>
 </div>
 </div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</section>
+<section id="머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm" class="level2">
+<h2 class="anchored" data-anchor-id="머신러닝-기반-이상-탐지-isolation-forest-dbscan-one-class-svm">2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)</h2>
+<section id="isolation-forest" class="level3">
+<h3 class="anchored" data-anchor-id="isolation-forest">Isolation Forest</h3>
+<div id="fit-isolation-forest" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> IsolationForest</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> IsolationForest(contamination<span class="op">=</span><span class="fl">0.05</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_isof'</span>] <span class="op">=</span> model.fit_predict(df[[<span class="st">'value'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-plot-anomaly-isof" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df[df[<span class="st">'anomaly_isof'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'time'</span>], df[df[<span class="st">'anomaly_isof'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'value'</span>], color<span class="op">=</span><span class="st">'red'</span>, label<span class="op">=</span><span class="st">'탐지된 이상값'</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'Isolation Forest 기반 이상 탐지 결과'</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="plot-anomaly-isof" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-anomaly-isof-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>Isolation Forest 기반 이상 탐지 결과</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="dbscan-밀도-기반-이상-탐지" class="level3">
+<h3 class="anchored" data-anchor-id="dbscan-밀도-기반-이상-탐지">DBSCAN (밀도 기반 이상 탐지)</h3>
+<div id="fit-dbscan" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.cluster <span class="im">import</span> DBSCAN</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> scaler.fit_transform(df[[<span class="st">'value'</span>]])</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>dbscan <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.5</span>, min_samples<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_dbscan'</span>] <span class="op">=</span> dbscan.fit_predict(X_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-plot-anomaly-dbscan" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df[df[<span class="st">'anomaly_dbscan'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'time'</span>], df[df[<span class="st">'anomaly_dbscan'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'value'</span>], color<span class="op">=</span><span class="st">'orange'</span>, label<span class="op">=</span><span class="st">'탐지된 이상값(DBSCAN)'</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'DBSCAN 기반 이상 탐지 결과'</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="plot-anomaly-dbscan" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-anomaly-dbscan-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>DBSCAN 기반 이상 탐지 결과</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="one-class-svm-서포트-벡터-머신-기반-이상-탐지" class="level3">
+<h3 class="anchored" data-anchor-id="one-class-svm-서포트-벡터-머신-기반-이상-탐지">One-Class SVM (서포트 벡터 머신 기반 이상 탐지)</h3>
+<div id="fit-ocsvm" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.svm <span class="im">import</span> OneClassSVM</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ocsvm <span class="op">=</span> OneClassSVM(nu<span class="op">=</span><span class="fl">0.05</span>, kernel<span class="op">=</span><span class="st">'rbf'</span>, gamma<span class="op">=</span><span class="st">'auto'</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_ocsvm'</span>] <span class="op">=</span> ocsvm.fit_predict(df[[<span class="st">'value'</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div id="cell-plot-anomaly-ocsvm" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>,<span class="dv">4</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plt.plot(df[<span class="st">'time'</span>], df[<span class="st">'value'</span>], label<span class="op">=</span><span class="st">'시계열 데이터'</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>plt.scatter(df[df[<span class="st">'anomaly_ocsvm'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'time'</span>], df[df[<span class="st">'anomaly_ocsvm'</span>]<span class="op">==-</span><span class="dv">1</span>][<span class="st">'value'</span>], color<span class="op">=</span><span class="st">'purple'</span>, label<span class="op">=</span><span class="st">'탐지된 이상값(OCSVM)'</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'One-Class SVM 기반 이상 탐지 결과'</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div id="plot-anomaly-ocsvm" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/plot-anomaly-ocsvm-output-1.png" class="img-fluid figure-img"></p>
+<figcaption>One-Class SVM 기반 이상 탐지 결과</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="결과-해석-및-정리" class="level2">
+<h2 class="anchored" data-anchor-id="결과-해석-및-정리">3. 결과 해석 및 정리</h2>
+<ul>
+<li>Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.</li>
+<li>각 방법마다 잡히는 이상치가 조금씩 다르더라고요. 실제 데이터 쓸 땐 여러 방법 돌려보고, 도메인 지식이랑 같이 해석하는 게 진짜 중요한 것 같아요.</li>
+<li>다음엔 더 복잡한 데이터나, 여러 변수 쓸 때도 해보고 싶네요!</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
