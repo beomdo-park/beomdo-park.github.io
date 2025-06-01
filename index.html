@@ -389,24 +389,24 @@ window.Quarto = {
 </header>
 
 
+<!-- HTML in QMD - runs immediately when page loads, not after DOMContentLoaded -->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var head = document.head;
-  var first = head.firstChild;
-
-  // Google site verification
+// 이 방식은 DOMContentLoaded보다 먼저 실행되므로 더 효과적일 수 있음
+(function() {
+  // Google site verification - 페이지 로드 즉시 실행
   var googleMeta = document.createElement('meta');
   googleMeta.name = "google-site-verification";
   googleMeta.content = "tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo";
-  head.insertBefore(googleMeta, first);
+  document.head.insertBefore(googleMeta, document.head.firstChild);
 
   // Naver site verification
   var naverMeta = document.createElement('meta');
   naverMeta.name = "naver-site-verification";
   naverMeta.content = "6c1006d6edf85b99c51f1f82aabd2a4fd68ec739";
-  head.insertBefore(naverMeta, first);
-});
+  document.head.insertBefore(naverMeta, document.head.firstChild);
+})();
 </script>
+<!-- 원래 스크립트 -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     let subtitleElement = null;
@@ -501,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 <div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748736000000" data-listing-file-modified-sort="1748793895914" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="908">
+<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748736000000" data-listing-file-modified-sort="1748794718052" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="5" data-listing-word-count-sort="908">
 <div class="thumbnail"><a href="./posts/ABC_week02_time_series_anomaly/index.html" class="no-external">
 
 <p class="card-img-top"><img src="posts/ABC_week02_time_series_anomaly/index_files/figure-html/plot-sample-data-output-1.png"  class="thumbnail-image card-img"/></p>
@@ -540,7 +540,7 @@ Beomdo Park
 </a>
 </div>
 </div>
-<div class="quarto-post image-right" data-index="1" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748131200000" data-listing-file-modified-sort="1748793895914" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1483">
+<div class="quarto-post image-right" data-index="1" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDJUVDJTlDJUEwJUVEJTgxJUI0JUVCJUE2JUFDJUVCJTkzJTlDJUVDJTg2JThDJUVEJTk0JTg0JUVEJThBJUI4JTJDJUVBJUIzJUEwJUVDJTlBJUE5JUVCJTg1JUI4JUVCJThGJTk5JUVCJUI2JTgwJTJDJUVCJThDJTgwJUVEJTk1JTlDJUVDJTgzJTgxJUVBJUIzJUI1JUVEJTlBJThDJUVDJTlEJTk4JUVDJTg2JThDJTJDJUVCJUFGJUI4JUVCJTlFJTk4JUVCJTgyJUI0JUVDJTlEJUJDJUVDJTlEJUJDJUVBJUIyJUJEJUVEJTk3JTk4JUVDJTgyJUFDJUVDJTk3JTg1" data-listing-date-sort="1748131200000" data-listing-file-modified-sort="1748794718052" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1483">
 <div class="thumbnail"><a href="./posts/ABC_week01_data analysis/index.html" class="no-external">
 
 <p class="card-img-top"><img src="posts/ABC_week01_data analysis/index_files/figure-html/fig-time-series-plot-power-output-1.png"  class="thumbnail-image card-img"/></p>
