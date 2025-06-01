@@ -1,0 +1,158 @@
+---
+title: "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용"
+description: "Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습"
+date: "2025-06-01"
+author: "Beomdo Park"
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
+page-layout: full
+freeze: false
+---
+
+> 안녕하세요! 한밭대 컴퓨터공학과 3학년 박범도입니다. 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.  
+지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 진짜 머신러닝 모델로 이상치 탐지까지 해봤습니다. (코딩하면서 신기했음)
+
+::: {.callout-tip title=""}
+이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄어요.
+:::
+
+## 1. 데이터 준비
+
+```{python}
+#| label: matplotlib-font-setup
+#| echo: false
+#| include: false
+#| eval: true
+import os, sys
+font_setup_script_path = "../../scripts/matplotlib_font_setup.py"
+try:
+    if os.path.exists(font_setup_script_path):
+        exec(open(font_setup_script_path, encoding='utf-8').read())
+    else:
+        import platform
+        import matplotlib.pyplot as plt
+        if platform.system() == 'Windows':
+            plt.rc('font', family='NanumGothic')
+        elif platform.system() == 'Darwin':
+            plt.rc('font', family='AppleGothic')
+        plt.rcParams['axes.unicode_minus'] = False
+except Exception as e:
+    import matplotlib.pyplot as plt
+    plt.rcParams['axes.unicode_minus'] = False
+```
+
+```{python}
+#| label: load-libraries
+#| echo: true
+#| eval: true
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.ensemble import IsolationForest
+import warnings
+warnings.filterwarnings('ignore')
+```
+
+```{python}
+#| label: generate-sample-data
+#| echo: true
+#| eval: true
+np.random.seed(42)
+t = np.arange(0, 100, 1)
+y = np.sin(0.2 * t) + np.random.normal(0, 0.2, size=len(t))
+y[20] += 2  # 인위적으로 이상치 추가 (이런 게 실제로 잘 잡히는지 궁금해서!)
+y[70] -= 2
+df = pd.DataFrame({'time': t, 'value': y})
+```
+
+```{python}
+#| label: plot-sample-data
+#| fig-cap: "이상값이 포함된 시계열 데이터"
+#| echo: true
+#| eval: true
+plt.figure(figsize=(10,4))
+plt.plot(df['time'], df['value'], label='시계열 데이터')
+plt.scatter([20, 70], [y[20], y[70]], color='red', label='이상값')
+plt.legend()
+plt.title('이상값이 포함된 시계열 데이터')
+plt.show()
+```
+
+## 2. 머신러닝 기반 이상 탐지 (Isolation Forest, DBSCAN, One-Class SVM)
+
+### Isolation Forest
+```{python}
+#| label: fit-isolation-forest
+#| echo: true
+#| eval: true
+from sklearn.ensemble import IsolationForest
+model = IsolationForest(contamination=0.05, random_state=42)
+df['anomaly_isof'] = model.fit_predict(df[['value']])
+```
+
+```{python}
+#| label: plot-anomaly-isof
+#| fig-cap: "Isolation Forest 기반 이상 탐지 결과"
+#| echo: true
+#| eval: true
+plt.figure(figsize=(10,4))
+plt.plot(df['time'], df['value'], label='시계열 데이터')
+plt.scatter(df[df['anomaly_isof']==-1]['time'], df[df['anomaly_isof']==-1]['value'], color='red', label='탐지된 이상값')
+plt.legend()
+plt.title('Isolation Forest 기반 이상 탐지 결과')
+plt.show()
+```
+
+### DBSCAN (밀도 기반 이상 탐지)
+```{python}
+#| label: fit-dbscan
+#| echo: true
+#| eval: true
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(df[['value']])
+dbscan = DBSCAN(eps=0.5, min_samples=5)
+df['anomaly_dbscan'] = dbscan.fit_predict(X_scaled)
+```
+
+```{python}
+#| label: plot-anomaly-dbscan
+#| fig-cap: "DBSCAN 기반 이상 탐지 결과"
+#| echo: true
+#| eval: true
+plt.figure(figsize=(10,4))
+plt.plot(df['time'], df['value'], label='시계열 데이터')
+plt.scatter(df[df['anomaly_dbscan']==-1]['time'], df[df['anomaly_dbscan']==-1]['value'], color='orange', label='탐지된 이상값(DBSCAN)')
+plt.legend()
+plt.title('DBSCAN 기반 이상 탐지 결과')
+plt.show()
+```
+
+### One-Class SVM (서포트 벡터 머신 기반 이상 탐지)
+```{python}
+#| label: fit-ocsvm
+#| echo: true
+#| eval: true
+from sklearn.svm import OneClassSVM
+ocsvm = OneClassSVM(nu=0.05, kernel='rbf', gamma='auto')
+df['anomaly_ocsvm'] = ocsvm.fit_predict(df[['value']])
+```
+
+```{python}
+#| label: plot-anomaly-ocsvm
+#| fig-cap: "One-Class SVM 기반 이상 탐지 결과"
+#| echo: true
+#| eval: true
+plt.figure(figsize=(10,4))
+plt.plot(df['time'], df['value'], label='시계열 데이터')
+plt.scatter(df[df['anomaly_ocsvm']==-1]['time'], df[df['anomaly_ocsvm']==-1]['value'], color='purple', label='탐지된 이상값(OCSVM)')
+plt.legend()
+plt.title('One-Class SVM 기반 이상 탐지 결과')
+plt.show()
+```
+
+## 3. 결과 해석 및 정리
+
+- Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.
+- 각 방법마다 잡히는 이상치가 조금씩 다르더라고요. 실제 데이터 쓸 땐 여러 방법 돌려보고, 도메인 지식이랑 같이 해석하는 게 진짜 중요한 것 같아요.
+- 다음엔 더 복잡한 데이터나, 여러 변수 쓸 때도 해보고 싶네요!
