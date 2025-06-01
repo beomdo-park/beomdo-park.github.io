@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2025-06-01">
 <meta name="description" content="Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습">
 
-<title>ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용 – beomdo’s ML-DL blog</title>
+<title>[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용 – beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -337,7 +337,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
-      <h1 class="title">ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용</h1>
+      <h1 class="title">[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용</h1>
                   <div>
         <div class="description">
           Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습
@@ -402,22 +402,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>안녕하세요! 한밭대 컴퓨터공학과 3학년 박범도입니다. 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.<br>
-지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 진짜 머신러닝 모델로 이상치 탐지까지 해봤습니다. (코딩하면서 신기했음)</p>
+<p>안녕하세요 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.<br>
+지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다. ::: {.callout-tip title=““} 이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다. :::</p>
 </blockquote>
-<div class="callout callout-style-default callout-tip callout-titled" title="">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄어요.</p>
-</div>
-</div>
 <section id="데이터-준비" class="level2">
 <h2 class="anchored" data-anchor-id="데이터-준비">1. 데이터 준비</h2>
 <div id="load-libraries" class="cell" data-execution_count="2">
@@ -486,7 +473,7 @@ Tip
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>scaler <span class="op">=</span> StandardScaler()</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>X_scaled <span class="op">=</span> scaler.fit_transform(df[[<span class="st">'value'</span>]])</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>dbscan <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.5</span>, min_samples<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>dbscan <span class="op">=</span> DBSCAN(eps<span class="op">=</span><span class="fl">0.25</span>, min_samples<span class="op">=</span><span class="dv">3</span>)  <span class="co"># eps와 min_samples를 조정해 민감도 조정</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'anomaly_dbscan'</span>] <span class="op">=</span> dbscan.fit_predict(X_scaled)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div id="cell-plot-anomaly-dbscan" class="cell" data-execution_count="8">
@@ -535,8 +522,8 @@ Tip
 <h2 class="anchored" data-anchor-id="결과-해석-및-정리">3. 결과 해석 및 정리</h2>
 <ul>
 <li>Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.</li>
-<li>각 방법마다 잡히는 이상치가 조금씩 다르더라고요. 실제 데이터 쓸 땐 여러 방법 돌려보고, 도메인 지식이랑 같이 해석하는 게 진짜 중요한 것 같아요.</li>
-<li>다음엔 더 복잡한 데이터나, 여러 변수 쓸 때도 해보고 싶네요!</li>
+<li>각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식이랑 같이 해석하는 게 중요한 것 같아요.</li>
+<li>다음엔 더 실제 산업 데이터에 적용하고자 합니다.</li>
 </ul>
 
 
