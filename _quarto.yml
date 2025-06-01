@@ -33,14 +33,13 @@ website:
 
 format:
   html:
+    include-in-header:
+      text: |
+        <meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo" />
+        <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739" />
     theme:
       light: cosmo
       dark: [cosmo, theme-dark.scss]
-    meta:
-      - name: google-site-verification
-        content: tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo
-      - name: naver-site-verification
-        content: 6c1006d6edf85b99c51f1f82aabd2a4fd68ec739
     css: styles.css
     toc: true
 
