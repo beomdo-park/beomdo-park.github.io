@@ -8,7 +8,7 @@ page-layout: full
 freeze: false
 ---
 
-> 안녕하세요 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.  
+> 안녕하세요 이번 포스트는 [ABC 프로젝트 멘토링](https://abcbootcamp.kr/abc_mentor/) 8기 2주차 실습 기록입니다.
 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다. 
 ::: {.callout-tip title=""}
 이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.
@@ -58,8 +58,11 @@ warnings.filterwarnings('ignore')
 np.random.seed(42)
 t = np.arange(0, 100, 1)
 y = np.sin(0.2 * t) + np.random.normal(0, 0.2, size=len(t))
-y[20] += 2  # 인위적으로 이상치 추가 (이런 게 실제로 잘 잡히는지 궁금해서!)
-y[70] -= 2
+# 여러 위치에 인위적으로 이상치 추가
+outlier_indices = [15, 35, 55, 75, 90]
+outlier_values = [2, -2, 2.5, -2.5, 3]
+for idx, val in zip(outlier_indices, outlier_values):
+    y[idx] += val
 df = pd.DataFrame({'time': t, 'value': y})
 ```
 
@@ -70,7 +73,7 @@ df = pd.DataFrame({'time': t, 'value': y})
 #| eval: true
 plt.figure(figsize=(10,4))
 plt.plot(df['time'], df['value'], label='시계열 데이터')
-plt.scatter([20, 70], [y[20], y[70]], color='red', label='이상값')
+plt.scatter(df.loc[outlier_indices, 'time'], df.loc[outlier_indices, 'value'], color='red', label='이상값')
 plt.legend()
 plt.title('이상값이 포함된 시계열 데이터')
 plt.show()
