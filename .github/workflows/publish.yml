@@ -40,6 +40,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install jupyter nbformat scikit-learn pandas numpy matplotlib statsmodels seaborn
 
+      # Quarto 렌더링 단계 추가 (publish 액션은 내부적으로 렌더링하지만 meta 태그 삽입을 위해 명시적으로 렌더링)
+      - name: Render Quarto Project
+        run: |
+          quarto render
+
+      # HTML 파일에 meta 태그 삽입
+      - name: Insert meta tags
+        run: |
+          echo "Inserting meta tags to HTML files..."
+          # index.html에 meta 태그 삽입
+          sed -i 's|<meta charset="utf-8">|<meta charset="utf-8">\n<meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">\n<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">|' docs/index.html
+
+          # 변경 확인
+          echo "Meta tags inserted successfully!"
+          echo "First 20 lines of index.html:"
+          head -n 20 docs/index.html
+
       - name: Publish to GitHub Pages (gh-pages branch)
         uses: quarto-dev/quarto-actions/publish@v2
         with:
