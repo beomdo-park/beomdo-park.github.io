@@ -1,5 +1,5 @@
 ---
-title: "ABC week02: 시계열 이상 탐지와 머신러닝 기초 적용"
+title: "[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용"
 description: "Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습"
 date: "2025-06-01"
 author: "Beomdo Park"
@@ -8,11 +8,10 @@ page-layout: full
 freeze: false
 ---
 
-> 안녕하세요! 한밭대 컴퓨터공학과 3학년 박범도입니다. 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.  
-지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 진짜 머신러닝 모델로 이상치 탐지까지 해봤습니다. (코딩하면서 신기했음)
-
+> 안녕하세요 이번 포스트는 ABC 프로젝트 멘토링 8기 2주차 실습 기록이에요.  
+지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다. 
 ::: {.callout-tip title=""}
-이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄어요.
+이 포스트는 week01에서 했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.
 :::
 
 ## 1. 데이터 준비
@@ -111,7 +110,7 @@ from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 X_scaled = scaler.fit_transform(df[['value']])
-dbscan = DBSCAN(eps=0.5, min_samples=5)
+dbscan = DBSCAN(eps=0.25, min_samples=3)  # eps와 min_samples를 조정해 민감도 조정
 df['anomaly_dbscan'] = dbscan.fit_predict(X_scaled)
 ```
 
@@ -154,5 +153,5 @@ plt.show()
 ## 3. 결과 해석 및 정리
 
 - Isolation Forest, DBSCAN, One-Class SVM 등 여러 머신러닝 기법으로 시계열 이상치 탐지를 해봤습니다.
-- 각 방법마다 잡히는 이상치가 조금씩 다르더라고요. 실제 데이터 쓸 땐 여러 방법 돌려보고, 도메인 지식이랑 같이 해석하는 게 진짜 중요한 것 같아요.
-- 다음엔 더 복잡한 데이터나, 여러 변수 쓸 때도 해보고 싶네요!
+- 각 방법마다의 이상치 검출이 조금씩 다른 모습이 보입니다. 실제 데이터 쓸 땐 여러 머신러닝 기법을 적용해보고, 도메인 지식이랑 같이 해석하는 게  중요한 것 같아요.
+- 다음엔 더 실제 산업 데이터에 적용하고자 합니다.
