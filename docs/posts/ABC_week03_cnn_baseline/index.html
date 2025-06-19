@@ -408,7 +408,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#모델-학습" id="toc-모델-학습" class="nav-link" data-scroll-target="#모델-학습">모델 학습</a></li>
   <li><a href="#재구성-오차-계산-및-이상치-탐지" id="toc-재구성-오차-계산-및-이상치-탐지" class="nav-link" data-scroll-target="#재구성-오차-계산-및-이상치-탐지">재구성 오차 계산 및 이상치 탐지</a></li>
   <li><a href="#결과-시각화" id="toc-결과-시각화" class="nav-link" data-scroll-target="#결과-시각화">결과 시각화</a></li>
-  <li><a href="#탐지-결과에-대한-심층-분석-및-고려사항" id="toc-탐지-결과에-대한-심층-분석-및-고려사항" class="nav-link" data-scroll-target="#탐지-결과에-대한-심층-분석-및-고려사항">탐지 결과에 대한 심층 분석 및 고려사항</a></li>
+  <li><a href="#탐지-결과-분석-및-고려사항" id="toc-탐지-결과-분석-및-고려사항" class="nav-link" data-scroll-target="#탐지-결과-분석-및-고려사항">탐지 결과 분석 및 고려사항</a></li>
   </ul></li>
   <li><a href="#결론-및-다음-단계" id="toc-결론-및-다음-단계" class="nav-link" data-scroll-target="#결론-및-다음-단계">결론 및 다음 단계</a></li>
   </ul>
@@ -648,11 +648,11 @@ CNNAutoencoder(
 <span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Using device: cuda
-Epoch [10/50], Loss: 0.373374
-Epoch [20/50], Loss: 0.269607
-Epoch [30/50], Loss: 0.233523
-Epoch [40/50], Loss: 0.219008
-Epoch [50/50], Loss: 0.210084
+Epoch [10/50], Loss: 0.466470
+Epoch [20/50], Loss: 0.291450
+Epoch [30/50], Loss: 0.264741
+Epoch [40/50], Loss: 0.224466
+Epoch [50/50], Loss: 0.209135
 모델 학습 완료.</code></pre>
 </div>
 </div>
@@ -701,8 +701,8 @@ Epoch [50/50], Loss: 0.210084
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co"># anomalies_approx_original_indices = [idx + window_size // 2 for idx in anomalies_indices_in_windows]</span></span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): </span><span class="sc">{</span>anomalies_approx_original_indices<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>계산된 MAE 값 (처음 5개): [0.13334458 0.1224654  0.08777217 0.06363949 0.08642011]
-이상치 탐지 임계값 (MAE): 0.9535
+<pre><code>계산된 MAE 값 (처음 5개): [0.12926425 0.12913459 0.10146508 0.06732681 0.0824157 ]
+이상치 탐지 임계값 (MAE): 0.9529
 이상치로 탐지된 윈도우의 수: 8
 이상치로 탐지된 윈도우 인덱스: [17 18 19 20 47 48 49 50]
 원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): [17 18 19 20 47 48 49 50]</code></pre>
@@ -760,22 +760,42 @@ Epoch [50/50], Loss: 0.210084
 </div>
 </div>
 </section>
-<section id="탐지-결과에-대한-심층-분석-및-고려사항" class="level3">
-<h3 class="anchored" data-anchor-id="탐지-결과에-대한-심층-분석-및-고려사항">탐지 결과에 대한 심층 분석 및 고려사항</h3>
-<p>위 시각화 결과와 재구성 오차를 살펴보면 몇 가지 고려할 점이 있습니다.</p>
+<section id="탐지-결과-분석-및-고려사항" class="level3">
+<h3 class="anchored" data-anchor-id="탐지-결과-분석-및-고려사항">탐지 결과 분석 및 고려사항</h3>
+<p>시각화 결과와 재구성 오차 검토 시 다음 사항을 고려해야 한다.</p>
 <ol type="1">
-<li><p><strong>실제 이상치와 탐지된 이상치</strong>: <code>data-generation</code>에서 의도적으로 삽입한 실제 이상치(<code>outliers = [20, 50, 80]</code>)와 모델이 탐지한 이상치를 비교해 보면, 모든 실제 이상치가 탐지되지 않았을 수도 있고, 반대로 정상적인 구간이 이상치로 탐지되었을 수도 있습니다. 현재 예제에서는 임계값(<code>np.mean(mae) + 1.5 * np.std(mae)</code>) 조정으로 최소 하나의 이상치를 탐지하도록 유도했지만, 실제 상황에서는 모델 성능, 데이터 특성, <code>window_size</code> 및 임계값 설정에 따라 결과가 크게 달라집니다.</p></li>
-<li><p><strong>윈도우 경계 효과 (Edge Effects)</strong>: 시계열 데이터의 처음과 끝 부분에서 생성된 윈도우들은 내부 윈도우에 비해 불완전한 정보를 가질 수 있습니다. 예를 들어, 첫 번째 윈도우는 이전 시점의 데이터가 없고, 마지막 윈도우는 이후 시점의 데이터가 없습니다. CNN 모델, 특히 패딩을 사용하는 경우, 이러한 경계 영역의 윈도우들은 모델이 학습한 주요 정상 패턴과 달라 재구성 오차가 상대적으로 크게 나타날 수 있습니다. 이로 인해 <strong>시계열의 양 끝부분에서 이상치가 아닌데도 이상치로 탐지되는 경향</strong>이 나타날 수 있습니다. 위 MAE 그래프에서 초반 또는 후반부에 높은 오차가 관찰된다면 이러한 경계 효과를 의심해 볼 수 있습니다.</p></li>
-<li><p><strong><code>window_size</code>의 중요성</strong>: <code>window_size</code>는 모델이 학습할 패턴의 길이를 결정합니다. <code>window_size</code>가 너무 작으면 장기적인 패턴을 파악하기 어렵고, 너무 크면 짧은 순간의 이상치를 놓치거나 정상적인 변동에도 민감하게 반응할 수 있습니다. 현재 <code>window_size=10</code>으로 설정되어 있는데, 데이터의 특성에 따라 이 값을 조정하며 실험해 보는 것이 중요합니다.</p></li>
-<li><p><strong>모델 및 임계값의 한계</strong>: 현재 사용된 CNN 오토인코더는 비교적 간단한 모델입니다. 더 복잡한 패턴이나 다양한 유형의 이상치를 탐지하기 위해서는 모델 구조를 개선하거나 (예: LSTM, Transformer 기반 오토인코더), 다른 접근 방식을 고려해야 할 수 있습니다. 또한, 고정된 임계값 대신 동적 임계값을 사용하거나, 통계적 검정 기법을 결합하는 것도 탐지 성능을 높이는 데 도움이 될 수 있습니다.</p></li>
+<li><strong>실제 이상치 vs.&nbsp;탐지 이상치</strong>:
+<ul>
+<li><code>data-generation</code> 단계에서 의도적으로 넣은 실제 이상치(<code>outliers = [20, 50, 80]</code>)와 모델의 탐지 결과는 다를 수 있다.</li>
+<li>모든 실제 이상치가 탐지되지 않거나, 정상이 이상치로 잘못 탐지될 가능성이 항상 존재한다.</li>
+<li>현 예제는 임계값(<code>np.mean(mae) + 1.5 * np.std(mae)</code>) 조정을 통해 최소 하나의 이상치를 탐지하도록 유도했다. 실제 상황에서는 모델 성능, 데이터 특성, <code>window_size</code>, 임계값 설정에 따라 결과가 크게 달라진다.</li>
+</ul></li>
+<li><strong>윈도우 경계 효과 (Edge Effects)</strong>:
+<ul>
+<li>시계열 데이터의 시작과 끝 부분 윈도우는 내부 윈도우에 비해 정보가 불완전할 수 있다 (이전/이후 데이터 부재).</li>
+<li>CNN 모델, 특히 패딩 사용 시, 경계 영역 윈도우는 학습된 주 정상 패턴과 달라 재구성 오차가 상대적으로 커질 수 있다.</li>
+<li>결과적으로, <strong>시계열 양 끝부분에서 이상치가 아닌데도 이상치로 탐지되는 경향</strong>이 나타날 수 있다. MAE 그래프에서 초반 또는 후반부에 높은 오차가 관찰된다면 이 효과를 의심해볼 수 있다.</li>
+</ul></li>
+<li><strong><code>window_size</code>의 중요성</strong>:
+<ul>
+<li><code>window_size</code>는 모델이 학습할 패턴의 길이를 결정한다.</li>
+<li>너무 작으면 장기 패턴 파악이 어렵고, 너무 크면 짧은 순간의 이상치를 놓치거나 정상 변동에도 민감하게 반응할 수 있다.</li>
+<li>현재 <code>window_size=10</code>으로 설정했다. 데이터 특성에 맞춰 이 값을 조정하며 실험하는 과정이 중요하다.</li>
+</ul></li>
+<li><strong>모델 및 임계값의 한계</strong>:
+<ul>
+<li>여기서 사용한 CNN 오토인코더는 비교적 단순한 모델이다.</li>
+<li>더 복잡한 패턴이나 다양한 유형의 이상치를 탐지하려면 모델 구조 개선(예: LSTM, Transformer 기반 오토인코더)이나 다른 접근법을 고려해야 한다.</li>
+<li>고정 임계값 대신 동적 임계값을 사용하거나, 통계적 검정 기법을 결합하는 것도 탐지 성능을 높이는 데 도움이 될 수 있다.</li>
+</ul></li>
 </ol>
-<p>이러한 점들을 고려하여 모델의 결과를 해석하고, 실제 문제에 적용할 때는 충분한 검증과 실험이 필요합니다.</p>
+<p>이런 점들을 고려해 모델 결과를 해석해야 하며, 실제 문제 적용 시에는 충분한 검증과 실험이 필수다.</p>
 </section>
 </section>
 <section id="결론-및-다음-단계" class="level2">
 <h2 class="anchored" data-anchor-id="결론-및-다음-단계">결론 및 다음 단계</h2>
-<p>이번 주에는 PyTorch를 사용하여 간단한 1D CNN 오토인코더를 설계하고, 이를 활용해 시계열 데이터의 이상 탐지를 수행했습니다. 이 모델은 시계열 이상 탐지의 강력한 베이스라인이 될 수 있습니다. 재구성 오차를 기반으로 이상치를 탐지하는 과정을 확인했으며, 임계값 설정 방법에 따라 탐지 결과가 달라질 수 있음을 알 수 있습니다.</p>
-<p>다음 포스트에서는 실제 산업 데이터를 사용해 모델을 학습시키고, 성능을 개선하기 위한 다양한 방법 (예: 더 복잡한 모델 구조, 다른 유형의 오토인코더, 동적 임계값 설정 등)을 탐구해 보겠습니다.</p>
+<p>이번 주에는 PyTorch로 간단한 1D CNN 오토인코더를 만들고, 시계열 이상 탐지를 수행했다. 이 모델은 시계열 이상 탐지의 괜찮은 시작점이 될 수 있다. 재구성 오차를 기반으로 이상치를 찾는 과정과, 임계값 설정에 따라 탐지 결과가 어떻게 달라지는지 확인했다.</p>
+<p>다음 포스트에서는 실제 산업 데이터를 사용해 모델을 학습시키고, 성능을 개선할 다양한 방법(예: 더 복잡한 모델 구조, 다른 유형의 오토인코더, 동적 임계값 설정 등)을 살펴볼 예정이다.</p>
 
 
 </section>

@@ -7,4 +7,5 @@ matplotlib
 statsmodels
 seaborn
 torch
+optuna
 # tensorflow
