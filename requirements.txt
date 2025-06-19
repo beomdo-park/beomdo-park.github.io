@@ -8,4 +8,5 @@ statsmodels
 seaborn
 torch
 optuna
+plotly
 # tensorflow

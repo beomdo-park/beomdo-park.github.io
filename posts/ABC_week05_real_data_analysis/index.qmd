@@ -10,6 +10,36 @@ freeze: false
 
 > 안녕하세요, ABC 프로젝트 멘토링 8기 다섯 번째 기술노트입니다. 지난 4주 동안 시계열 이상 탐지를 위한 모델을 만들고 개선하는 과정을 거쳤습니다. 이번 주에는 지금까지 만든 모델을 실제 세계의 데이터, 구체적으로 캐글의 '주택 전력 사용량' 데이터셋에 적용하여 그 실효성을 검증하고, 현실 데이터에서 마주할 수 있는 문제들을 어떻게 해결하는지 탐구해 보겠습니다.
 
+```{python}
+#| label: matplotlib-font-setup
+#| echo: false
+#| include: false
+#| eval: true
+import os, sys
+# matplotlib 한글 폰트 설정 스크립트 경로 (프로젝트 루트 기준)
+font_setup_script_path = "../../scripts/matplotlib_font_setup.py" 
+try:
+    if os.path.exists(font_setup_script_path):
+        exec(open(font_setup_script_path, encoding='utf-8').read())
+    else:
+        import platform
+        import matplotlib.pyplot as plt
+        if platform.system() == 'Windows':
+            plt.rc('font', family='NanumGothic')
+        elif platform.system() == 'Darwin':
+            plt.rc('font', family='AppleGothic')
+        else:
+            try:
+                plt.rc('font', family='NanumGothic')
+            except:
+                print("NanumGothic not found. Using system default font.")
+        plt.rcParams['axes.unicode_minus'] = False
+except Exception as e:
+    print(f"Font setup failed: {e}")
+    import matplotlib.pyplot as plt
+    plt.rcParams['axes.unicode_minus'] = False
+```
+
 ## 1. 데이터셋 소개 및 탐색
 
 이번 주에 사용할 데이터는 캐글에 공개된 **'Residential Power Usage 3-Years Data'** 입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.
@@ -17,7 +47,8 @@ freeze: false
 먼저, GitHub에 공개된 데이터를 Pandas를 이용해 직접 불러와 구조를 살펴보겠습니다.
 
 ```{python}
-#| label: setup-and-load
+#| label: matplotlib-font-setup
+#| echo: false
 #| eval: true
 import pandas as pd
 import numpy as np
@@ -27,15 +58,6 @@ import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
-
-# matplotlib 한글 폰트 설정 (Week04 내용 재활용)
-import os
-font_setup_script_path = "../../scripts/matplotlib_font_setup.py"
-if os.path.exists(font_setup_script_path):
-    exec(open(font_setup_script_path, encoding='utf-8').read())
-else:
-    plt.rcParams['axes.unicode_minus'] = False
-
 
 # GitHub Raw URL을 통해 데이터 불러오기
 url = 'https://raw.githubusercontent.com/beomdo-park/ml-dl-by-dataset/main/datasets/power_usage_2016_to_2020.csv'
@@ -47,7 +69,7 @@ print("데이터 로딩 완료.")
 df.info()
 ```
 
-데이터는 'StartDate', 'Value', 'units' 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 'StartDate'를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, 'Value' 컬럼만 사용하겠습니다. 데이터의 양이 매우 크므로, 실험을 위해 2018년 1월 한 달 치 데이터만 샘플링하여 사용하겠습니다.
+데이터는 'StartDate', 'Value (kWh)', 'day_of_week', 'notes' 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 'StartDate'를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, 'Value (kWh)' 컬럼만 사용하겠습니다. 전체 데이터를 사용하여 분석을 진행합니다.
 
 ```{python}
 #| label: data-preprocessing
@@ -58,23 +80,22 @@ print("데이터 전처리 시작...")
 df['StartDate'] = pd.to_datetime(df['StartDate'])
 df = df.set_index('StartDate')
 
-# 'Value' 컬럼만 선택
-df_value = df[['Value']].copy()
+# 'Value (kWh)' 컬럼만 선택
+# df.info() 결과에 따라 'Value (kWh)'를 사용합니다.
+value_col = 'Value (kWh)'
+df_value = df[[value_col]].copy()
 
-# 2018년 1월 데이터만 선택
-df_sample = df_value['2018-01-01':'2018-01-31']
-
-# 데이터 시각화
+# 데이터 시각화 (전체 기간)
 plt.figure(figsize=(15, 6))
-plt.plot(df_sample.index, df_sample['Value'], label='전력 사용량 (2018년 1월)')
-plt.title('시간에 따른 전력 사용량')
+plt.plot(df_value.index, df_value[value_col], label='전력 사용량 (전체 기간)')
+plt.title('시간에 따른 전력 사용량 (전체 기간)')
 plt.xlabel('날짜')
-plt.ylabel('사용량 (Wh)')
+plt.ylabel('사용량 (kWh)')
 plt.legend()
 plt.grid(True)
 plt.show()
 
-print(f"샘플 데이터 크기: {df_sample.shape}")
+print(f"전체 데이터 크기: {df_value.shape}")
 ```
 
 ## 2. 데이터 전처리 및 윈도우 생성
@@ -87,7 +108,7 @@ Week04에서와 동일하게 `StandardScaler`를 사용하여 데이터를 정�
 
 # StandardScaler 적용
 scaler = StandardScaler()
-scaled_data = scaler.fit_transform(df_sample['Value'].values.reshape(-1, 1)).flatten()
+scaled_data = scaler.fit_transform(df_value[value_col].values.reshape(-1, 1)).flatten()
 
 # 슬라이딩 윈도우 생성 함수
 def sliding_window(data, window_size, step_size=1):
@@ -162,7 +183,7 @@ dataset = TensorDataset(all_windows_torch)
 data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
 
 print("모델 학습 시작...")
-epochs = 20 # 실제 데이터는 양이 많으므로 epoch 수를 줄여서 진행
+epochs = 10 # 전체 데이터를 사용하므로 epoch 수를 10으로 조정
 for epoch in range(epochs):
     model.train()
     for data in data_loader:
