@@ -5,7 +5,7 @@ date: 2025-06-08
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch"]
 page-layout: full
-freeze: false
+freeze: true
 ---
 
 > 안녕하세요, ABC 프로젝트 멘토링 8기 세 번째 기술노트입니다. 이번 주는 시계열 데이터의 '패턴'을 학습할 수 있는 딥러닝, 그중에서도 CNN을 활용한 이상 탐지의 첫걸음을 PyTorch로 구현해 보겠습니다.

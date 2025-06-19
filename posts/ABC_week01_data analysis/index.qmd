@@ -5,7 +5,7 @@ date: "2025-05-25"
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
 page-layout: full
-freeze: false
+freeze: true
 ---
 
 > 유클리드소프트에서 진행하는 [ABC 프로젝트 멘토링](https://abcbootcamp.kr/abc_mentor/)에 8기로 참여하게 되었습니다.  </br></br>

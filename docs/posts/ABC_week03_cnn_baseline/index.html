@@ -648,11 +648,11 @@ CNNAutoencoder(
 <span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Using device: cuda
-Epoch [10/50], Loss: 0.466470
-Epoch [20/50], Loss: 0.291450
-Epoch [30/50], Loss: 0.264741
-Epoch [40/50], Loss: 0.224466
-Epoch [50/50], Loss: 0.209135
+Epoch [10/50], Loss: 0.474734
+Epoch [20/50], Loss: 0.271595
+Epoch [30/50], Loss: 0.231434
+Epoch [40/50], Loss: 0.217045
+Epoch [50/50], Loss: 0.210623
 모델 학습 완료.</code></pre>
 </div>
 </div>
@@ -701,8 +701,8 @@ Epoch [50/50], Loss: 0.209135
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co"># anomalies_approx_original_indices = [idx + window_size // 2 for idx in anomalies_indices_in_windows]</span></span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): </span><span class="sc">{</span>anomalies_approx_original_indices<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>계산된 MAE 값 (처음 5개): [0.12926425 0.12913459 0.10146508 0.06732681 0.0824157 ]
-이상치 탐지 임계값 (MAE): 0.9529
+<pre><code>계산된 MAE 값 (처음 5개): [0.13974112 0.11385794 0.07825096 0.08110552 0.07896732]
+이상치 탐지 임계값 (MAE): 0.9588
 이상치로 탐지된 윈도우의 수: 8
 이상치로 탐지된 윈도우 인덱스: [17 18 19 20 47 48 49 50]
 원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): [17 18 19 20 47 48 49 50]</code></pre>

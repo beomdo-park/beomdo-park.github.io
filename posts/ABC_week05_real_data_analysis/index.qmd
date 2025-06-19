@@ -1,14 +1,24 @@
 ---
 title: "[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지"
-description: "지난주에 개선한 CNN 오토인코더 모델을 실제 캐글의 주택 전력 사용량 데이터에 적용하여, 현실 세계의 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다."
-date: "2025-06-21"
+description: "이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다."
+date: "2025-06-19"
 author: "Beomdo Park"
-categories: ["ABC프로젝트멘토링", "실전 데이터 분석", "시계열", "이상 탐지", "PyTorch"]
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch"]
 page-layout: full
 freeze: false
 ---
 
-> 안녕하세요, ABC 프로젝트 멘토링 8기 다섯 번째 기술노트입니다. 지난 4주 동안 시계열 이상 탐지를 위한 모델을 만들고 개선하는 과정을 거쳤습니다. 이번 주에는 지금까지 만든 모델을 실제 세계의 데이터, 구체적으로 캐글의 '주택 전력 사용량' 데이터셋에 적용하여 그 실효성을 검증하고, 현실 데이터에서 마주할 수 있는 문제들을 어떻게 해결하는지 탐구해 보겠습니다.
+> 안녕하세요, ABC 프로젝트 멘토링 8기 다섯 번째 기술노트입니다. Week04에서 개발한 CNN 오토인코더 모델을 실제 Kaggle 공개 데이터셋(주택 전력 사용량 3년치)에 적용해, 실전 환경에서의 이상 탐지 성능과 한계를 점검합니다. 이 과정을 통해, 이론적 모델이 실제 데이터에서 어떻게 동작하는지, 그리고 실무에서 마주칠 수 있는 문제와 해결책을 탐구합니다.
+
+::: {.callout-tip title="이전 포스트"}
+[Week4 포스트](https://beomdo-park.github.io/posts/ABC_week04_model_optimization/)에서 CNN 오토인코더 모델의 성능 개선과 하이퍼파라미터 최적화 과정을 다뤘습니다. 이번 포스트는 해당 모델을 실제 데이터에 적용하는 실전 단계에 초점을 맞춥니다.
+:::
+
+## 1. 데이터 소개 및 준비
+
+이번 주에 사용할 데이터는 Kaggle에 공개된 **'Residential Power Usage 3-Years Data'**입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 시계열 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.
+
+먼저, GitHub Raw URL을 통해 데이터를 불러오고, 시계열 분석을 위해 날짜 컬럼을 인덱스로 변환한 뒤, 전력 사용량 컬럼만 추출합니다.
 
 ```{python}
 #| label: matplotlib-font-setup
@@ -40,15 +50,10 @@ except Exception as e:
     plt.rcParams['axes.unicode_minus'] = False
 ```
 
-## 1. 데이터셋 소개 및 탐색
-
-이번 주에 사용할 데이터는 캐글에 공개된 **'Residential Power Usage 3-Years Data'** 입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.
-
-먼저, GitHub에 공개된 데이터를 Pandas를 이용해 직접 불러와 구조를 살펴보겠습니다.
-
 ```{python}
 #| label: data-loading
 #| echo: false
+#| include: true
 #| eval: true
 import pandas as pd
 import numpy as np
@@ -104,9 +109,9 @@ print(f"전체 데이터 크기: {df_value.shape}")
 
 ## 2. 데이터 전처리 및 윈도우 생성
 
-시계열 데이터에 포함된 추세(Trend)의 영향을 줄이고, 각 윈도우의 지역적 패턴에 집중하기 위해 전체 데이터를 한 번에 정규화하는 대신, 각 윈도우별로 독립적인 정규화를 수행합니다. 이 방법은 데이터의 전반적인 스케일 변화에 덜 민감한 모델을 만드는 데 도움이 됩니다.
+시계열 데이터의 추세(Trend) 영향을 줄이고, 각 윈도우의 지역적 패턴에 집중하기 위해 윈도우별로 독립적인 정규화를 수행합니다. 이 방법은 데이터의 전반적인 스케일 변화에 덜 민감한 모델을 만드는 데 도움이 됩니다.
 
-```python
+```{python}
 #| label: scaling-and-windowing
 #| eval: true
 
@@ -126,42 +131,42 @@ raw_windows = sliding_window(raw_data, window_size)
 # 윈도우별 정규화
 scaled_windows = np.array([StandardScaler().fit_transform(window.reshape(-1, 1)).flatten() for window in raw_windows])
 
-all_windows_torch = torch.from_numpy(scaled_windows[..., np.newaxis].transpose(0, 2, 1)).float()
+# PyTorch 텐서 변환 (shape: [batch_size, channels, sequence_length])
+all_windows_torch = torch.from_numpy(scaled_windows).unsqueeze(1).float()  # [N, 1, window_size]
 
 print(f"생성된 윈도우 데이터 shape: {all_windows_torch.shape}")
 ```
 
 ## 3. 안정 구간을 이용한 모델 학습 전략
 
-이전 실행 결과에서 보았듯이, 데이터의 초반부(약 5,000 스텝 이전)는 이후 구간과 다른 패턴을 보입니다. 이는 '구간 변화(Regime Change)'로 해석할 수 있으며, 모델이 전체 데이터를 학습할 경우, 이 변화 자체를 이상으로 탐지하게 됩니다.
+실제 데이터에서는 초반부와 이후 구간의 패턴이 다를 수 있습니다(구간 변화, Regime Change). 전체 데이터를 학습하면 변화 자체를 이상으로 탐지할 수 있으므로, **패턴이 안정화된 구간만을 '정상'으로 정의하고 해당 구간 데이터로만 모델을 학습**합니다.
 
-더 정교한 이상 탐지를 위해, **데이터의 특정 안정 구간을 '정상' 상태로 정의하고 해당 구간의 데이터로만 모델을 학습**시키는 전략을 사용합니다. 여기서는 패턴이 안정화된 것으로 보이는 5,000번째 윈도우 이후의 데이터를 학습에 사용하겠습니다.
-
-```python
+```{python}
 #| label: split-data-for-training
 #| eval: true
 
 # 학습 데이터와 전체 평가 데이터 분리
-# 패턴이 안정화된 5000번째 윈도우부터를 학습 데이터로 사용
-train_start_index = 5000
+# 패턴이 안정화된 구간을 학습 데이터로 사용 (전체 데이터의 1/3 지점부터)
+train_start_index = min(5000, len(all_windows_torch) // 3)
 train_windows_torch = all_windows_torch[train_start_index:]
 
 print(f"전체 윈도우 수: {all_windows_torch.shape[0]}")
+print(f"학습 시작 인덱스: {train_start_index}")
 print(f"학습에 사용할 윈도우 수: {train_windows_torch.shape[0]}")
 
 ```
 
 이제 `CNNAutoencoderWithDropout` 모델을 이 안정 구간 데이터로만 학습시킵니다.
 
-```python
+```{python}
 #| label: model-definition-and-training
 #| eval: true
 
 class CNNAutoencoderWithDropout(nn.Module):
-    def __init__(self, input_shape, dropout_rate=0.2):
+    def __init__(self, input_channels=1, dropout_rate=0.2):
         super(CNNAutoencoderWithDropout, self).__init__()
         # Encoder
-        self.encoder_conv1 = nn.Conv1d(in_channels=input_shape[1], out_channels=32, kernel_size=7, padding=3)
+        self.encoder_conv1 = nn.Conv1d(in_channels=input_channels, out_channels=32, kernel_size=7, padding=3)
         self.encoder_relu1 = nn.ReLU()
         self.encoder_drop1 = nn.Dropout(dropout_rate)
         self.encoder_pool1 = nn.MaxPool1d(kernel_size=2, stride=2)
@@ -177,7 +182,7 @@ class CNNAutoencoderWithDropout(nn.Module):
         self.decoder_conv_t2 = nn.ConvTranspose1d(in_channels=16, out_channels=32, kernel_size=2, stride=2)
         self.decoder_relu2 = nn.ReLU()
         self.decoder_drop4 = nn.Dropout(dropout_rate)
-        self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_shape[1], kernel_size=7, padding=3)
+        self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_channels, kernel_size=7, padding=3)
 
     def forward(self, x):
         # Encoder
@@ -201,7 +206,7 @@ class CNNAutoencoderWithDropout(nn.Module):
         return x
 
 # 모델 정의 및 학습
-model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=0.2)
+model = CNNAutoencoderWithDropout(input_channels=1, dropout_rate=0.2)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 criterion = nn.MSELoss()
 
@@ -227,9 +232,9 @@ print("모델 학습 완료.")
 
 ## 4. 모델 평가 및 이상치 탐지
 
-학습된 모델을 사용하여 **전체 데이터**의 재구성 오차를 계산합니다. 중요한 점은, 이상치를 판별하는 **임계값(Threshold)은 '정상'으로 가정한 학습 데이터의 재구성 오차를 기준**으로 설정한다는 것입니다.
+학습된 모델로 전체 데이터의 재구성 오차를 계산하고, 학습 데이터의 재구성 오차 분포를 기반으로 임계값(Quantile 기준)을 설정해 이상치를 탐지합니다.
 
-```python
+```{python}
 #| label: evaluation-and-detection
 #| eval: true
 
@@ -264,19 +269,15 @@ for window_idx in anomaly_window_indices:
 
 predicted_anomaly_points = sorted(list(set(predicted_anomaly_points)))
 print(f"탐지된 이상치 포인트 수: {len(predicted_anomaly_points)}")
+
+# 안전성 체크: 유효한 인덱스만 필터링
+predicted_anomaly_points = [idx for idx in predicted_anomaly_points if idx < len(raw_data)]
+print(f"유효한 이상치 포인트 수: {len(predicted_anomaly_points)}")
 ```
-
-### 탐지 결과 분석 및 고찰
-
-시각화 결과를 살펴보면, 탐지된 이상치의 대부분이 데이터셋의 초반부(대략 5,000 스텝 이전)에 집중된 것을 확인할 수 있습니다. 하단의 재구성 오차 그래프에서도 동일한 경향이 나타납니다.
-
-이는 모델이 잘못되었다기보다는, **데이터의 패턴 자체가 시간에 따라 변화했음**을 시사합니다. 모델은 전체 기간에 걸친 데이터의 "평균적인" 정상 상태를 학습합니다. 따라서, 전체적인 패턴과 통계적 특성이 다른 특정 구간(여기서는 초반부)은 재구성이 어려워지고, 결과적으로 높은 오차를 기록하며 '이상'으로 탐지됩니다.
-
-이처럼 비지도 학습 기반의 이상 탐지 모델은 특정 스파이크성 이상치뿐만 아니라, 데이터의 분포가 크게 변하는 **"구간 변화(Regime Change)"**를 감지하는 데에도 매우 효과적입니다. 즉, 현재 모델은 전력 사용 패턴에 중요한 변화가 있었던 시점을 성공적으로 식별해낸 것입니다.
 
 ### 탐지 결과 시각화
 
-이제 탐지된 이상치들을 원본 데이터와 함께 시각화하여 어떤 패턴들이 '이상'으로 간주되었는지 확인합니다.
+이상치로 탐지된 구간과 원본 데이터를 함께 시각화하여, 모델이 어떤 패턴을 '이상'으로 간주했는지 확인합니다.
 
 ```{python}
 #| label: final-visualization
@@ -285,18 +286,20 @@ print(f"탐지된 이상치 포인트 수: {len(predicted_anomaly_points)}")
 # 시각화를 위해 원본 데이터 사용
 original_data = df_value[value_col].values
 
-plt.figure(figsize=(15, 10))
+plt.figure(figsize=(15, 8))
 
 # 상단: 전체 데이터와 탐지 결과
 plt.subplot(2, 1, 1)
 plt.plot(original_data, label='원본 전력 사용량', alpha=0.8)
 
 if len(predicted_anomaly_points) > 0:
+    # 유효한 인덱스만 사용
     valid_indices = [i for i in predicted_anomaly_points if i < len(original_data)]
-    plt.scatter(valid_indices, original_data[valid_indices],
-                color='red', marker='x', s=100, linewidth=2, label='탐지된 이상치', zorder=5)
+    if len(valid_indices) > 0:
+        plt.scatter(valid_indices, original_data[valid_indices],
+                    color='red', marker='x', s=100, linewidth=2, label='탐지된 이상치', zorder=5)
 
-plt.title('실제 전력 사용량 데이터 이상 탐지 결과 (윈도우별 정규화)', fontsize=16)
+plt.title('실제 전력 사용량 데이터 이상 탐지 결과 (안정 구간 학습)', fontsize=16)
 plt.xlabel('시간 스텝')
 plt.ylabel('사용량 (kWh)')
 plt.legend()
@@ -321,17 +324,17 @@ plt.show()
 
 ## 5. 결론 및 고찰
 
-이번 주에는 Week04에서 구축한 CNN 오토인코더 모델을 실제 주택 전력 사용량 데이터에 성공적으로 적용해 보았습니다. 가상의 데이터가 아닌 실제 데이터에 적용함으로써, 모델이 예측 불가능하고 불규칙한 패턴 속에서도 의미 있는 이상 신호를 포착할 수 있음을 확인했습니다.
+이번 실습을 통해, Week04에서 구축한 CNN 오토인코더 모델을 실제 주택 전력 사용량 데이터에 성공적으로 적용해 보았습니다. 가상의 데이터가 아닌 실제 데이터에 적용함으로써, 모델이 예측 불가능하고 불규칙한 패턴 속에서도 의미 있는 이상 신호를 포착할 수 있음을 확인했습니다.
 
-특히, 데이터의 특정 안정 구간만을 '정상'으로 정의하고 학습시키는 전략을 통해, 데이터 전체에 걸친 패턴 변화(Regime Change)와 국소적인 이상치를 효과적으로 구분하여 탐지할 수 있었습니다.
+특히, 데이터의 특정 안정 구간만을 '정상'으로 정의하고 학습시키는 전략을 통해, 데이터 전체에 걸친 패턴 변화(Regime Change)와 국소적인 이상치를 효과적으로 구분하여 탐지할 수 있었습니다. 시각화 결과, 모델이 학습하지 않은 초반부 구간은 전반적으로 높은 재구성 오차를 보이며 '이상 구간'으로 탐지되었고, 학습에 사용된 안정 구간 내에서도 급격한 전력 사용량 변화를 성공적으로 포착했습니다.
 
-**주요 인사이트:**
+### 주요 인사이트
 - **안정 구간 학습의 효과**: '정상' 상태에 대한 명확한 정의는 비지도 학습 기반 이상 탐지 모델의 성능을 크게 향상시킬 수 있습니다. 데이터의 모든 부분을 동등하게 보는 대신, 도메인 지식이나 사전 분석을 통해 기준이 되는 구간을 선택하는 것이 중요합니다.
 - 단일 변수 시계열 데이터에서도 CNN 오토인코더는 효과적으로 정상 패턴을 학습하고, 급격한 전력 사용량 변화 등을 이상치로 탐지할 수 있습니다.
 - Quantile 기반의 임계값 설정은 라벨이 없는 실제 데이터에서 통계적으로 안정적인 이상치 탐지 기준을 제공하는 유용한 방법입니다.
 - 실제 데이터는 예측치 못한 노이즈와 계절성, 추세 등 복합적인 패턴을 포함하고 있어, 모델이 이를 얼마나 잘 일반화하여 '정상'으로 학습하는지가 이상 탐지 성능의 관건이 됩니다.
 
-**한계 및 개선 방향:**
+### 한계 및 개선 방향
 - **정량적 평가의 어려움**: 실제 이상치 라벨이 없어 모델의 성능을 정량적으로 평가(e.g., F1-Score)하기 어렵습니다.
 - **단변량의 한계**: 현재 모델은 '전력 사용량' 외의 다른 정보(요일, 시간, 날씨 등)를 활용하지 못해, 복합적인 요인으로 발생하는 이상을 탐지하는 데 한계가 있습니다.
 - **임계값의 민감도**: Quantile 기반 임계값은 통계적으로 유용하지만, 데이터의 분포에 따라 탐지 민감도가 크게 달라질 수 있습니다. 실제 운영 환경에서는 여러 임계값을 테스트하며 최적의 균형점을 찾아야 합니다.
