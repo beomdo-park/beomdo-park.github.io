@@ -80,6 +80,10 @@ print("데이터 전처리 시작...")
 df['StartDate'] = pd.to_datetime(df['StartDate'])
 df = df.set_index('StartDate')
 
+# 시간순으로 정렬
+df.sort_index(inplace=True)
+print("데이터 시간순 정렬 완료.")
+
 # 'Value (kWh)' 컬럼만 선택
 # df.info() 결과에 따라 'Value (kWh)'를 사용합니다.
 value_col = 'Value (kWh)'
@@ -100,15 +104,15 @@ print(f"전체 데이터 크기: {df_value.shape}")
 
 ## 2. 데이터 전처리 및 윈도우 생성
 
-Week04에서와 동일하게 `StandardScaler`를 사용하여 데이터를 정규화하고, `sliding_window` 함수를 이용해 모델에 입력할 윈도우를 생성합니다.
+시계열 데이터에 포함된 추세(Trend)의 영향을 줄이고, 각 윈도우의 지역적 패턴에 집중하기 위해 전체 데이터를 한 번에 정규화하는 대신, 각 윈도우별로 독립적인 정규화를 수행합니다. 이 방법은 데이터의 전반적인 스케일 변화에 덜 민감한 모델을 만드는 데 도움이 됩니다.
 
-```{python}
+```python
 #| label: scaling-and-windowing
 #| eval: true
 
-# StandardScaler 적용
-scaler = StandardScaler()
-scaled_data = scaler.fit_transform(df_value[value_col].values.reshape(-1, 1)).flatten()
+print("윈도우 생성 및 정규화 시작...")
+# 원본 데이터에서 바로 윈도우 생성
+raw_data = df_value[value_col].values
 
 # 슬라이딩 윈도우 생성 함수
 def sliding_window(data, window_size, step_size=1):
@@ -117,8 +121,12 @@ def sliding_window(data, window_size, step_size=1):
 
 # 윈도우 생성 (윈도우 크기는 60분(1시간)으로 설정)
 window_size = 60
-all_windows = sliding_window(scaled_data, window_size)
-all_windows_torch = torch.from_numpy(all_windows[..., np.newaxis].transpose(0, 2, 1)).float()
+raw_windows = sliding_window(raw_data, window_size)
+
+# 윈도우별 정규화
+scaled_windows = np.array([StandardScaler().fit_transform(window.reshape(-1, 1)).flatten() for window in raw_windows])
+
+all_windows_torch = torch.from_numpy(scaled_windows[..., np.newaxis].transpose(0, 2, 1)).float()
 
 print(f"생성된 윈도우 데이터 shape: {all_windows_torch.shape}")
 ```
@@ -242,20 +250,23 @@ print(f"탐지된 이상치 포인트 수: {len(predicted_anomaly_points)}")
 #| label: final-visualization
 #| eval: true
 
+# 시각화를 위해 원본 데이터 사용
+original_data = df_value[value_col].values
+
 plt.figure(figsize=(15, 10))
 
 # 상단: 전체 데이터와 탐지 결과
 plt.subplot(2, 1, 1)
-plt.plot(scaled_data, label='정규화된 전력 사용량', alpha=0.8)
+plt.plot(original_data, label='원본 전력 사용량', alpha=0.8)
 
 if len(predicted_anomaly_points) > 0:
-    valid_indices = [i for i in predicted_anomaly_points if i < len(scaled_data)]
-    plt.scatter(valid_indices, scaled_data[valid_indices],
+    valid_indices = [i for i in predicted_anomaly_points if i < len(original_data)]
+    plt.scatter(valid_indices, original_data[valid_indices],
                 color='red', marker='x', s=100, linewidth=2, label='탐지된 이상치', zorder=5)
 
-plt.title('실제 전력 사용량 데이터 이상 탐지 결과', fontsize=16)
-plt.xlabel('시간 스텝 (분)')
-plt.ylabel('정규화된 사용량')
+plt.title('실제 전력 사용량 데이터 이상 탐지 결과 (윈도우별 정규화)', fontsize=16)
+plt.xlabel('시간 스텝')
+plt.ylabel('사용량 (kWh)')
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.6)
 
