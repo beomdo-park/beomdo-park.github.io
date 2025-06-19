@@ -1,23 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://beomdo-park.github.io/posts/ABC_week03_cnn_baseline/index.html</loc>
-    <lastmod>2025-06-08T13:46:40.619Z</lastmod>
+    <loc>https://beomdo-park.github.io/posts/ABC_week01_data analysis/index.html</loc>
+    <lastmod>2025-06-19T14:17:40.454Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/ABC_week04_model_optimization/index.html</loc>
+    <lastmod>2025-06-19T14:17:40.455Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/index.html</loc>
-    <lastmod>2025-06-08T13:46:40.616Z</lastmod>
+    <lastmod>2025-06-19T14:17:40.450Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/about.html</loc>
-    <lastmod>2025-06-08T13:46:40.600Z</lastmod>
+    <lastmod>2025-06-19T14:17:40.430Z</lastmod>
   </url>
   <url>
-    <loc>https://beomdo-park.github.io/posts/ABC_week01_data analysis/index.html</loc>
-    <lastmod>2025-06-08T13:46:40.619Z</lastmod>
+    <loc>https://beomdo-park.github.io/posts/ABC_week03_cnn_baseline/index.html</loc>
+    <lastmod>2025-06-19T14:17:40.455Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/ABC_week05_real_data_analysis/index.html</loc>
+    <lastmod>2025-06-19T14:17:40.455Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/posts/ABC_week02_time_series_anomaly/index.html</loc>
-    <lastmod>2025-06-08T13:46:40.619Z</lastmod>
+    <lastmod>2025-06-19T14:17:40.454Z</lastmod>
   </url>
 </urlset>

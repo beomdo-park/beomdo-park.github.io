@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -74,14 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-73f59b168be9ce609f464f53eef18749.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a3c50a17a2328b7dd90a9ec1dc649364.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -118,8 +118,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:description" content="PyTorch를 사용하여 1D CNN 오토인코더 기반 시계열 이상 탐지 베이스라인 모델을 구현합니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/posts/ABC_week03_cnn_baseline/index_files/figure-html/visualization-output-1.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="388">
-<meta property="og:image:width" content="835">
+<meta property="og:image:height" content="778">
+<meta property="og:image:width" content="1669">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -647,12 +647,12 @@ CNNAutoencoder(
 <span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a>            <span class="bu">print</span>(<span class="ss">f"Epoch [</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">], Loss: </span><span class="sc">{</span>epoch_loss<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
 <span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Using device: cpu
-Epoch [10/50], Loss: 0.484598
-Epoch [20/50], Loss: 0.248452
-Epoch [30/50], Loss: 0.216719
-Epoch [40/50], Loss: 0.208601
-Epoch [50/50], Loss: 0.206805
+<pre><code>Using device: cuda
+Epoch [10/50], Loss: 0.474734
+Epoch [20/50], Loss: 0.271595
+Epoch [30/50], Loss: 0.231434
+Epoch [40/50], Loss: 0.217045
+Epoch [50/50], Loss: 0.210623
 모델 학습 완료.</code></pre>
 </div>
 </div>
@@ -701,8 +701,8 @@ Epoch [50/50], Loss: 0.206805
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co"># anomalies_approx_original_indices = [idx + window_size // 2 for idx in anomalies_indices_in_windows]</span></span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): </span><span class="sc">{</span>anomalies_approx_original_indices<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>계산된 MAE 값 (처음 5개): [0.11586414 0.10525587 0.07775392 0.07573621 0.07772272]
-이상치 탐지 임계값 (MAE): 0.9602
+<pre><code>계산된 MAE 값 (처음 5개): [0.13974112 0.11385794 0.07825096 0.08110552 0.07896732]
+이상치 탐지 임계값 (MAE): 0.9588
 이상치로 탐지된 윈도우의 수: 8
 이상치로 탐지된 윈도우 인덱스: [17 18 19 20 47 48 49 50]
 원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): [17 18 19 20 47 48 49 50]</code></pre>
@@ -746,7 +746,7 @@ Epoch [50/50], Loss: 0.206805
 <div class="cell-output cell-output-display">
 <div id="visualization-1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/visualization-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/visualization-output-1.png" width="834" height="389" class="figure-img"></p>
 <figcaption>PyTorch CNN 오토인코더 기반 이상 탐지 결과</figcaption>
 </figure>
 </div>
@@ -754,7 +754,7 @@ Epoch [50/50], Loss: 0.206805
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/visualization-output-2.png" id="visualization-2" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/visualization-output-2.png" id="visualization-2" width="840" height="311" class="figure-img"></p>
 </figure>
 </div>
 </div>

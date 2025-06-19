@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.31">
+<meta name="generator" content="quarto-1.7.32">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -74,14 +74,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-73f59b168be9ce609f464f53eef18749.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dde8d7229bfee0f8bb5efd37f0f9ae1e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-a3c50a17a2328b7dd90a9ec1dc649364.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -118,8 +118,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:description" content="Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습">
 <meta property="og:image" content="https://beomdo-park.github.io/posts/ABC_week02_time_series_anomaly/index_files/figure-html/plot-sample-data-output-1.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="370">
-<meta property="og:image:width" content="826">
+<meta property="og:image:height" content="740">
+<meta property="og:image:width" content="1652">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -459,7 +459,7 @@ Tip
 <div class="cell-output cell-output-display">
 <div id="plot-sample-data" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/plot-sample-data-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/plot-sample-data-output-1.png" width="826" height="370" class="figure-img"></p>
 <figcaption>이상값이 포함된 시계열 데이터</figcaption>
 </figure>
 </div>
@@ -519,7 +519,7 @@ Tip
 <div class="cell-output cell-output-display">
 <div id="plot-anomaly-isof" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/plot-anomaly-isof-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/plot-anomaly-isof-output-1.png" width="826" height="370" class="figure-img"></p>
 <figcaption>Isolation Forest 기반 이상 탐지 결과</figcaption>
 </figure>
 </div>
@@ -546,7 +546,7 @@ Tip
 <div class="cell-output cell-output-display">
 <div id="plot-anomaly-dbscan" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/plot-anomaly-dbscan-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/plot-anomaly-dbscan-output-1.png" width="826" height="370" class="figure-img"></p>
 <figcaption>DBSCAN 기반 이상 탐지 결과</figcaption>
 </figure>
 </div>
@@ -571,7 +571,7 @@ Tip
 <div class="cell-output cell-output-display">
 <div id="plot-anomaly-ocsvm" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/plot-anomaly-ocsvm-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/plot-anomaly-ocsvm-output-1.png" width="826" height="370" class="figure-img"></p>
 <figcaption>One-Class SVM 기반 이상 탐지 결과</figcaption>
 </figure>
 </div>
@@ -594,7 +594,7 @@ Tip
 <div class="cell-output cell-output-display">
 <div id="plot-anomaly-ocsvm-tuned" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/plot-anomaly-ocsvm-tuned-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/plot-anomaly-ocsvm-tuned-output-1.png" width="826" height="370" class="figure-img"></p>
 <figcaption>튜닝된 One-Class SVM 이상 탐지 결과</figcaption>
 </figure>
 </div>
