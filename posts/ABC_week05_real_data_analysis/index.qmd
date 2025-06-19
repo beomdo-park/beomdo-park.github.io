@@ -1,0 +1,281 @@
+---
+title: "[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지"
+description: "지난주에 개선한 CNN 오토인코더 모델을 실제 캐글의 주택 전력 사용량 데이터에 적용하여, 현실 세계의 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다."
+date: "2025-06-21"
+author: "Beomdo Park"
+categories: ["ABC프로젝트멘토링", "실전 데이터 분석", "시계열", "이상 탐지", "PyTorch"]
+page-layout: full
+freeze: false
+---
+
+> 안녕하세요, ABC 프로젝트 멘토링 8기 다섯 번째 기술노트입니다. 지난 4주 동안 시계열 이상 탐지를 위한 모델을 만들고 개선하는 과정을 거쳤습니다. 이번 주에는 지금까지 만든 모델을 실제 세계의 데이터, 구체적으로 캐글의 '주택 전력 사용량' 데이터셋에 적용하여 그 실효성을 검증하고, 현실 데이터에서 마주할 수 있는 문제들을 어떻게 해결하는지 탐구해 보겠습니다.
+
+## 1. 데이터셋 소개 및 탐색
+
+이번 주에 사용할 데이터는 캐글에 공개된 **'Residential Power Usage 3-Years Data'** 입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.
+
+먼저, GitHub에 공개된 데이터를 Pandas를 이용해 직접 불러와 구조를 살펴보겠습니다.
+
+```{python}
+#| label: setup-and-load
+#| eval: true
+import pandas as pd
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import TensorDataset, DataLoader
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+# matplotlib 한글 폰트 설정 (Week04 내용 재활용)
+import os
+font_setup_script_path = "../../scripts/matplotlib_font_setup.py"
+if os.path.exists(font_setup_script_path):
+    exec(open(font_setup_script_path, encoding='utf-8').read())
+else:
+    plt.rcParams['axes.unicode_minus'] = False
+
+
+# GitHub Raw URL을 통해 데이터 불러오기
+url = 'https://raw.githubusercontent.com/beomdo-park/ml-dl-by-dataset/main/datasets/power_usage_2016_to_2020.csv'
+
+print("데이터 로딩 시작...")
+df = pd.read_csv(url)
+print("데이터 로딩 완료.")
+
+df.info()
+```
+
+데이터는 'StartDate', 'Value', 'units' 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 'StartDate'를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, 'Value' 컬럼만 사용하겠습니다. 데이터의 양이 매우 크므로, 실험을 위해 2018년 1월 한 달 치 데이터만 샘플링하여 사용하겠습니다.
+
+```{python}
+#| label: data-preprocessing
+#| eval: true
+
+print("데이터 전처리 시작...")
+# 'StartDate'를 datetime으로 변환하고 인덱스로 설정
+df['StartDate'] = pd.to_datetime(df['StartDate'])
+df = df.set_index('StartDate')
+
+# 'Value' 컬럼만 선택
+df_value = df[['Value']].copy()
+
+# 2018년 1월 데이터만 선택
+df_sample = df_value['2018-01-01':'2018-01-31']
+
+# 데이터 시각화
+plt.figure(figsize=(15, 6))
+plt.plot(df_sample.index, df_sample['Value'], label='전력 사용량 (2018년 1월)')
+plt.title('시간에 따른 전력 사용량')
+plt.xlabel('날짜')
+plt.ylabel('사용량 (Wh)')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+print(f"샘플 데이터 크기: {df_sample.shape}")
+```
+
+## 2. 데이터 전처리 및 윈도우 생성
+
+Week04에서와 동일하게 `StandardScaler`를 사용하여 데이터를 정규화하고, `sliding_window` 함수를 이용해 모델에 입력할 윈도우를 생성합니다.
+
+```{python}
+#| label: scaling-and-windowing
+#| eval: true
+
+# StandardScaler 적용
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df_sample['Value'].values.reshape(-1, 1)).flatten()
+
+# 슬라이딩 윈도우 생성 함수
+def sliding_window(data, window_size, step_size=1):
+    n_windows = (len(data) - window_size) // step_size + 1
+    return np.array([data[i:i+window_size] for i in range(0, n_windows * step_size, step_size)])
+
+# 윈도우 생성 (윈도우 크기는 60분(1시간)으로 설정)
+window_size = 60
+all_windows = sliding_window(scaled_data, window_size)
+all_windows_torch = torch.from_numpy(all_windows[..., np.newaxis].transpose(0, 2, 1)).float()
+
+print(f"생성된 윈도우 데이터 shape: {all_windows_torch.shape}")
+```
+
+## 3. Week04 모델 재활용 및 학습
+
+지난주에 완성한 `CNNAutoencoderWithDropout` 모델을 그대로 가져와 실제 데이터로 학습시킵니다. 실제 데이터에는 명확한 '정상'과 '이상' 라벨이 없으므로, **대부분의 데이터가 정상일 것이라는 가정 하에 전체 데이터를 학습**시킵니다.
+
+```{python}
+#| label: model-definition
+#| eval: true
+
+class CNNAutoencoderWithDropout(nn.Module):
+    def __init__(self, input_shape, dropout_rate=0.2):
+        super(CNNAutoencoderWithDropout, self).__init__()
+        # Encoder
+        self.encoder_conv1 = nn.Conv1d(in_channels=input_shape[1], out_channels=32, kernel_size=7, padding=3)
+        self.encoder_relu1 = nn.ReLU()
+        self.encoder_drop1 = nn.Dropout(dropout_rate)
+        self.encoder_pool1 = nn.MaxPool1d(kernel_size=2, stride=2)
+        self.encoder_conv2 = nn.Conv1d(in_channels=32, out_channels=16, kernel_size=7, padding=3)
+        self.encoder_relu2 = nn.ReLU()
+        self.encoder_drop2 = nn.Dropout(dropout_rate)
+        self.encoder_pool2 = nn.MaxPool1d(kernel_size=2, stride=2)
+
+        # Decoder
+        self.decoder_conv_t1 = nn.ConvTranspose1d(in_channels=16, out_channels=16, kernel_size=2, stride=2)
+        self.decoder_relu1 = nn.ReLU()
+        self.decoder_drop3 = nn.Dropout(dropout_rate)
+        self.decoder_conv_t2 = nn.ConvTranspose1d(in_channels=16, out_channels=32, kernel_size=2, stride=2)
+        self.decoder_relu2 = nn.ReLU()
+        self.decoder_drop4 = nn.Dropout(dropout_rate)
+        self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_shape[1], kernel_size=7, padding=3)
+
+    def forward(self, x):
+        # Encoder
+        x = self.encoder_conv1(x)
+        x = self.encoder_relu1(x)
+        x = self.encoder_drop1(x)
+        x = self.encoder_pool1(x)
+        x = self.encoder_conv2(x)
+        x = self.encoder_relu2(x)
+        x = self.encoder_drop2(x)
+        encoded = self.encoder_pool2(x)
+        
+        # Decoder
+        x = self.decoder_conv_t1(encoded)
+        x = self.decoder_relu1(x)
+        x = self.decoder_drop3(x)
+        x = self.decoder_conv_t2(x)
+        x = self.decoder_relu2(x)
+        x = self.decoder_drop4(x)
+        x = self.decoder_conv_final(x)
+        return x
+
+# 모델 정의 및 학습
+model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=0.2)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion = nn.MSELoss()
+
+dataset = TensorDataset(all_windows_torch)
+data_loader = DataLoader(dataset, batch_size=64, shuffle=True)
+
+print("모델 학습 시작...")
+epochs = 20 # 실제 데이터는 양이 많으므로 epoch 수를 줄여서 진행
+for epoch in range(epochs):
+    model.train()
+    for data in data_loader:
+        inputs = data[0]
+        optimizer.zero_grad()
+        outputs = model(inputs)
+        loss = criterion(outputs, inputs)
+        loss.backward()
+        optimizer.step()
+    if (epoch + 1) % 5 == 0:
+        print(f"Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}")
+print("모델 학습 완료.")
+```
+
+## 4. 모델 평가 및 이상치 탐지
+
+학습된 모델을 사용하여 전체 데이터의 재구성 오차를 계산하고, Week04에서와 같이 Quantile 방식을 사용하여 임계값을 설정합니다.
+
+```{python}
+#| label: evaluation-and-detection
+#| eval: true
+
+# 재구성 오차 계산
+model.eval()
+reconstruction_error = []
+with torch.no_grad():
+    reconstructed = model(all_windows_torch)
+    error = torch.mean((all_windows_torch - reconstructed)**2, dim=(1, 2))
+    reconstruction_error = error.numpy()
+
+# Quantile 기반 임계값 설정
+quantile_level = 0.995
+threshold = np.quantile(reconstruction_error, quantile_level)
+print(f"임계값 (Threshold) 설정 완료 ({quantile_level*100:.1f}% Quantile): {threshold:.6f}")
+
+# 이상치 탐지
+anomaly_window_indices = np.where(reconstruction_error > threshold)[0]
+
+# 윈도우 내 최대 오차 지점 탐색
+pointwise_error = ((all_windows_torch - reconstructed)**2).squeeze().numpy()
+predicted_anomaly_points = []
+for window_idx in anomaly_window_indices:
+    max_error_idx_in_window = np.argmax(pointwise_error[window_idx])
+    absolute_idx = window_idx + max_error_idx_in_window
+    predicted_anomaly_points.append(absolute_idx)
+
+predicted_anomaly_points = sorted(list(set(predicted_anomaly_points)))
+print(f"탐지된 이상치 포인트 수: {len(predicted_anomaly_points)}")
+```
+
+### 탐지 결과 시각화
+
+이제 탐지된 이상치들을 원본 데이터와 함께 시각화하여 어떤 패턴들이 '이상'으로 간주되었는지 확인합니다.
+
+```{python}
+#| label: final-visualization
+#| eval: true
+
+plt.figure(figsize=(15, 10))
+
+# 상단: 전체 데이터와 탐지 결과
+plt.subplot(2, 1, 1)
+plt.plot(scaled_data, label='정규화된 전력 사용량', alpha=0.8)
+
+if len(predicted_anomaly_points) > 0:
+    valid_indices = [i for i in predicted_anomaly_points if i < len(scaled_data)]
+    plt.scatter(valid_indices, scaled_data[valid_indices],
+                color='red', marker='x', s=100, linewidth=2, label='탐지된 이상치', zorder=5)
+
+plt.title('실제 전력 사용량 데이터 이상 탐지 결과', fontsize=16)
+plt.xlabel('시간 스텝 (분)')
+plt.ylabel('정규화된 사용량')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+
+# 하단: 재구성 오차와 임계값
+plt.subplot(2, 1, 2)
+plt.plot(reconstruction_error, label='윈도우별 재구성 오차', color='blue')
+plt.axhline(y=threshold, color='r', linestyle='--', label=f'임계값 ({threshold:.4f})')
+if len(anomaly_window_indices) > 0:
+    plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], c='red', s=100, label='이상치로 탐지된 윈도우', zorder=5)
+
+plt.title('윈도우별 재구성 오차', fontsize=16)
+plt.xlabel('윈도우 인덱스')
+plt.ylabel('재구성 오차 (MSE)')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
+
+plt.tight_layout()
+plt.show()
+```
+
+## 5. 모델 고도화 시도 (논의)
+
+현재 모델은 오직 '전력 사용량'이라는 단일 변수만 사용했습니다. 더 정교한 탐지를 위해 다음과 같은 Feature Engineering을 시도해 볼 수 있습니다.
+
+- **시간 관련 특성 추가**: `hour`, `day_of_week`, `is_weekend` 등 시간 정보를 추가하여 주기적인 패턴을 모델이 학습하도록 도울 수 있습니다.
+- **이동 평균/표준편차**: 특정 기간의 이동 평균이나 표준편차를 계산하여 데이터의 추세나 변동성 정보를 추가할 수 있습니다.
+
+이러한 추가 특성들을 활용하기 위해서는 현재의 CNN 모델보다 LSTM이나 Transformer 기반의 다변량(Multi-variate) 시계열 모델을 사용하는 것이 더 효과적일 수 있습니다.
+
+## 6. 결론 및 고찰
+
+이번 주에는 Week04에서 구축한 CNN 오토인코더 모델을 실제 주택 전력 사용량 데이터에 성공적으로 적용해 보았습니다. 가상의 데이터가 아닌 실제 데이터에 적용함으로써, 모델이 예측 불가능하고 불규칙한 패턴 속에서도 의미 있는 이상 신호를 포착할 수 있음을 확인했습니다.
+
+**주요 인사이트:**
+- 단일 변수 시계열 데이터에서도 CNN 오토인코더는 효과적으로 정상 패턴을 학습하고, 급격한 전력 사용량 변화 등을 이상치로 탐지할 수 있습니다.
+- Quantile 기반의 임계값 설정은 라벨이 없는 실제 데이터에서 통계적으로 안정적인 이상치 탐지 기준을 제공하는 유용한 방법입니다.
+- 실제 데이터는 예측치 못한 노이즈와 계절성, 추세 등 복합적인 패턴을 포함하고 있어, 모델이 이를 얼마나 잘 일반화하여 '정상'으로 학습하는지가 이상 탐지 성능의 관건이 됩니다.
+
+**한계 및 개선 방향:**
+- **정량적 평가의 어려움**: 실제 이상치 라벨이 없어 모델의 성능을 정량적으로 평가(e.g., F1-Score)하기 어렵습니다.
+- **단변량의 한계**: 현재 모델은 '전력 사용량' 외의 다른 정보(요일, 시간, 날씨 등)를 활용하지 못해, 복합적인 요인으로 발생하는 이상을 탐지하는 데 한계가 있습니다.
+- **임계값의 민감도**: Quantile 기반 임계값은 통계적으로 유용하지만, 데이터의 분포에 따라 탐지 민감도가 크게 달라질 수 있습니다. 실제 운영 환경에서는 여러 임계값을 테스트하며 최적의 균형점을 찾아야 합니다.
+
+향후에는 도메인 지식을 활용하여 이상치에 대한 명확한 기준을 정의하고, 다변량 시계열 모델을 도입하여 더 풍부한 정보를 바탕으로 이상 탐지 성능을 고도화하는 연구를 진행해 볼 수 있을 것입니다.
