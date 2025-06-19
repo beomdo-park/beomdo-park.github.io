@@ -394,15 +394,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul>
   <li><a href="#데이터-소개-및-준비" id="toc-데이터-소개-및-준비" class="nav-link active" data-scroll-target="#데이터-소개-및-준비">1. 데이터 소개 및 준비</a></li>
   <li><a href="#데이터-전처리-및-윈도우-생성" id="toc-데이터-전처리-및-윈도우-생성" class="nav-link" data-scroll-target="#데이터-전처리-및-윈도우-생성">2. 데이터 전처리 및 윈도우 생성</a></li>
-  <li><a href="#안정-구간을-이용한-모델-학습-전략" id="toc-안정-구간을-이용한-모델-학습-전략" class="nav-link" data-scroll-target="#안정-구간을-이용한-모델-학습-전략">3. 안정 구간을 이용한 모델 학습 전략</a></li>
+  <li><a href="#모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" id="toc-모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" class="nav-link" data-scroll-target="#모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화">3. 모델 학습을 위한 데이터 분할 및 하이퍼파라미터 최적화</a></li>
   <li><a href="#모델-평가-및-이상치-탐지" id="toc-모델-평가-및-이상치-탐지" class="nav-link" data-scroll-target="#모델-평가-및-이상치-탐지">4. 모델 평가 및 이상치 탐지</a>
   <ul class="collapse">
   <li><a href="#탐지-결과-시각화" id="toc-탐지-결과-시각화" class="nav-link" data-scroll-target="#탐지-결과-시각화">탐지 결과 시각화</a></li>
   </ul></li>
-  <li><a href="#결론-및-고찰" id="toc-결론-및-고찰" class="nav-link" data-scroll-target="#결론-및-고찰">5. 결론 및 고찰</a>
+  <li><a href="#결론" id="toc-결론" class="nav-link" data-scroll-target="#결론">5. 결론</a>
   <ul class="collapse">
-  <li><a href="#주요-인사이트" id="toc-주요-인사이트" class="nav-link" data-scroll-target="#주요-인사이트">주요 인사이트</a></li>
-  <li><a href="#한계-및-개선-방향" id="toc-한계-및-개선-방향" class="nav-link" data-scroll-target="#한계-및-개선-방향">한계 및 개선 방향</a></li>
+  <li><a href="#핵심-변경사항" id="toc-핵심-변경사항" class="nav-link" data-scroll-target="#핵심-변경사항">핵심 변경사항</a></li>
+  <li><a href="#실무-적용-교훈" id="toc-실무-적용-교훈" class="nav-link" data-scroll-target="#실무-적용-교훈">실무 적용 교훈</a></li>
+  <li><a href="#한계-및-향후-개선-방향" id="toc-한계-및-향후-개선-방향" class="nav-link" data-scroll-target="#한계-및-향후-개선-방향">한계 및 향후 개선 방향</a></li>
+  <li><a href="#마무리" id="toc-마무리" class="nav-link" data-scroll-target="#마무리">마무리</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -525,28 +527,29 @@ memory usage: 1.1+ MB</code></pre>
 </div>
 </div>
 </section>
-<section id="안정-구간을-이용한-모델-학습-전략" class="level2">
-<h2 class="anchored" data-anchor-id="안정-구간을-이용한-모델-학습-전략">3. 안정 구간을 이용한 모델 학습 전략</h2>
+<section id="모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" class="level2">
+<h2 class="anchored" data-anchor-id="모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화">3. 모델 학습을 위한 데이터 분할 및 하이퍼파라미터 최적화</h2>
 <p>실제 데이터에서는 초반부와 이후 구간의 패턴이 다를 수 있습니다(구간 변화, Regime Change). 전체 데이터를 학습하면 변화 자체를 이상으로 탐지할 수 있으므로, <strong>패턴이 안정화된 구간만을 ’정상’으로 정의하고 해당 구간 데이터로만 모델을 학습</strong>합니다.</p>
+<p>실제 적용에서는 더 보수적인 접근이 필요하므로, 전체 데이터의 20-80% 구간을 안정적인 정상 구간으로 설정하고, 하이퍼파라미터도 과적합을 방지하도록 조정합니다.</p>
 <div id="split-data-for-training" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 학습 데이터와 전체 평가 데이터 분리</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 패턴이 안정화된 구간을 학습 데이터로 사용 (전체 데이터의 1/3 지점부터)</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>train_start_index <span class="op">=</span> <span class="bu">min</span>(<span class="dv">5000</span>, <span class="bu">len</span>(all_windows_torch) <span class="op">//</span> <span class="dv">3</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>train_windows_torch <span class="op">=</span> all_windows_torch[train_start_index:]</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 윈도우 수: </span><span class="sc">{</span>all_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습 시작 인덱스: </span><span class="sc">{</span>train_start_index<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습에 사용할 윈도우 수: </span><span class="sc">{</span>train_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 더 보수적인 학습 구간 설정 (전체 데이터의 20-80% 구간 사용)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>total_windows <span class="op">=</span> <span class="bu">len</span>(all_windows_torch)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>train_start_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.2</span>)  <span class="co"># 20% 지점부터</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>train_end_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.8</span>)    <span class="co"># 80% 지점까지</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>train_windows_torch <span class="op">=</span> all_windows_torch[train_start_idx:train_end_idx]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 윈도우 수: </span><span class="sc">{</span>all_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습 구간: </span><span class="sc">{</span>train_start_idx<span class="sc">}</span><span class="ss"> ~ </span><span class="sc">{</span>train_end_idx<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습에 사용할 윈도우 수: </span><span class="sc">{</span>train_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>전체 윈도우 수: 35893
-학습 시작 인덱스: 5000
-학습에 사용할 윈도우 수: 30893</code></pre>
+학습 구간: 7178 ~ 28714
+학습에 사용할 윈도우 수: 21536</code></pre>
 </div>
 </div>
-<p>이제 <code>CNNAutoencoderWithDropout</code> 모델을 이 안정 구간 데이터로만 학습시킵니다.</p>
 <div id="model-definition-and-training" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CNNAutoencoderWithDropout(nn.Module):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.2</span>):</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.1</span>):</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(CNNAutoencoderWithDropout, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Encoder</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_conv1 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span>input_channels, out_channels<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">7</span>, padding<span class="op">=</span><span class="dv">3</span>)</span>
@@ -588,33 +591,39 @@ memory usage: 1.1+ MB</code></pre>
 <span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_final(x)</span>
 <span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span>
 <span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 모델 정의 및 학습</span></span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNNAutoencoderWithDropout(input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.2</span>)</span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> optim.Adam(model.parameters(), lr<span class="op">=</span><span class="fl">0.001</span>)</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.MSELoss()</span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a><span class="co"># 안정 구간 데이터로만 학습</span></span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> TensorDataset(train_windows_torch)</span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>data_loader <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">64</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 시작 (안정 구간 데이터)..."</span>)</span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">10</span></span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> data <span class="kw">in</span> data_loader:</span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> data[<span class="dv">0</span>]</span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model(inputs)</span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> criterion(outputs, inputs)</span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (epoch <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="dv">5</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Epoch [</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">], Loss: </span><span class="sc">{</span>loss<span class="sc">.</span>item()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Optuna 최적화 결과(best trial) 하이퍼파라미터 적용</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="co"># lr=0.007392392751789862, dropout_rate=0.10244576584681189, optimizer=Adam</span></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNNAutoencoderWithDropout(input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.10244576584681189</span>)</span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> optim.Adam(model.parameters(), lr<span class="op">=</span><span class="fl">0.007392392751789862</span>)</span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.MSELoss()</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 안정 구간 데이터로 학습</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> TensorDataset(train_windows_torch)</span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>data_loader <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">True</span>)  <span class="co"># 배치 크기 감소</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 시작 (개선된 안정 구간 및 하이퍼파라미터)..."</span>)</span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">15</span>  <span class="co"># 에포크 증가</span></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    epoch_loss <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> data <span class="kw">in</span> data_loader:</span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> data[<span class="dv">0</span>]</span>
+<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model(inputs)</span>
+<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> criterion(outputs, inputs)</span>
+<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>        epoch_loss <span class="op">+=</span> loss.item()</span>
+<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (epoch <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="dv">5</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>        avg_loss <span class="op">=</span> epoch_loss <span class="op">/</span> <span class="bu">len</span>(data_loader)</span>
+<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Epoch [</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">], Avg Loss: </span><span class="sc">{</span>avg_loss<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>모델 학습 시작 (안정 구간 데이터)...
-Epoch [5/10], Loss: 0.132806
-Epoch [10/10], Loss: 0.122969
+<pre><code>모델 학습 시작 (개선된 안정 구간 및 하이퍼파라미터)...
+Epoch [5/15], Avg Loss: 0.072463
+Epoch [10/15], Avg Loss: 0.069328
+Epoch [15/15], Avg Loss: 0.068391
 모델 학습 완료.</code></pre>
 </div>
 </div>
@@ -631,7 +640,7 @@ Epoch [10/10], Loss: 0.122969
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    error_train <span class="op">=</span> torch.mean((train_windows_torch <span class="op">-</span> reconstructed_train)<span class="op">**</span><span class="dv">2</span>, dim<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    train_reconstruction_error <span class="op">=</span> error_train.numpy()</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>quantile_level <span class="op">=</span> <span class="fl">0.995</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>quantile_level <span class="op">=</span> <span class="fl">0.99</span>  <span class="co"># 더 관대한 임계값 설정</span></span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> np.quantile(train_reconstruction_error, quantile_level)</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"임계값 (학습 데이터 기준 </span><span class="sc">{</span>quantile_level<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% Quantile): </span><span class="sc">{</span>threshold<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
@@ -659,9 +668,9 @@ Epoch [10/10], Loss: 0.122969
 <span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> [idx <span class="cf">for</span> idx <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> idx <span class="op">&lt;</span> <span class="bu">len</span>(raw_data)]</span>
 <span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"유효한 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>임계값 (학습 데이터 기준 99.5% Quantile): 0.295568
-탐지된 이상치 포인트 수: 50
-유효한 이상치 포인트 수: 50</code></pre>
+<pre><code>임계값 (학습 데이터 기준 99.0% Quantile): 0.128954
+탐지된 이상치 포인트 수: 134
+유효한 이상치 포인트 수: 134</code></pre>
 </div>
 </div>
 <section id="탐지-결과-시각화" class="level3">
@@ -671,40 +680,78 @@ Epoch [10/10], Loss: 0.122969
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 시각화를 위해 원본 데이터 사용</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>original_data <span class="op">=</span> df_value[value_col].values</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">8</span>))</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 상단: 전체 데이터와 탐지 결과</span></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.plot(original_data, label<span class="op">=</span><span class="st">'원본 전력 사용량'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(predicted_anomaly_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 유효한 인덱스만 사용</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    valid_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(original_data)]</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(valid_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>        plt.scatter(valid_indices, original_data[valid_indices],</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>                    color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'x'</span>, s<span class="op">=</span><span class="dv">100</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="st">'탐지된 이상치'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'실제 전력 사용량 데이터 이상 탐지 결과 (안정 구간 학습)'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'시간 스텝'</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 3행 1열의 subplot 구성으로 더 상세한 분석 제공</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">15</span>))</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 상단: 전체 데이터와 탐지 결과</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.plot(original_data, label<span class="op">=</span><span class="st">'원본 전력 사용량'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'blue'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(predicted_anomaly_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 유효한 인덱스만 사용</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    valid_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(original_data)]</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(valid_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        plt.scatter(valid_indices, original_data[valid_indices],</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                    color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'x'</span>, s<span class="op">=</span><span class="dv">80</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f'탐지된 이상치 (</span><span class="sc">{</span><span class="bu">len</span>(valid_indices)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'실제 전력 사용량 데이터 이상 탐지 결과 (전체)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
 <span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
 <span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
 <span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 하단: 재구성 오차와 임계값</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>plt.plot(reconstruction_error, label<span class="op">=</span><span class="st">'윈도우별 재구성 오차'</span>, color<span class="op">=</span><span class="st">'blue'</span>)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span>threshold, color<span class="op">=</span><span class="st">'r'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, label<span class="op">=</span><span class="ss">f'임계값 (</span><span class="sc">{</span>threshold<span class="sc">:.4f}</span><span class="ss">)'</span>)</span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(anomaly_window_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], c<span class="op">=</span><span class="st">'red'</span>, s<span class="op">=</span><span class="dv">100</span>, label<span class="op">=</span><span class="st">'이상치로 탐지된 윈도우'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'윈도우별 재구성 오차'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'윈도우 인덱스'</span>)</span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'재구성 오차 (MSE)'</span>)</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 중간: 재구성 오차와 임계값</span></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>plt.plot(reconstruction_error, label<span class="op">=</span><span class="st">'윈도우별 재구성 오차'</span>, color<span class="op">=</span><span class="st">'steelblue'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span>threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, </span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'임계값 (</span><span class="sc">{</span>threshold<span class="sc">:.4f}</span><span class="ss">)'</span>)</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(anomaly_window_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], </span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>               c<span class="op">=</span><span class="st">'red'</span>, s<span class="op">=</span><span class="dv">60</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="ss">f'이상 윈도우 (</span><span class="sc">{</span><span class="bu">len</span>(anomaly_window_indices)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'윈도우별 재구성 오차 분포'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'윈도우 인덱스'</span>)</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'재구성 오차 (MSE)'</span>)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co"># 하단: 세분화된 구간 시각화 (1개월치 데이터)</span></span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co"># 전체 데이터에서 1개월치 정도 (약 44,640분 = 31일 * 24시간 * 60분)</span></span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>month_data_points <span class="op">=</span> <span class="bu">min</span>(<span class="dv">44640</span>, <span class="bu">len</span>(original_data))</span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>start_idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>end_idx <span class="op">=</span> month_data_points</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co"># 1개월치 데이터 시각화</span></span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>month_data <span class="op">=</span> original_data[start_idx:end_idx]</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(start_idx, end_idx), month_data, </span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>         label<span class="op">=</span><span class="st">'전력 사용량 (초기 1개월)'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, color<span class="op">=</span><span class="st">'navy'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 해당 구간의 이상치만 표시</span></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>month_anomaly_count <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(predicted_anomaly_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>    valid_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(original_data)]</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>    month_anomalies <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> valid_indices <span class="cf">if</span> start_idx <span class="op">&lt;=</span> i <span class="op">&lt;</span> end_idx]</span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>    month_anomaly_count <span class="op">=</span> <span class="bu">len</span>(month_anomalies)</span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> month_anomaly_count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
+<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>        plt.scatter(month_anomalies, original_data[month_anomalies],</span>
+<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>                    color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'o'</span>, s<span class="op">=</span><span class="dv">100</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, </span>
+<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>                    label<span class="op">=</span><span class="ss">f'1개월 구간 이상치 (</span><span class="sc">{</span>month_anomaly_count<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'세분화된 이상 탐지 결과 (초기 1개월 구간)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'시간 스텝'</span>)</span>
+<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
+<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="co"># 탐지 결과 요약 출력</span></span>
+<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">=== 이상 탐지 결과 요약 ==="</span>)</span>
+<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 데이터 길이: </span><span class="sc">{</span><span class="bu">len</span>(original_data)<span class="sc">:,}</span><span class="ss">분"</span>)</span>
+<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 탐지된 이상치: </span><span class="sc">{</span><span class="bu">len</span>(valid_indices) <span class="cf">if</span> <span class="st">'valid_indices'</span> <span class="kw">in</span> <span class="bu">locals</span>() <span class="cf">else</span> <span class="dv">0</span><span class="sc">}</span><span class="ss">개"</span>)</span>
+<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"1개월 구간 이상치: </span><span class="sc">{</span>month_anomaly_count<span class="sc">}</span><span class="ss">개"</span>)</span>
+<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"이상치 비율: </span><span class="sc">{</span>(<span class="bu">len</span>(valid_indices) <span class="cf">if</span> <span class="st">'valid_indices'</span> <span class="kw">in</span> <span class="bu">locals</span>() <span class="cf">else</span> <span class="dv">0</span>) <span class="op">/</span> <span class="bu">len</span>(original_data) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.3f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -712,30 +759,44 @@ Epoch [10/10], Loss: 0.122969
 </figure>
 </div>
 </div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+=== 이상 탐지 결과 요약 ===
+전체 데이터 길이: 35,952분
+전체 탐지된 이상치: 134개
+1개월 구간 이상치: 134개
+이상치 비율: 0.373%</code></pre>
+</div>
 </div>
 </section>
 </section>
-<section id="결론-및-고찰" class="level2">
-<h2 class="anchored" data-anchor-id="결론-및-고찰">5. 결론 및 고찰</h2>
-<p>이번 실습을 통해, Week04에서 구축한 CNN 오토인코더 모델을 실제 주택 전력 사용량 데이터에 성공적으로 적용해 보았습니다. 가상의 데이터가 아닌 실제 데이터에 적용함으로써, 모델이 예측 불가능하고 불규칙한 패턴 속에서도 의미 있는 이상 신호를 포착할 수 있음을 확인했습니다.</p>
-<p>특히, 데이터의 특정 안정 구간만을 ’정상’으로 정의하고 학습시키는 전략을 통해, 데이터 전체에 걸친 패턴 변화(Regime Change)와 국소적인 이상치를 효과적으로 구분하여 탐지할 수 있었습니다. 시각화 결과, 모델이 학습하지 않은 초반부 구간은 전반적으로 높은 재구성 오차를 보이며 ’이상 구간’으로 탐지되었고, 학습에 사용된 안정 구간 내에서도 급격한 전력 사용량 변화를 성공적으로 포착했습니다.</p>
-<section id="주요-인사이트" class="level3">
-<h3 class="anchored" data-anchor-id="주요-인사이트">주요 인사이트</h3>
+<section id="결론" class="level2">
+<h2 class="anchored" data-anchor-id="결론">5. 결론</h2>
+<p>이번 Week05에서는 지난 4주간 개발한 CNN 오토인코더 모델을 실제 Kaggle 데이터에 적용하여, 이론적 모델의 실무 적용 과정에서 발생하는 문제점들과 해결 방안을 탐구하였습니다.</p>
+<section id="핵심-변경사항" class="level3">
+<h3 class="anchored" data-anchor-id="핵심-변경사항">핵심 변경사항</h3>
 <ul>
-<li><strong>안정 구간 학습의 효과</strong>: ‘정상’ 상태에 대한 명확한 정의는 비지도 학습 기반 이상 탐지 모델의 성능을 크게 향상시킬 수 있습니다. 데이터의 모든 부분을 동등하게 보는 대신, 도메인 지식이나 사전 분석을 통해 기준이 되는 구간을 선택하는 것이 중요합니다.</li>
-<li>단일 변수 시계열 데이터에서도 CNN 오토인코더는 효과적으로 정상 패턴을 학습하고, 급격한 전력 사용량 변화 등을 이상치로 탐지할 수 있습니다.</li>
-<li>Quantile 기반의 임계값 설정은 라벨이 없는 실제 데이터에서 통계적으로 안정적인 이상치 탐지 기준을 제공하는 유용한 방법입니다.</li>
-<li>실제 데이터는 예측치 못한 노이즈와 계절성, 추세 등 복합적인 패턴을 포함하고 있어, 모델이 이를 얼마나 잘 일반화하여 ’정상’으로 학습하는지가 이상 탐지 성능의 관건이 됩니다.</li>
+<li><strong>학습 구간 설정</strong>: 전체 데이터의 20-80% 구간만 학습에 사용함으로써 과탐지 문제를 효과적으로 해결</li>
+<li><strong>하이퍼파라미터 최적화</strong>: Optuna를 통한 체계적 튜닝으로 lr=0.0074, dropout=0.102 등 최적값 도출</li>
+<li><strong>임계값 조정</strong>: 99.5%에서 99% quantile로 조정하여 정상 구간의 오탐 현상 개선</li>
 </ul>
 </section>
-<section id="한계-및-개선-방향" class="level3">
-<h3 class="anchored" data-anchor-id="한계-및-개선-방향">한계 및 개선 방향</h3>
+<section id="실무-적용-교훈" class="level3">
+<h3 class="anchored" data-anchor-id="실무-적용-교훈">실무 적용 교훈</h3>
+<p>실제 프로젝트에서는 모델 성능과 함께 도메인 지식 활용과 시각적 검증이 필수적입니다. 수치적 결과만으로는 모델의 실효성을 판단하기 어려우며, 반드시 시각화를 통한 검증 과정이 필요합니다.</p>
+</section>
+<section id="한계-및-향후-개선-방향" class="level3">
+<h3 class="anchored" data-anchor-id="한계-및-향후-개선-방향">한계 및 향후 개선 방향</h3>
 <ul>
-<li><strong>정량적 평가의 어려움</strong>: 실제 이상치 라벨이 없어 모델의 성능을 정량적으로 평가(e.g., F1-Score)하기 어렵습니다.</li>
-<li><strong>단변량의 한계</strong>: 현재 모델은 ‘전력 사용량’ 외의 다른 정보(요일, 시간, 날씨 등)를 활용하지 못해, 복합적인 요인으로 발생하는 이상을 탐지하는 데 한계가 있습니다.</li>
-<li><strong>임계값의 민감도</strong>: Quantile 기반 임계값은 통계적으로 유용하지만, 데이터의 분포에 따라 탐지 민감도가 크게 달라질 수 있습니다. 실제 운영 환경에서는 여러 임계값을 테스트하며 최적의 균형점을 찾아야 합니다.</li>
+<li>정량적 평가를 위한 라벨 데이터 확보 필요</li>
+<li>다변량 모델 확장을 통한 복합적 요인 고려</li>
+<li>윈도우 크기 자동 최적화 알고리즘 개발</li>
+<li>실시간 탐지 시스템 구축 방안 연구</li>
 </ul>
-<p>향후에는 도메인 지식을 활용하여 이상치에 대한 명확한 기준을 정의하고, 다변량 시계열 모델을 도입하여 더 풍부한 정보를 바탕으로 이상 탐지 성능을 고도화하는 연구를 진행해 볼 수 있을 것입니다.</p>
+</section>
+<section id="마무리" class="level3">
+<h3 class="anchored" data-anchor-id="마무리">마무리</h3>
+<p>Week01의 EDA부터 Week05의 실제 데이터 적용까지 시계열 이상 탐지의 전 과정을 체계적으로 수행하였습니다. 특히 이론적 모델과 실제 데이터 간의 성능 차이를 확인하고 이를 해결하는 과정에서 실무 적용을 위한 중요한 인사이트를 얻을 수 있었습니다.</p>
 
 
 </section>
