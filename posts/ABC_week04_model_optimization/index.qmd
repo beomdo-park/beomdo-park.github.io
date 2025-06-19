@@ -4,6 +4,7 @@ description: "지난주 CNN 오토인코더 모델의 한계를 분석하고, �
 date: "2025-06-14"
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch"]
+image: "posts/ABC_week03_cnn_baseline/index_files/figure-html/visualization-output-1.png"
 page-layout: full
 freeze: false
 ---
