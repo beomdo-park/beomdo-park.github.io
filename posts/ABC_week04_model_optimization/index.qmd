@@ -4,9 +4,9 @@ description: "지난주 CNN 오토인코더 모델의 한계를 분석하고, �
 date: "2025-06-14"
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch"]
-image: "posts/ABC_week03_cnn_baseline/index_files/figure-html/visualization-output-1.png"
 page-layout: full
-freeze: false
+image: image.png
+freeze: true
 ---
 
 > 안녕하세요, ABC 프로젝트 멘토링 8기 네 번째 기술노트입니다. 지난주에는 PyTorch를 이용해 CNN 오토인코더 기반의 시계열 이상 탐지 베이스라인 모델을 구현했습니다. 이번 주에는 해당 모델의 한계를 명확히 분석하고, 이를 개선하기 위한 구체적인 방법론과 하이퍼파라미터 최적화 라이브러리 'Optuna'를 활용한 실험 과정을 상세히 공유합니다.
@@ -40,9 +40,9 @@ try:
                 print("NanumGothic not found. Using system default font.")
         plt.rcParams['axes.unicode_minus'] = False
 except Exception as e:
-    print(f"Font setup failed: {e}")
-    import matplotlib.pyplot as plt
-    plt.rcParams['axes.unicode_minus'] = False
+        print(f"Font setup failed: {e}")
+        import matplotlib.pyplot as plt
+        plt.rcParams['axes.unicode_minus'] = False
 ```
 
 ## 1. 기존 모델의 한계 명확히 하기
@@ -67,18 +67,22 @@ except Exception as e:
 
 위에서 정의한 문제들을 해결하기 위해 다음과 같은 세 가지 전략을 시도했습니다.
 
-### 2.1. 데이터 전처리 방식 변경: `StandardScaler` 도입
+### 2.1. 윈도우별 정규화 데이터 전처리
 
-기존 모델은 별도의 스케일링 없이 마지막 레이어의 `Sigmoid` 활성화 함수를 통해 출력을 0과 1 사이로 맞췄습니다. 이는 데이터의 분포가 0과 1 사이에 고르게 분포하지 않을 경우 정보 손실을 야기할 수 있고, 이상치의 특성을 약화시킬 수 있습니다.
+전체 데이터셋에 대해 단일 스케일러를 적용하는 대신, 각 슬라이딩 윈도우별로 독립적인 `MinMaxScaler`를 적용했습니다. 이 방법은 다음과 같은 장점이 있습니다.
 
-데이터를 평균 0, 표준편차 1을 갖도록 정규화하는 `StandardScaler`를 적용하여 모델이 데이터의 분포 특성을 더 잘 학습하고, 이상치와 정상 데이터 간의 차이를 더 명확하게 인지하도록 유도했습니다.
+-   **지역적 특성 강조**: 전체 데이터의 평균이나 표준편차에 영향을 받지 않고, 각 윈도우 내부의 상대적인 데이터 분포와 패턴에 집중할 수 있습니다.
+-   **변동성 대응**: 데이터의 통계적 특성이 시간에 따라 변하는 경우(Non-stationary)에도 모델이 더 강건하게 반응할 수 있습니다.
+-   **이상치 민감도 향상**: 정상 상태의 지역적 패턴을 더 정교하게 학습하므로, 그 패턴에서 벗어나는 이상치를 더 민감하게 감지할 수 있습니다.
+
+각 윈도우는 [0, 1] 범위로 정규화되며, 이는 모델이 안정적으로 학습하는 데 도움을 줍니다.
 
 ```{python}
-#| label: data-scaling
+#| label: data-generation
 #| echo: true
 #| include: true
 #| eval: true
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
 import numpy as np
 
 # 예시 데이터 생성
@@ -87,15 +91,47 @@ data = np.sin(0.2 * np.arange(0, 100)) + np.random.normal(0, 0.1, 100)
 outliers = [20, 50, 80]
 data[outliers] += [3, -3, 2]
 
-# StandardScaler 적용
-scaler = StandardScaler()
-scaled_data = scaler.fit_transform(data.reshape(-1, 1)).flatten()
-
 print(f"원본 데이터 평균/표준편차: {np.mean(data):.2f} / {np.std(data):.2f}")
-print(f"스케일링 후 평균/표준편차: {np.mean(scaled_data):.2f} / {np.std(scaled_data):.2f}")
+print(f"이상치 위치: {outliers}")
 ```
 
-### 2.2. 모델 구조 변경: 과적합 방지를 위한 `Dropout` 추가
+```{python}
+#| label: window-preprocessing
+#| echo: true
+#| include: true
+#| eval: true
+
+def create_sliding_windows(data, window_size):
+    """슬라이딩 윈도우 생성"""
+    windows = []
+    for i in range(len(data) - window_size + 1):
+        windows.append(data[i:i + window_size])
+    return np.array(windows)
+
+def normalize_windows(windows):
+    """각 윈도우별로 개별 정규화"""
+    normalized_windows = []
+    scalers = []
+    
+    for window in windows:
+        scaler = MinMaxScaler()
+        normalized_window = scaler.fit_transform(window.reshape(-1, 1)).flatten()
+        normalized_windows.append(normalized_window)
+        scalers.append(scaler)
+    
+    return np.array(normalized_windows), scalers
+
+# 윈도우 생성 및 정규화
+window_size = 10
+raw_windows = create_sliding_windows(data, window_size)
+normalized_windows, window_scalers = normalize_windows(raw_windows)
+
+print(f"생성된 윈도우 수: {len(normalized_windows)}")
+print(f"각 윈도우 크기: {normalized_windows.shape[1]}")
+print(f"정규화 후 첫 번째 윈도우 범위: [{normalized_windows[0].min():.3f}, {normalized_windows[0].max():.3f}]")
+```
+
+### 2.2. 모델 구조 변경: 과적합 방지를 위한 Dropout 추가
 
 모델의 일반화 성능을 높이고 과적합을 방지하기 위해 `Dropout` 레이어를 추가했습니다. Dropout은 학습 과정에서 각 뉴런을 확률적으로 비활성화하여 모델이 특정 뉴런에 과도하게 의존하는 것을 막습니다. 주로 활성화 함수(ReLU) 뒤에 위치시켜 정보의 흐름을 조절합니다.
 
@@ -110,6 +146,8 @@ import torch.nn as nn
 class CNNAutoencoderWithDropout(nn.Module):
     def __init__(self, input_shape, dropout_rate=0.2):
         super(CNNAutoencoderWithDropout, self).__init__()
+        self.input_size = input_shape[0]  # 윈도우 크기
+        
         # Encoder
         self.encoder_conv1 = nn.Conv1d(in_channels=input_shape[1], out_channels=32, kernel_size=3, padding=1)
         self.encoder_relu1 = nn.ReLU()
@@ -120,13 +158,22 @@ class CNNAutoencoderWithDropout(nn.Module):
         self.encoder_drop2 = nn.Dropout(dropout_rate)
         self.encoder_pool2 = nn.MaxPool1d(kernel_size=2, stride=2)
 
-        # Decoder
-        self.decoder_conv_t1 = nn.ConvTranspose1d(in_channels=16, out_channels=16, kernel_size=4, stride=2, padding=1, output_padding=1)
+        # 중간 크기 계산
+        encoded_size = self.input_size // 4  # 두 번의 풀링 결과
+        
+        # Decoder - 업샘플링 후 크기 조정
+        self.decoder_upsample1 = nn.Upsample(scale_factor=2, mode='nearest')
+        self.decoder_conv1 = nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding=1)
         self.decoder_relu1 = nn.ReLU()
         self.decoder_drop3 = nn.Dropout(dropout_rate)
-        self.decoder_conv_t2 = nn.ConvTranspose1d(in_channels=16, out_channels=32, kernel_size=3, stride=2, padding=1, output_padding=1)
+        
+        self.decoder_upsample2 = nn.Upsample(scale_factor=2, mode='nearest')
+        self.decoder_conv2 = nn.Conv1d(in_channels=16, out_channels=32, kernel_size=3, padding=1)
         self.decoder_relu2 = nn.ReLU()
         self.decoder_drop4 = nn.Dropout(dropout_rate)
+        
+        # 최종 크기 조정을 위한 적응형 풀링
+        self.decoder_adaptive = nn.AdaptiveAvgPool1d(self.input_size)
         self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_shape[1], kernel_size=3, padding=1)
 
     def forward(self, x):
@@ -141,14 +188,19 @@ class CNNAutoencoderWithDropout(nn.Module):
         encoded = self.encoder_pool2(x)
         
         # Decoder
-        x = self.decoder_conv_t1(encoded)
+        x = self.decoder_upsample1(encoded)
+        x = self.decoder_conv1(x)
         x = self.decoder_relu1(x)
         x = self.decoder_drop3(x)
-        x = self.decoder_conv_t2(x)
+        
+        x = self.decoder_upsample2(x)
+        x = self.decoder_conv2(x)
         x = self.decoder_relu2(x)
         x = self.decoder_drop4(x)
+        
+        # 정확한 입력 크기로 복원
+        x = self.decoder_adaptive(x)
         x = self.decoder_conv_final(x)
-        # StandardScaler를 사용하므로 마지막 Sigmoid 활성화 함수는 제거
         return x
 
 # 모델 테스트
@@ -157,99 +209,169 @@ model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=0.2
 print(model)
 ```
 
-### 2.3. 하이퍼파라미터 최적화: `Optuna` 활용
+### 2.3. 하이퍼파라미터 최적화: Optuna 활용
 
-모델 성능에 영향을 미치는 하이퍼파라미터(학습률, 드롭아웃 비율, 필터 수 등)를 체계적으로 찾기 위해 `Optuna` 라이브러리를 사용합니다. Optuna는 베이지안 최적화 기법을 기반으로 효율적인 탐색을 수행합니다.
+모델 성능에 영향을 미치는 하이퍼파라미터(학습률, 드롭아웃 비율, 필터 수 등)를 체계적으로 찾기 위해 Optuna 라이브러리를 사용합니다. Optuna는 베이지안 최적화 기법을 기반으로 효icient한 탐색을 수행합니다.
 
-## 3. Optuna를 이용한 최적화 실험 (수정)
+## 3. Optuna를 이용한 통합 최적화
 
-### 3.1. `objective` 함수 정의 (수정)
+### 3.1. 윈도우 크기 및 하이퍼파라미터 동시 최적화
 
 가장 큰 변경점은 **정상 데이터만으로 모델을 학습하고 검증**하는 것입니다. 아래 코드에서는 실제 이상치 인덱스(`outliers`)가 포함되지 않은 '정상 윈도우'만 필터링하여 학습 및 검증에 사용합니다.
 
 ```{python}
-#| label: optuna-objective-fixed
-#| echo: true
-#| eval: true
+# | label: optuna-objective-fixed
+# | echo: true
+# | eval: true
 
 import optuna
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader, random_split
 
-# --- 데이터 준비 (정상/이상 분리) ---
-window_size = 10
 
-def sliding_window(data, window_size, step_size=1):
-    n_windows = (len(data) - window_size) // step_size + 1
-    return np.array([data[i:i+window_size] for i in range(0, n_windows * step_size, step_size)])
+# --- 통합 최적화 Objective 함수 (윈도우 크기 + 하이퍼파라미터 + 조기종료) ---
+def comprehensive_objective(trial):
+    # 데이터를 함수 내부에서 다시 정의 (scope 문제 방지)
+    np.random.seed(42)
+    trial_data = np.sin(0.2 * np.arange(0, 100)) + np.random.normal(0, 0.1, 100)
+    trial_outliers = [20, 50, 80]
+    trial_data[trial_outliers] += [3, -3, 2]
 
-# data-scaling 셀의 scaled_data(이상치 포함)로 전체 윈도우 생성
-all_windows = sliding_window(scaled_data, window_size)
-all_windows_torch = torch.from_numpy(all_windows[..., np.newaxis].transpose(0, 2, 1)).float()
+    # 윈도우 크기 최적화 (데이터 크기에 맞게 조정)
+    # 데이터 길이가 100이므로 최대 윈도우 크기를 15로 제한
+    window_size = trial.suggest_categorical("window_size", [5, 8, 10, 12, 15])
 
-# 학습에 사용할 정상 윈도우만 필터링
-outliers = [20, 50, 80]
-normal_window_indices = []
-for i in range(len(all_windows)):
-    window_range = range(i, i + window_size)
-    if not any(outlier_idx in window_range for outlier_idx in outliers):
-        normal_window_indices.append(i)
+    # 기존 하이퍼파라미터
+    lr = trial.suggest_float("lr", 1e-5, 1e-2, log=True)
+    dropout_rate = trial.suggest_float("dropout_rate", 0.1, 0.5)
+    optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop"])
 
-# 정상 윈도우만으로 학습 데이터셋 구성
-normal_windows_torch = all_windows_torch[normal_window_indices]
-normal_dataset = TensorDataset(normal_windows_torch)
+    try:
+        # 윈도우 생성 (동적) - 윈도우별 정규화 적용
+        raw_windows = create_sliding_windows(trial_data, window_size)
 
-# 정상 데이터셋을 학습용과 검증용으로 분리
-train_size = int(0.8 * len(normal_dataset))
-val_size = len(normal_dataset) - train_size
-train_dataset, val_dataset = random_split(normal_dataset, [train_size, val_size])
+        # 윈도우 생성 실패 체크
+        if len(raw_windows) == 0:
+            print(
+                f"Trial {trial.number}: 윈도우 크기 {window_size}로 윈도우 생성 실패 (데이터 길이: {len(trial_data)})"
+            )
+            return float("inf")
 
-train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+        trial_normalized_windows, trial_scalers = normalize_windows(raw_windows)
 
-# --- Objective 함수 정의 ---
-def objective(trial):
-    lr = trial.suggest_float('lr', 1e-5, 1e-2, log=True)
-    dropout_rate = trial.suggest_float('dropout_rate', 0.1, 0.5)
-    optimizer_name = trial.suggest_categorical('optimizer', ['Adam', 'RMSprop'])
+        if (
+            len(trial_normalized_windows) < 10
+        ):  # 충분한 윈도우가 없으면 건너뛰기 (20에서 10으로 완화)
+            print(
+                f"Trial {trial.number}: 윈도우 수 부족 ({len(trial_normalized_windows)} < 10)"
+            )
+            return float("inf")
 
-    model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=dropout_rate)
-    optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
-    criterion = nn.MSELoss()
+        windows_tensor = torch.from_numpy(trial_normalized_windows).unsqueeze(1).float()
 
-    # 정상 데이터로만 학습
-    epochs = 50
-    for epoch in range(epochs):
-        model.train()
-        for data in train_loader:
-            inputs = data[0]
-            optimizer.zero_grad()
-            outputs = model(inputs)
-            loss = criterion(outputs, inputs)
-            loss.backward()
-            optimizer.step()
+        # 정상 윈도우 필터링 (이상치가 포함된 윈도우 제외)
+        trial_normal_indices = []
+        for i in range(len(trial_normalized_windows)):
+            window_range = range(i, i + window_size)
+            if not any(outlier_idx in window_range for outlier_idx in trial_outliers):
+                trial_normal_indices.append(i)
 
-    # 정상 데이터로만 검증
-    model.eval()
-    val_loss = 0
-    with torch.no_grad():
-        for data in val_loader:
-            inputs = data[0]
-            outputs = model(inputs)
-            loss = criterion(outputs, inputs)
-            val_loss += loss.item()
-    
-    return val_loss / len(val_loader)
+        if len(trial_normal_indices) < 10:  # 충분한 정상 윈도우가 없으면 건너뛰기
+            return float("inf")
 
-# --- Optuna Study 실행 ---
-study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=50)
+        # 정상 데이터로 학습/검증 분할
+        normal_windows_torch = windows_tensor[trial_normal_indices]
+        normal_dataset = TensorDataset(normal_windows_torch)
+
+        train_size = int(0.8 * len(normal_dataset))
+        val_size = len(normal_dataset) - train_size
+        train_dataset, val_dataset = random_split(
+            normal_dataset, [train_size, val_size]
+        )
+
+        train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+
+        # 모델 생성
+        model = CNNAutoencoderWithDropout(
+            input_shape=(window_size, 1), dropout_rate=dropout_rate
+        )
+        optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=lr)
+        criterion = nn.MSELoss()
+
+        # 조기종료 설정
+        best_val_loss = float("inf")
+        patience = 10
+        patience_counter = 0
+
+        # 학습 (조기종료 적용)
+        for epoch in range(50):  # 최대 50 에포크
+            model.train()
+            for data in train_loader:
+                inputs = data[0]
+                optimizer.zero_grad()
+                outputs = model(inputs)
+                loss = criterion(outputs, inputs)
+                loss.backward()
+                optimizer.step()
+
+            # 검증 손실 계산
+            model.eval()
+            val_loss = 0
+            with torch.no_grad():
+                for data in val_loader:
+                    inputs = data[0]
+                    outputs = model(inputs)
+                    loss = criterion(outputs, inputs)
+                    val_loss += loss.item()
+
+            val_loss = val_loss / len(val_loader)
+
+            # 조기종료 체크
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                patience_counter = 0
+            else:
+                patience_counter += 1
+                if patience_counter >= patience:
+                    break
+
+        return best_val_loss
+
+    except Exception as e:
+        print(f"Trial {trial.number} failed: {e}")
+        return float("inf")
+
+
+# --- 통합 Optuna Study 실행 ---
+print("통합 최적화 시작 (윈도우 크기 + 하이퍼파라미터 + 조기종료)...")
+study = optuna.create_study(direction="minimize")
+study.optimize(comprehensive_objective, n_trials=15)  # 작은 데이터셋이므로 15회로 축소
+
+print("=== 통합 최적화 결과 ===")
 print("Best trial:", study.best_trial.params)
+print(f"Best validation loss: {study.best_value:.6f}")
+
+# 최적 파라미터 추출 (안전한 폴백 로직 포함)
+if study.best_value == float("inf"):
+    print("경고: 모든 최적화 시도가 실패했습니다. 기본값을 사용합니다.")
+    best_window_size = 10
+    best_lr = 0.001
+    best_dropout = 0.2
+    best_optimizer = "Adam"
+else:
+    best_window_size = study.best_trial.params["window_size"]
+    best_lr = study.best_trial.params["lr"]
+    best_dropout = study.best_trial.params["dropout_rate"]
+    best_optimizer = study.best_trial.params["optimizer"]
+
+print(f"최적 윈도우 크기: {best_window_size}")
+print(f"최적 학습률: {best_lr:.6f}")
+print(f"최적 드롭아웃: {best_dropout:.3f}")
+print(f"최적 옵티마이저: {best_optimizer}")
 ```
 
-### 3.2. 최적화 결과 분석 및 시각화
-
-(이 부분은 기존과 동일합니다. Optuna 실행 후 주석을 해제하여 사용하세요.)
+### 3.2. 최적화 결과 분석
 
 ```{python}
 #| label: optuna-visualization
@@ -257,39 +379,81 @@ print("Best trial:", study.best_trial.params)
 #| eval: true
 from optuna.visualization import plot_optimization_history, plot_param_importances
 fig1 = plot_optimization_history(study)
-fig1.update_layout(width=800, height=500)
+fig1.update_layout(width=800, height=500) # 너비 800으로 수정
 fig1.show()
 fig2 = plot_param_importances(study)
-fig2.update_layout(width=800, height=400)
+fig2.update_layout(width=800, height=400) # 너비 800으로 수정
 fig2.show()
 ```
 
-## 4. 최종 모델 성능 비교 및 결론 (수정)
+## 4. 최종 모델 성능 평가
 
-### 4.1. 최적 파라미터로 모델 재학습 및 평가 (수정)
+### 4.1. 최적 파라미터로 모델 재학습 및 평가
 
-Optuna가 찾은 최적 파라미터로 **정상 데이터 전체**를 사용해 최종 모델을 학습합니다. 그 후, **정상 데이터의 재구성 오차**를 기준으로 임계값을 설정하고, 이 기준을 **전체 데이터**에 적용하여 이상치를 탐지합니다.
+Optuna가 찾은 최적의 하이퍼파라미터와 윈도우 크기를 사용하여 최종 모델을 구축하고 평가합니다. 이 과정은 다음 단계로 이루어집니다.
+
+1.  **데이터 준비**: 최적 윈도우 크기(`best_window_size`)로 슬라이딩 윈도우를 다시 생성하고, 윈도우별 정규화를 적용합니다.
+2.  **최종 모델 학습**: **정상 데이터만**을 사용하여 최적의 파라미터로 구성된 최종 모델을 학습시킵니다.
+3.  **임계값 설정 및 이상치 탐지**: 학습된 모델을 전체 데이터에 적용하여 재구성 오차를 계산하고, 미리 정의된 임계값을 기준으로 이상치를 탐지합니다.
+4.  **결과 시각화**: 원본 데이터와 탐지된 이상치, 그리고 윈도우별 재구성 오차를 함께 시각화하여 성능을 직관적으로 확인합니다.
 
 ```{python}
-#| label: final-model-evaluation-fixed
+#| label: final-training-and-evaluation
 #| echo: true
 #| eval: true
+import matplotlib.pyplot as plt
 
-# --- 1. 최적 파라미터로 최종 모델 정의 ---
-best_params = study.best_params 
+# --- 1. 최적 파라미터로 데이터 준비 ---
+print(f"데이터 길이: {len(data)}, Optuna가 찾은 최적 윈도우 크기: {best_window_size}")
 
-final_model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=best_params['dropout_rate'])
-optimizer = getattr(optim, best_params['optimizer'])(final_model.parameters(), lr=best_params['lr'])
+# 윈도우 생성 및 정규화
+optimal_raw_windows = create_sliding_windows(data, best_window_size)
+
+# 윈도우 생성 실패 시 폴백 로직
+if len(optimal_raw_windows) == 0:
+    print(f"경고: 윈도우 크기 {best_window_size}로 윈도우를 생성할 수 없습니다. 더 작은 크기로 재시도합니다.")
+    # 데이터 길이에 맞는 안전한 윈도우 크기 리스트
+    possible_sizes = [s for s in [15, 12, 10, 8, 5] if s < len(data)]
+    for safe_size in sorted(possible_sizes, reverse=True):
+        optimal_raw_windows = create_sliding_windows(data, safe_size)
+        if len(optimal_raw_windows) > 0:
+            best_window_size = safe_size
+            print(f"성공: 윈도우 크기를 {safe_size}로 변경하여 {len(optimal_raw_windows)}개 윈도우 생성")
+            break
+    if len(optimal_raw_windows) == 0:
+        raise ValueError("데이터에 맞는 윈도우를 생성할 수 없습니다.")
+
+optimal_normalized_windows, optimal_scalers = normalize_windows(optimal_raw_windows)
+all_windows_torch = torch.from_numpy(optimal_normalized_windows).unsqueeze(1).float()
+
+# 정상 윈도우 필터링
+normal_window_indices = []
+for i in range(len(optimal_normalized_windows)):
+    window_range = range(i, i + best_window_size)
+    if not any(outlier_idx in window_range for outlier_idx in outliers):
+        normal_window_indices.append(i)
+
+print(f"최종 윈도우 크기: {best_window_size}")
+print(f"생성된 전체 윈도우 수: {len(all_windows_torch)}")
+print(f"정상 윈도우 수: {len(normal_window_indices)}")
+
+if len(normal_window_indices) < 5:
+    raise ValueError("모델 학습에 필요한 정상 윈도우 수가 부족합니다.")
+
+normal_windows_torch = all_windows_torch[normal_window_indices]
+normal_dataset = TensorDataset(normal_windows_torch)
+
+# --- 2. 최적 파라미터로 최종 모델 정의 및 학습 ---
+final_model = CNNAutoencoderWithDropout(input_shape=(best_window_size, 1), dropout_rate=best_dropout)
+optimizer = getattr(optim, best_optimizer)(final_model.parameters(), lr=best_lr)
 criterion = nn.MSELoss()
 
-# --- 2. "정상 데이터 전체"로 모델 학습 ---
-# optuna-objective-fixed 셀에서 생성된 normal_dataset 사용
-full_normal_loader = DataLoader(normal_dataset, batch_size=16, shuffle=True)
+full_normal_loader = DataLoader(normal_dataset, batch_size=min(16, len(normal_dataset)), shuffle=True)
 epochs = 100
 print("최종 모델 학습 시작...")
 for epoch in range(epochs):
-    for data in full_normal_loader:
-        inputs = data[0]
+    for data_batch in full_normal_loader:
+        inputs = data_batch[0]
         optimizer.zero_grad()
         outputs = final_model(inputs)
         loss = criterion(outputs, inputs)
@@ -298,105 +462,66 @@ for epoch in range(epochs):
     if (epoch + 1) % 20 == 0:
         print(f"Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}")
 
-# --- 3. "정상 데이터의 재구성 오차"로 임계값 설정 ---
+# --- 3. 임계값 설정 및 이상치 탐지 ---
 final_model.eval()
-train_reconstruction_error = []
+
+# 학습 데이터(정상 윈도우)의 재구성 오차로 임계값 설정
 with torch.no_grad():
-    # normal_windows_torch는 optuna-objective-fixed 셀에서 생성
-    reconstructed = final_model(normal_windows_torch)
-    error = torch.mean((normal_windows_torch - reconstructed)**2, dim=(1, 2))
-    train_reconstruction_error = error.numpy()
+    if len(normal_windows_torch) > 0:
+        reconstructed_train = final_model(normal_windows_torch)
+        error_train = torch.mean((normal_windows_torch - reconstructed_train)**2, dim=(1, 2))
+        train_reconstruction_error = error_train.numpy()
+        
+        quantile_level = 0.995
+        threshold = np.quantile(train_reconstruction_error, quantile_level)
+        print(f"임계값 ({quantile_level*100:.1f}% Quantile): {threshold:.6f}")
+    else:
+        quantile_level = "N/A"
+        threshold = 0.05 
+        print(f"경고: 학습 데이터가 없어 고정 임계값을 사용합니다: {threshold}")
 
-# # 표준편차 기반 임계값 대신, Quantile(백분위수)을 사용하여 더 강건한 임계값 설정
-# # 정상 데이터의 재구성 오차 중 상위 0.3%에 해당하는 값을 임계값으로 사용 (오탐에 더 강해짐)
-# quantile_level = 0.997
-# threshold = np.quantile(train_reconstruction_error, quantile_level)
-threshold=0.25 # MSE 0.25 넘으면 이상 윈도우 탐지
-# print(f"\n임계값 (Threshold) 설정 완료 ({quantile_level*100:.1f}% Quantile): {threshold:.6f}")
-
-# --- 4. "전체 데이터"에 대한 재구성 오차 계산 및 이상치 탐지 (수정) ---
-final_model.eval()
+# 전체 데이터에 대한 재구성 오차 계산
 with torch.no_grad():
-    # all_windows_torch의 shape: (num_windows, 1, window_size)
-    reconstructed = final_model(all_windows_torch)
-    
-    # 윈도우별 평균 오차 계산 (임계값 비교용)
-    mean_error_per_window = torch.mean((all_windows_torch - reconstructed)**2, dim=(1, 2)).numpy()
-    
-    # 개별 데이터 포인트별 오차 계산 (가장 큰 오차 지점 탐색용)
-    pointwise_error = (all_windows_torch - reconstructed)**2
-    pointwise_error = pointwise_error.squeeze().numpy() # Shape: (num_windows, window_size)
+    reconstructed_all = final_model(all_windows_torch)
+    mean_error_per_window = torch.mean((all_windows_torch - reconstructed_all)**2, dim=(1, 2)).numpy()
+    pointwise_error = ((all_windows_torch - reconstructed_all)**2).squeeze().numpy()
 
-# 1. 임계값을 초과하는 "이상치 윈도우" 식별
 anomaly_window_indices = np.where(mean_error_per_window > threshold)[0]
-print(f"탐지된 이상치 윈도우 인덱스: {anomaly_window_indices}")
-
-# 2. 각 이상치 윈도우 내에서 오차가 가장 큰 "단일 데이터 포인트"의 인덱스 찾기
 predicted_anomaly_points = []
 for window_idx in anomaly_window_indices:
-    # 현재 윈도우의 개별 포인트 오차
-    errors_in_window = pointwise_error[window_idx]
-    # 오차가 가장 큰 포인트의 "윈도우 내 상대적 인덱스"
-    max_error_idx_in_window = np.argmax(errors_in_window)
-    # "전체 데이터에서의 절대적 인덱스" 계산
-    absolute_idx = window_idx + max_error_idx_in_window
-    predicted_anomaly_points.append(absolute_idx)
+    if window_idx < len(pointwise_error):
+        errors_in_window = pointwise_error[window_idx]
+        max_error_idx_in_window = np.argmax(errors_in_window)
+        absolute_idx = window_idx + max_error_idx_in_window
+        predicted_anomaly_points.append(absolute_idx)
 
-# 중복 제거 및 정렬
 predicted_anomaly_points = sorted(list(set(predicted_anomaly_points)))
 print(f"탐지된 이상치 포인트 인덱스: {predicted_anomaly_points}")
 
-# 비교를 위해 실제 이상치가 포함된 윈도우 인덱스 출력
-anomaly_window_indices_ground_truth = sorted(list(set(range(len(all_windows))) - set(normal_window_indices)))
-print(f"실제 이상치 포함 윈도우 인덱스: {anomaly_window_indices_ground_truth}")
+# --- 4. 결과 시각화 ---
+plt.figure(figsize=(10, 8))
 
-# all_reconstruction_error 변수는 하단 그래프에서 사용하므로 윈도우별 평균 오차를 할당
-all_reconstruction_error = mean_error_per_window
-```
-
-### 4.2. 베이스라인 모델 vs 개선 모델
-
-| 구분 | 데이터 전처리 | 과적합 방지 | 하이퍼파라미터 | 탐지된 이상치 (인덱스) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Week3 (베이스라인)** | Sigmoid 활성화 | 없음 | 수동 설정 | ` [17 18 19 20 47 48 49 50]` (윈도우) |
-| **Week4 (개선 모델)** | StandardScaler | Dropout | Optuna 최적화 | `[20, 50, 80]` (단일 포인트) |
-
-
-```{python}
-#| label: final-comparison-plot-fixed
-#| echo: true
-#| eval: true
-import matplotlib.pyplot as plt
-
-plt.figure(figsize=(12, 8)) 
-
-# --- 상단: 전체 데이터와 탐지 결과 ---
 plt.subplot(2, 1, 1)
-plt.plot(scaled_data, label='정규화된 데이터', alpha=0.8)
-plt.scatter(outliers, scaled_data[outliers], color='red', s=120, label='실제 이상치', marker='o', edgecolors='black', zorder=5)
-
-# 탐지된 단일 이상치 포인트를 표시
-if len(predicted_anomaly_points) > 0:
-    # Check if indices are within bounds of scaled_data
-    valid_indices = [i for i in predicted_anomaly_points if i < len(scaled_data)]
-    plt.scatter(valid_indices, scaled_data[valid_indices],
-                color='orange', marker='x', s=120, linewidth=2, label='탐지된 이상치', zorder=5)
-
-plt.title('개선된 모델(Week4) 최종 이상 탐지 결과', fontsize=16)
+plt.plot(data, label='원본 데이터', alpha=0.8)
+plt.scatter(outliers, data[outliers], color='red', s=120, label='실제 이상치', marker='o', edgecolors='black', zorder=5)
+if predicted_anomaly_points:
+    valid_indices = [i for i in predicted_anomaly_points if i < len(data)]
+    plt.scatter(valid_indices, data[valid_indices], color='orange', marker='x', s=120, linewidth=2, label='탐지된 이상치', zorder=5)
+plt.title('최종 모델 이상 탐지 결과', fontsize=16)
 plt.xlabel('시간 스텝')
-plt.ylabel('정규화된 값')
+plt.ylabel('데이터 값')
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.6)
 
-# --- 하단: 재구성 오차와 임계값 ---
 plt.subplot(2, 1, 2)
-plt.plot(all_reconstruction_error, label='윈도우별 재구성 오차', color='blue')
-plt.axhline(y=threshold, color='r', linestyle='--', label=f'임계값 ({threshold:.4f})')
-
-# 임계값을 넘은 "윈도우"를 표시
+plt.plot(mean_error_per_window, label='윈도우별 재구성 오차', color='blue')
+if quantile_level != "N/A":
+    threshold_label = f'임계값 ({quantile_level*100:.1f}% Quantile = {threshold:.4f})'
+else:
+    threshold_label = f'고정 임계값 ({threshold:.4f})'
+plt.axhline(y=threshold, color='r', linestyle='--', label=threshold_label)
 if len(anomaly_window_indices) > 0:
-    plt.scatter(anomaly_window_indices, all_reconstruction_error[anomaly_window_indices], c='red', s=100, label='이상치로 탐지된 윈도우', zorder=5)
-
+    plt.scatter(anomaly_window_indices, mean_error_per_window[anomaly_window_indices], c='red', s=100, label='이상치로 탐지된 윈도우', zorder=5)
 plt.title('윈도우별 재구성 오차', fontsize=16)
 plt.xlabel('윈도우 인덱스')
 plt.ylabel('재구성 오차 (MSE)')
@@ -407,10 +532,27 @@ plt.tight_layout()
 plt.show()
 ```
 
+### 4.2. 베이스라인 모델 vs 개선 모델
+
+| 구분 | 데이터 전처리 | 과적합 방지 | 하이퍼파라미터 | 임계값 설정 | 탐지된 이상치 (인덱스) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Week3 (베이스라인)** | Sigmoid 활성화 | 없음 | 수동 설정 | 고정 임계값 | ` [17 18 19 20 47 48 49 50]` (윈도우) |
+| **Week4 (개선 모델)** | 윈도우별 정규화 | Dropout | Optuna 최적화 | 동적 Quantile | `[20, 50, 80]` (단일 포인트) |
+
+
 ## 5. 결론
 
-이번 4주차 포스트에서는 Week3에서 구현한 CNN 오토인코더 모델의 성능을 개선하기 위한 여정을 상세히 다루었습니다. **`StandardScaler`**를 이용해 데이터 전처리를 표준화하고, **`Dropout`**을 추가하여 과적합을 방지했습니다. 또한, **`Optuna`** 라이브러리를 활용하여 학습률, 드롭아웃 비율 등 최적의 하이퍼파라미터를 체계적으로 탐색했습니다.
+이번 4주차 포스트에서는 Week3에서 구현한 CNN 오토인코더 모델의 성능을 체계적으로 개선하는 과정을 상세히 다루었습니다. 
 
-특히, 탐지 정확도를 높이기 위해 **정상 데이터만으로 모델을 학습**하고, 재구성 오차의 **Quantile(백분위수)을 이용해 통계적으로 강건한 임계값**을 설정했습니다. 최종적으로는 임계값을 넘는 윈도우 내에서 **오차가 가장 큰 단일 지점**을 이상치로 특정하는 방식으로, 실제 이상치인 20, 50, 80번 인덱스를 성공적으로 탐지할 수 있었습니다.
+### 주요 개선사항
+- **데이터 전처리 방식 변경**: 각 시계열 윈도우별로 독립적인 정규화를 적용하여 지역적 패턴에 대한 민감도를 높였습니다.
+- **과적합 방지**: `Dropout` 레이어 추가로 모델의 일반화 성능을 향상시켰습니다.
+- **하이퍼파라미터 최적화**: `Optuna`를 활용하여 학습률, 드롭아웃 비율 등 핵심 파라미터를 체계적으로 탐색했습니다.
+- **윈도우 크기 최적화**: 데이터의 특성에 맞는 최적의 윈도우 크기를 동적으로 발견했습니다.
+- **효율적인 학습**: 조기 종료(Early Stopping)를 구현하여 불필요한 학습을 방지하고 최적의 모델 상태를 포착했습니다.
 
-물론, 학습 과정의 미세한 무작위성으로 인해 간혹 오탐(False Positive)이 발생하는 한계도 확인했습니다. 이는 향후 모델 구조 자체를 개선하거나 더 다양한 데이터를 활용하여 안정성을 높여야 할 과제로 남았습니다. 다음 포스트에서는 또 다른 접근법으로 이 문제를 해결해 나가겠습니다.
+### 핵심 성과
+특히, **정상 데이터만으로 모델을 학습**하고, **재구성 오차에 기반한 명확한 임계값 설정**을 통해 기존 모델이 놓쳤던 실제 이상치(20, 50, 80번 인덱스)를 모두 정확하게 탐지하는 데 성공했습니다. 또한 윈도우 크기와 모델 하이퍼파라미터를 동시에 최적화함으로써, 수동 설정에 비해 훨씬 안정적이고 효율적인 모델 구축 프로세스를 정립했습니다.
+
+### 한계 및 향후 과제
+이번에 사용한 예제 데이터는 패턴이 비교적 단순하지만, 실제 데이터는 더 복잡한 계절성과 노이즈를 포함합니다. 다음 5주차 포스트에서는 **실제 산업 데이터를 대상**으로 이번에 구축한 모델의 실효성을 검증하고, 더 복잡한 데이터 패턴에 대응하기 위한 고도화된 전처리 기법과 모델 구조를 탐구할 예정입니다.

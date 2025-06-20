@@ -52,7 +52,7 @@ except Exception as e:
 
 ```{python}
 #| label: data-loading
-#| echo: false
+#| echo: true
 #| include: true
 #| eval: true
 import pandas as pd
@@ -77,112 +77,231 @@ df.info()
 데이터는 'StartDate', 'Value (kWh)', 'day_of_week', 'notes' 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 'StartDate'를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, 'Value (kWh)' 컬럼만 사용하겠습니다. 전체 데이터를 사용하여 분석을 진행합니다.
 
 ```{python}
-#| label: data-preprocessing
-#| eval: true
+# | label: data-preprocessing
+# | eval: true
 
 print("데이터 전처리 시작...")
 # 'StartDate'를 datetime으로 변환하고 인덱스로 설정
-df['StartDate'] = pd.to_datetime(df['StartDate'])
-df = df.set_index('StartDate')
+df["StartDate"] = pd.to_datetime(df["StartDate"])
+df = df.set_index("StartDate")
 
 # 시간순으로 정렬
 df.sort_index(inplace=True)
 print("데이터 시간순 정렬 완료.")
 
 # 'Value (kWh)' 컬럼만 선택
-# df.info() 결과에 따라 'Value (kWh)'를 사용합니다.
-value_col = 'Value (kWh)'
+value_col = "Value (kWh)"
 df_value = df[[value_col]].copy()
 
-# 데이터 시각화 (전체 기간)
-plt.figure(figsize=(15, 6))
-plt.plot(df_value.index, df_value[value_col], label='전력 사용량 (전체 기간)')
-plt.title('시간에 따른 전력 사용량 (전체 기간)')
-plt.xlabel('날짜')
-plt.ylabel('사용량 (kWh)')
+# 시간 단위를 'H'로 재샘플링하고 누락된 값은 선형 보간
+print("데이터를 시간 단위로 재샘플링하고 누락된 값을 보간합니다...")
+df_value = df_value.resample("H").mean()
+df_value[value_col] = df_value[value_col].interpolate(method="linear")
+print("재샘플링 및 보간 완료.")
+
+# [수정] 분석 효율성을 위해 2019년 데이터만 사용
+print("분석 효율성을 위해 2019년 데이터만 사용합니다...")
+df_value = df_value[df_value.index.year == 2019].copy()
+print("데이터 슬라이싱 완료.")
+
+
+# 데이터 시각화 (2019년)
+plt.figure(figsize=(10, 5))
+plt.plot(df_value.index, df_value[value_col], label="전력 사용량 (2019년)")
+plt.title("시간에 따른 전력 사용량 (2019년)")
+plt.xlabel("날짜")
+plt.ylabel("사용량 (kWh)")
 plt.legend()
 plt.grid(True)
 plt.show()
 
-print(f"전체 데이터 크기: {df_value.shape}")
+print(f"2019년 데이터 크기: {df_value.shape}")
 ```
 
-## 2. 데이터 전처리 및 윈도우 생성
+## 2. 데이터 전처리 및 계절성 제거
 
-시계열 데이터의 추세(Trend) 영향을 줄이고, 각 윈도우의 지역적 패턴에 집중하기 위해 윈도우별로 독립적인 정규화를 수행합니다. 이 방법은 데이터의 전반적인 스케일 변화에 덜 민감한 모델을 만드는 데 도움이 됩니다.
+실제 전력 데이터는 강한 계절성과 일간 패턴을 보입니다. 효과적인 이상 탐지를 위해 다단계 계절성 제거를 적용한 후 윈도우 생성과 정규화를 수행합니다.
 
 ```{python}
-#| label: scaling-and-windowing
-#| eval: true
+# | label: data-processing-and-windowing
+# | eval: true
 
-print("윈도우 생성 및 정규화 시작...")
-# 원본 데이터에서 바로 윈도우 생성
+from statsmodels.tsa.seasonal import STL
+from sklearn.preprocessing import MinMaxScaler
+import warnings
+
+warnings.filterwarnings("ignore")
+
+
+# --- Helper Functions ---
+def create_sliding_windows(data, window_size):
+    """슬라이딩 윈도우 생성"""
+    windows = []
+    for i in range(len(data) - window_size + 1):
+        windows.append(data[i : i + window_size])
+    return np.array(windows)
+
+
+def normalize_windows(windows):
+    """각 윈도우별로 개별 정규화"""
+    normalized_windows = []
+    scalers = []
+    for window in windows:
+        scaler = MinMaxScaler()
+        normalized_window = scaler.fit_transform(window.reshape(-1, 1)).flatten()
+        normalized_windows.append(normalized_window)
+        scalers.append(scaler)
+    return np.array(normalized_windows), scalers
+
+
+def seasonal_decomposition_approach(data, index):
+    """STL 분해를 통한 계절성 제거"""
+    # 데이터가 너무 짧으면 주기를 조정
+    period = 8760  # 연간 주기 (시간 단위)
+    if len(data) < 2 * period:
+        period = 24 * 365  # 근사치
+        if len(data) < 2 * period:
+            period = 24 * 30  # 월간 주기
+            if len(data) < 2 * period:
+                period = 24 * 7  # 주간 주기
+
+    # STL의 seasonal 파라미터는 반드시 홀수여야 함
+    if period % 2 == 0:
+        period += 1
+
+    ts = pd.Series(data, index=index[: len(data)])
+    stl = STL(ts, seasonal=period, robust=True)
+    result = stl.fit()
+    deseasonalized = ts - result.seasonal
+    return deseasonalized.values, result
+
+
+def comprehensive_deseasonalize(data, index, window_size):
+    """다단계 계절성 제거 및 윈도우 생성"""
+    print("1단계: STL 분해로 주요 계절성 제거...")
+    deseason_data, decomp_result = seasonal_decomposition_approach(data, index)
+
+    print("2단계: 일간 패턴 제거 (24시간 이동평균)...")
+    daily_smooth = pd.Series(deseason_data).rolling(24, center=True).mean()
+    deseason_data = deseason_data - daily_smooth.fillna(0).values
+
+    print("3단계: 윈도우 생성 및 정규화...")
+    windows = create_sliding_windows(deseason_data, window_size)
+    normalized_windows, scalers = normalize_windows(windows)
+
+    return normalized_windows, scalers, decomp_result
+
+
+# --- Data Extraction ---
 raw_data = df_value[value_col].values
+print(f"원본 데이터 크기: {len(raw_data)}")
 
-# 슬라이딩 윈도우 생성 함수
-def sliding_window(data, window_size, step_size=1):
-    n_windows = (len(data) - window_size) // step_size + 1
-    return np.array([data[i:i+window_size] for i in range(0, n_windows * step_size, step_size)])
+# --- 1. 계절성 분해 시각화 ---
+_, decomp_result_for_plot = seasonal_decomposition_approach(raw_data, df_value.index)
 
-# 윈도우 생성 (윈도우 크기는 60분(1시간)으로 설정)
-window_size = 60
-raw_windows = sliding_window(raw_data, window_size)
+plt.figure(figsize=(10, 8)) # 너비 10으로 수정
+plt.subplot(4, 1, 1)
+plt.plot(decomp_result_for_plot.observed)
+plt.title('원본 데이터 (2019년)')
+plt.ylabel("kWh")
 
-# 윈도우별 정규화
-scaled_windows = np.array([StandardScaler().fit_transform(window.reshape(-1, 1)).flatten() for window in raw_windows])
+plt.subplot(4, 1, 2)
+plt.plot(decomp_result_for_plot.trend)
+plt.title('트렌드 (2019년)')
+plt.ylabel("kWh")
 
-# PyTorch 텐서 변환 (shape: [batch_size, channels, sequence_length])
-all_windows_torch = torch.from_numpy(scaled_windows).unsqueeze(1).float()  # [N, 1, window_size]
+plt.subplot(4, 1, 3)
+plt.plot(decomp_result_for_plot.seasonal)
+plt.title('계절성 (2019년)')
+plt.ylabel("kWh")
 
-print(f"생성된 윈도우 데이터 shape: {all_windows_torch.shape}")
+plt.subplot(4, 1, 4)
+# 계절성 제거된 데이터 계산
+desasonalized_for_plot = (
+    decomp_result_for_plot.observed - decomp_result_for_plot.seasonal
+)
+plt.plot(desasonalized_for_plot)
+plt.title('계절성 제거 후 (2019년)')
+plt.ylabel("kWh")
+plt.xlabel("시간")
+
+plt.tight_layout()
+plt.show()
+
+# --- 2. 최종 데이터 처리 및 윈도우 생성 ---
+print("\n다단계 계절성 제거 및 윈도우 생성 시작...")
+window_size = 10 # Week4 Optuna 최적값
+processed_windows, window_scalers, decomp_result = comprehensive_deseasonalize(
+    raw_data, df_value.index, window_size
+)
+
+print(f"계절성 제거 후 생성된 윈도우 수: {len(processed_windows)}")
+print(f"각 윈도우 크기: {processed_windows.shape[1]}")
+
+# PyTorch 텐서로 변환
+all_windows_torch = torch.from_numpy(processed_windows).unsqueeze(1).float()
+print(f"텐서 형태: {all_windows_torch.shape}")
+
+# --- 3. 처리 전후 비교 시각화 ---
+plt.figure(figsize=(10, 6))
+plt.subplot(2, 1, 1)
+plt.plot(raw_data, alpha=0.8, label='원본 데이터 (2019년)')
+plt.title('원본 전력 사용량 데이터 (2019년)')
+plt.ylabel('kWh')
+plt.legend()
+
+plt.subplot(2, 1, 2)
+deseason_full = raw_data - decomp_result.seasonal.values
+plt.plot(deseason_full, alpha=0.8, label='계절성 제거 후', color="orange")
+plt.title('계절성 제거 후 데이터 (2019년)')
+plt.ylabel('kWh')
+plt.xlabel('시간')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
 ```
 
-## 3. 모델 학습을 위한 데이터 분할 및 하이퍼파라미터 최적화
+## 3. 모델 학습 및 이상치 탐지
 
-실제 데이터에서는 초반부와 이후 구간의 패턴이 다를 수 있습니다(구간 변화, Regime Change). 전체 데이터를 학습하면 변화 자체를 이상으로 탐지할 수 있으므로, **패턴이 안정화된 구간만을 '정상'으로 정의하고 해당 구간 데이터로만 모델을 학습**합니다.
+Week4에서 최적화한 CNN 오토인코더 모델을 사용하여 실제 전력 데이터에 대한 이상치 탐지를 수행합니다. 학습, 평가, 시각화 과정을 하나의 논리적 흐름으로 통합하여 설명합니다.
 
-실제 적용에서는 더 보수적인 접근이 필요하므로, 전체 데이터의 20-80% 구간을 안정적인 정상 구간으로 설정하고, 하이퍼파라미터도 과적합을 방지하도록 조정합니다.
+### 3.1. 모델 정의
 
-```{python}
-#| label: split-data-for-training
-#| eval: true
-
-# 더 보수적인 학습 구간 설정 (전체 데이터의 20-80% 구간 사용)
-total_windows = len(all_windows_torch)
-train_start_idx = int(total_windows * 0.2)  # 20% 지점부터
-train_end_idx = int(total_windows * 0.8)    # 80% 지점까지
-train_windows_torch = all_windows_torch[train_start_idx:train_end_idx]
-
-print(f"전체 윈도우 수: {all_windows_torch.shape[0]}")
-print(f"학습 구간: {train_start_idx} ~ {train_end_idx}")
-print(f"학습에 사용할 윈도우 수: {train_windows_torch.shape[0]}")
-```
+Week4에서 `Optuna`를 통해 최적화한 모델 구조와 하이퍼파라미터를 그대로 사용합니다. 이 모델은 `Dropout`을 포함하여 과적합을 방지하고, `ConvTranspose1d` 대신 `Upsample`과 `AdaptiveAvgPool1d`를 사용하여 다양한 윈도우 크기에 유연하게 대응할 수 있도록 개선되었습니다.
 
 ```{python}
-#| label: model-definition-and-training
+#| label: model-definition
 #| eval: true
 
 class CNNAutoencoderWithDropout(nn.Module):
-    def __init__(self, input_channels=1, dropout_rate=0.1):
+    def __init__(self, input_shape, dropout_rate=0.2):
         super(CNNAutoencoderWithDropout, self).__init__()
+        self.input_size = input_shape[0]
+        
         # Encoder
-        self.encoder_conv1 = nn.Conv1d(in_channels=input_channels, out_channels=32, kernel_size=7, padding=3)
+        self.encoder_conv1 = nn.Conv1d(in_channels=input_shape[1], out_channels=32, kernel_size=3, padding=1)
         self.encoder_relu1 = nn.ReLU()
         self.encoder_drop1 = nn.Dropout(dropout_rate)
         self.encoder_pool1 = nn.MaxPool1d(kernel_size=2, stride=2)
-        self.encoder_conv2 = nn.Conv1d(in_channels=32, out_channels=16, kernel_size=7, padding=3)
+        self.encoder_conv2 = nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding=1)
         self.encoder_relu2 = nn.ReLU()
         self.encoder_drop2 = nn.Dropout(dropout_rate)
         self.encoder_pool2 = nn.MaxPool1d(kernel_size=2, stride=2)
 
         # Decoder
-        self.decoder_conv_t1 = nn.ConvTranspose1d(in_channels=16, out_channels=16, kernel_size=2, stride=2)
+        self.decoder_upsample1 = nn.Upsample(scale_factor=2, mode='nearest')
+        self.decoder_conv1 = nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding=1)
         self.decoder_relu1 = nn.ReLU()
         self.decoder_drop3 = nn.Dropout(dropout_rate)
-        self.decoder_conv_t2 = nn.ConvTranspose1d(in_channels=16, out_channels=32, kernel_size=2, stride=2)
+        
+        self.decoder_upsample2 = nn.Upsample(scale_factor=2, mode='nearest')
+        self.decoder_conv2 = nn.Conv1d(in_channels=16, out_channels=32, kernel_size=3, padding=1)
         self.decoder_relu2 = nn.ReLU()
         self.decoder_drop4 = nn.Dropout(dropout_rate)
-        self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_channels, kernel_size=7, padding=3)
+        
+        self.decoder_adaptive = nn.AdaptiveAvgPool1d(self.input_size)
+        self.decoder_conv_final = nn.Conv1d(in_channels=32, out_channels=input_shape[1], kernel_size=3, padding=1)
 
     def forward(self, x):
         # Encoder
@@ -196,116 +315,119 @@ class CNNAutoencoderWithDropout(nn.Module):
         encoded = self.encoder_pool2(x)
         
         # Decoder
-        x = self.decoder_conv_t1(encoded)
+        x = self.decoder_upsample1(encoded)
+        x = self.decoder_conv1(x)
         x = self.decoder_relu1(x)
         x = self.decoder_drop3(x)
-        x = self.decoder_conv_t2(x)
+        
+        x = self.decoder_upsample2(x)
+        x = self.decoder_conv2(x)
         x = self.decoder_relu2(x)
         x = self.decoder_drop4(x)
+        
+        x = self.decoder_adaptive(x)
         x = self.decoder_conv_final(x)
         return x
 
-# Optuna 최적화 결과(best trial) 하이퍼파라미터 적용
-# lr=0.007392392751789862, dropout_rate=0.10244576584681189, optimizer=Adam
-model = CNNAutoencoderWithDropout(input_channels=1, dropout_rate=0.10244576584681189)
-optimizer = optim.Adam(model.parameters(), lr=0.007392392751789862)
+```
+
+### 3.2. 학습 및 평가
+
+실제 데이터에서는 패턴이 안정화된 구간을 '정상'으로 간주하고 학습하는 것이 중요합니다. 전체 데이터의 **20% ~ 80% 구간**을 정상 데이터로 정의하고, 이 데이터로만 모델을 학습시킵니다. 그 후, 학습된 모델을 전체 데이터에 적용하여 이상치를 탐지합니다.
+
+```{python}
+# | label: training-and-evaluation
+# | eval: true
+
+# --- 1. 학습 데이터 분할 ---
+total_windows = len(all_windows_torch)
+train_start_idx = int(total_windows * 0.2)
+train_end_idx = int(total_windows * 0.8)
+train_windows_torch = all_windows_torch[train_start_idx:train_end_idx]
+
+print(f"전체 윈도우 수: {total_windows}")
+print(f"학습 구간: {train_start_idx} ~ {train_end_idx}")
+print(f"학습에 사용할 윈도우 수: {len(train_windows_torch)}")
+
+# --- 2. 모델 초기화 및 학습 ---
+# Week4에서 찾은 최적 하이퍼파라미터 사용
+model = CNNAutoencoderWithDropout(input_shape=(window_size, 1), dropout_rate=0.137)
+optimizer = optim.RMSprop(model.parameters(), lr=0.000981)
 criterion = nn.MSELoss()
 
-# 안정 구간 데이터로 학습
 dataset = TensorDataset(train_windows_torch)
-data_loader = DataLoader(dataset, batch_size=32, shuffle=True)  # 배치 크기 감소
+data_loader = DataLoader(dataset, batch_size=32, shuffle=True)
 
-print("모델 학습 시작 (개선된 안정 구간 및 하이퍼파라미터)...")
-epochs = 15  # 에포크 증가
+print("\n모델 학습 시작...")
+epochs = 15
 for epoch in range(epochs):
     model.train()
-    epoch_loss = 0
-    for data in data_loader:
-        inputs = data[0]
+    for data_batch in data_loader:
+        inputs = data_batch[0]
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, inputs)
         loss.backward()
         optimizer.step()
-        epoch_loss += loss.item()
-    
     if (epoch + 1) % 5 == 0:
-        avg_loss = epoch_loss / len(data_loader)
-        print(f"Epoch [{epoch+1}/{epochs}], Avg Loss: {avg_loss:.6f}")
-print("모델 학습 완료.")
-```
+        print(f"Epoch [{epoch+1}/{epochs}], Loss: {loss.item():.6f}")
 
-## 4. 모델 평가 및 이상치 탐지
-
-학습된 모델로 전체 데이터의 재구성 오차를 계산하고, 학습 데이터의 재구성 오차 분포를 기반으로 임계값(Quantile 기준)을 설정해 이상치를 탐지합니다.
-
-```{python}
-#| label: evaluation-and-detection
-#| eval: true
-
+# --- 3. 임계값 설정 및 이상치 탐지 ---
 model.eval()
 
-# 1. 학습 데이터의 재구성 오차를 기반으로 임계값 설정
+# 학습 데이터의 재구성 오차로 임계값 설정
 with torch.no_grad():
     reconstructed_train = model(train_windows_torch)
-    error_train = torch.mean((train_windows_torch - reconstructed_train)**2, dim=(1, 2))
+    error_train = torch.mean(
+        (train_windows_torch - reconstructed_train) ** 2, dim=(1, 2)
+    )
     train_reconstruction_error = error_train.numpy()
 
-quantile_level = 0.99  # 더 관대한 임계값 설정
+quantile_level = 0.99
 threshold = np.quantile(train_reconstruction_error, quantile_level)
-print(f"임계값 (학습 데이터 기준 {quantile_level*100:.1f}% Quantile): {threshold:.6f}")
+print(f"\n임계값 ({quantile_level*100:.1f}% Quantile): {threshold:.6f}")
 
-# 2. 전체 데이터에 대한 재구성 오차 계산
+# 전체 데이터에 대한 재구성 오차 계산
 with torch.no_grad():
     reconstructed_all = model(all_windows_torch)
-    error_all = torch.mean((all_windows_torch - reconstructed_all)**2, dim=(1, 2))
-    reconstruction_error = error_all.numpy()
+    reconstruction_error = torch.mean(
+        (all_windows_torch - reconstructed_all) ** 2, dim=(1, 2)
+    ).numpy()
+    pointwise_error = ((all_windows_torch - reconstructed_all) ** 2).squeeze().numpy()
 
-# 3. 임계값을 기준으로 전체 데이터에서 이상치 탐지
+# 이상치 탐지
 anomaly_window_indices = np.where(reconstruction_error > threshold)[0]
-
-# 윈도우 내 최대 오차 지점 탐색
-pointwise_error = ((all_windows_torch - reconstructed_all)**2).squeeze().numpy()
 predicted_anomaly_points = []
 for window_idx in anomaly_window_indices:
-    max_error_idx_in_window = np.argmax(pointwise_error[window_idx])
-    absolute_idx = window_idx + max_error_idx_in_window
-    predicted_anomaly_points.append(absolute_idx)
+    if window_idx < len(pointwise_error):
+        max_error_idx_in_window = np.argmax(pointwise_error[window_idx])
+        absolute_idx = window_idx + max_error_idx_in_window
+        predicted_anomaly_points.append(absolute_idx)
 
 predicted_anomaly_points = sorted(list(set(predicted_anomaly_points)))
+predicted_anomaly_points = [
+    idx for idx in predicted_anomaly_points if idx < len(raw_data)
+]
 print(f"탐지된 이상치 포인트 수: {len(predicted_anomaly_points)}")
-
-# 안전성 체크: 유효한 인덱스만 필터링
-predicted_anomaly_points = [idx for idx in predicted_anomaly_points if idx < len(raw_data)]
-print(f"유효한 이상치 포인트 수: {len(predicted_anomaly_points)}")
 ```
 
-### 탐지 결과 시각화
+### 3.3. 결과 시각화
 
-이상치로 탐지된 구간과 원본 데이터를 함께 시각화하여, 모델이 어떤 패턴을 '이상'으로 간주했는지 확인합니다.
+탐지된 이상치를 원본 데이터와 함께 시각화하여 모델의 성능을 직관적으로 확인합니다. 전체 기간과 최근 3개월 구간을 나누어 상세히 분석합니다.
 
 ```{python}
 #| label: final-visualization
 #| eval: true
 
-# 시각화를 위해 원본 데이터 사용
-original_data = df_value[value_col].values
-
-# 3행 1열의 subplot 구성으로 더 상세한 분석 제공
-plt.figure(figsize=(15, 15))
+plt.figure(figsize=(10, 9))
 
 # 상단: 전체 데이터와 탐지 결과
 plt.subplot(3, 1, 1)
-plt.plot(original_data, label='원본 전력 사용량', alpha=0.7, color='blue', linewidth=0.8)
-
-if len(predicted_anomaly_points) > 0:
-    # 유효한 인덱스만 사용
-    valid_indices = [i for i in predicted_anomaly_points if i < len(original_data)]
-    if len(valid_indices) > 0:
-        plt.scatter(valid_indices, original_data[valid_indices],
-                    color='red', marker='x', s=80, linewidth=2, label=f'탐지된 이상치 ({len(valid_indices)}개)', zorder=5)
-
-plt.title('실제 전력 사용량 데이터 이상 탐지 결과 (전체)', fontsize=14, fontweight='bold')
+plt.plot(raw_data, label='원본 전력 사용량 (2019년)', alpha=0.7, color='blue', linewidth=0.8)
+if predicted_anomaly_points:
+    plt.scatter(predicted_anomaly_points, raw_data[predicted_anomaly_points],
+                color='red', marker='x', s=80, linewidth=2, label=f'탐지된 이상치 ({len(predicted_anomaly_points)}개)', zorder=5)
+plt.title('실제 전력 사용량 데이터 이상 탐지 결과 (2019년)', fontsize=14, fontweight='bold')
 plt.ylabel('사용량 (kWh)')
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
@@ -313,42 +435,32 @@ plt.grid(True, linestyle='--', alpha=0.5)
 # 중간: 재구성 오차와 임계값
 plt.subplot(3, 1, 2)
 plt.plot(reconstruction_error, label='윈도우별 재구성 오차', color='steelblue', linewidth=1)
-plt.axhline(y=threshold, color='red', linestyle='--', linewidth=2, 
-           label=f'임계값 ({threshold:.4f})')
-if len(anomaly_window_indices) > 0:
+plt.axhline(y=threshold, color='red', linestyle='--', linewidth=2, label=f'임계값 ({threshold:.4f})')
+if anomaly_window_indices.any():
     plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], 
                c='red', s=60, alpha=0.8, label=f'이상 윈도우 ({len(anomaly_window_indices)}개)', zorder=5)
-
-plt.title('윈도우별 재구성 오차 분포', fontsize=14, fontweight='bold')
+plt.title('윈도우별 재구성 오차 분포 (2019년)', fontsize=14, fontweight='bold')
 plt.xlabel('윈도우 인덱스')
 plt.ylabel('재구성 오차 (MSE)')
 plt.legend()
 plt.grid(True, linestyle='--', alpha=0.5)
 
-# 하단: 세분화된 구간 시각화 (1개월치 데이터)
+# 하단: 세분화된 구간 시각화 (맨 뒤 3개월치 데이터)
 plt.subplot(3, 1, 3)
-# 전체 데이터에서 1개월치 정도 (약 44,640분 = 31일 * 24시간 * 60분)
-month_data_points = min(44640, len(original_data))
-start_idx = 0
-end_idx = month_data_points
+month_hours = 90 * 24
+start_idx_viz = max(0, len(raw_data) - month_hours)
+end_idx_viz = len(raw_data)
 
-# 1개월치 데이터 시각화
-month_data = original_data[start_idx:end_idx]
-plt.plot(range(start_idx, end_idx), month_data, 
-         label='전력 사용량 (초기 1개월)', alpha=0.8, color='navy', linewidth=1)
+plt.plot(range(start_idx_viz, end_idx_viz), raw_data[start_idx_viz:end_idx_viz], 
+         label=f'전력 사용량 (2019년, 최근 3개월)', alpha=0.8, color='navy', linewidth=1)
 
-# 해당 구간의 이상치만 표시
-month_anomaly_count = 0
-if len(predicted_anomaly_points) > 0:
-    valid_indices = [i for i in predicted_anomaly_points if i < len(original_data)]
-    month_anomalies = [i for i in valid_indices if start_idx <= i < end_idx]
-    month_anomaly_count = len(month_anomalies)
-    if month_anomaly_count > 0:
-        plt.scatter(month_anomalies, original_data[month_anomalies],
-                    color='red', marker='o', s=100, alpha=0.8, 
-                    label=f'1개월 구간 이상치 ({month_anomaly_count}개)', zorder=5)
+month_anomalies = [i for i in predicted_anomaly_points if start_idx_viz <= i < end_idx_viz]
+if month_anomalies:
+    plt.scatter(month_anomalies, raw_data[month_anomalies],
+                color='red', marker='o', s=100, alpha=0.8, 
+                label=f'최근 3개월 이상치 ({len(month_anomalies)}개)', zorder=5)
 
-plt.title('세분화된 이상 탐지 결과 (초기 1개월 구간)', fontsize=14, fontweight='bold')
+plt.title('세분화된 이상 탐지 결과 (2019년, 최근 3개월)', fontsize=14, fontweight='bold')
 plt.xlabel('시간 스텝')
 plt.ylabel('사용량 (kWh)')
 plt.legend()
@@ -358,30 +470,26 @@ plt.tight_layout()
 plt.show()
 
 # 탐지 결과 요약 출력
-print(f"\n=== 이상 탐지 결과 요약 ===")
-print(f"전체 데이터 길이: {len(original_data):,}분")
-print(f"전체 탐지된 이상치: {len(valid_indices) if 'valid_indices' in locals() else 0}개")
-print(f"1개월 구간 이상치: {month_anomaly_count}개")
-print(f"이상치 비율: {(len(valid_indices) if 'valid_indices' in locals() else 0) / len(original_data) * 100:.3f}%")
+print(f"\n=== 이상 탐지 결과 요약 (2019년) ===")
+print(f"분석 데이터 길이: {len(raw_data):,} 시간")
+print(f"전체 탐지된 이상치: {len(predicted_anomaly_points)}개")
+print(f"최근 3개월 구간 이상치: {len(month_anomalies)}개")
+print(f"이상치 비율: {len(predicted_anomaly_points) / len(raw_data) * 100:.3f}%")
 ```
 
-## 5. 결론
+## 4. 결론
 
-이번 Week05에서는 지난 4주간 개발한 CNN 오토인코더 모델을 실제 Kaggle 데이터에 적용하여, 이론적 모델의 실무 적용 과정에서 발생하는 문제점들과 해결 방안을 탐구하였습니다.
+이번 5주차에서는 지난 4주간 개발해온 CNN 오토인코더 모델을 실제 전력 사용량 데이터에 적용해봤습니다. 단순히 모델을 돌려보는 데서 그치지 않고, 실제 데이터가 가진 복잡함과 예측 불가능성을 직접 마주하며, 이론과 실전의 간극을 좁히는 과정을 경험했습니다.
 
-### 핵심 변경사항
-- **학습 구간 설정**: 전체 데이터의 20-80% 구간만 학습에 사용함으로써 과탐지 문제를 효과적으로 해결
-- **하이퍼파라미터 최적화**: Optuna를 통한 체계적 튜닝으로 lr=0.0074, dropout=0.102 등 최적값 도출
-- **임계값 조정**: 99.5%에서 99% quantile로 조정하여 정상 구간의 오탐 현상 개선
+### 진행 과정
 
-### 실무 적용 교훈
-실제 프로젝트에서는 모델 성능과 함께 도메인 지식 활용과 시각적 검증이 필수적입니다. 수치적 결과만으로는 모델의 실효성을 판단하기 어려우며, 반드시 시각화를 통한 검증 과정이 필요합니다.
+- **체계적인 개선**  
+    Week 4에서 정립한 ‘윈도우별 정규화 → Dropout으로 과적합 방지 → Optuna 하이퍼파라미터 최적화 → Quantile 기반 임계값 설정’이라는 프로세스가 실제 데이터에서도 효과적이었습니다. 감에 의존하지 않고 논리적으로 접근하는 것이 얼마나 중요한지 다시 한 번 확인할 수 있었습니다.
 
-### 한계 및 향후 개선 방향
-- 정량적 평가를 위한 라벨 데이터 확보 필요
-- 다변량 모델 확장을 통한 복합적 요인 고려
-- 윈도우 크기 자동 최적화 알고리즘 개발
-- 실시간 탐지 시스템 구축 방안 연구
+- **데이터를 중심에 두기**  
+    실제 데이터는 노이즈와 계절성이 강하게 섞여 있습니다. STL 분해와 이동평균을 결합한 다단계 전처리 덕분에, 모델이 본질적인 패턴에 집중할 수 있었고, 이상 신호도 더 명확하게 잡아낼 수 있었습니다. 결국 모델링의 핵심은 데이터를 얼마나 잘 이해하고 다루느냐에 달려 있다는 점을 실감했습니다.
 
-### 마무리
-Week01의 EDA부터 Week05의 실제 데이터 적용까지 시계열 이상 탐지의 전 과정을 체계적으로 수행하였습니다. 특히 이론적 모델과 실제 데이터 간의 성능 차이를 확인하고 이를 해결하는 과정에서 실무 적용을 위한 중요한 인사이트를 얻을 수 있었습니다.
+- **‘정상’의 기준 고민하기**  
+    실제 데이터에서는 ‘정상’이 무엇인지 정의하는 것부터 쉽지 않습니다. 데이터의 20%~80% 구간을 정상으로 간주해 학습에 사용했고, 덕분에 모델이 전체 변동성에 휘둘리지 않고 진짜 이상 신호에 집중할 수 있었습니다. 이상 탐지에서는 도메인 지식과 합리적인 가정이 필수라는 점도 다시 느꼈습니다.
+
+Week 1의 데이터 탐색부터 Week 5의 실제 데이터 적용까지, 시계열 이상 탐지라는 목표를 향해 한 단계씩 나아갔습니다. 단순한 베이스라인에서 출발해 점진적으로 성능을 개선하고, 실제 데이터의 복잡성까지 다룰 수 있게 된 이번 과정은, 모델링이 단순히 코드를 짜는 일이 아니라 문제를 정의하고, 가설을 세우고, 실험하고, 검증하는 일련의 탐구라는 사실을 다시 한 번 확인했습니다.
