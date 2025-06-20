@@ -116,10 +116,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지 – beomdo’s ML-DL blog">
 <meta property="og:description" content="이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다.">
-<meta property="og:image" content="https://beomdo-park.github.io/posts/ABC_week05_real_data_analysis/index_files/figure-html/data-preprocessing-output-2.png">
+<meta property="og:image" content="https://beomdo-park.github.io/posts/ABC_week05_real_data_analysis/index_files/figure-html/data-preprocessing-output-3.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="543">
-<meta property="og:image:width" content="1218">
+<meta property="og:image:height" content="466">
+<meta property="og:image:width" content="831">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -393,18 +393,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#데이터-소개-및-준비" id="toc-데이터-소개-및-준비" class="nav-link active" data-scroll-target="#데이터-소개-및-준비">1. 데이터 소개 및 준비</a></li>
-  <li><a href="#데이터-전처리-및-윈도우-생성" id="toc-데이터-전처리-및-윈도우-생성" class="nav-link" data-scroll-target="#데이터-전처리-및-윈도우-생성">2. 데이터 전처리 및 윈도우 생성</a></li>
-  <li><a href="#모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" id="toc-모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" class="nav-link" data-scroll-target="#모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화">3. 모델 학습을 위한 데이터 분할 및 하이퍼파라미터 최적화</a></li>
-  <li><a href="#모델-평가-및-이상치-탐지" id="toc-모델-평가-및-이상치-탐지" class="nav-link" data-scroll-target="#모델-평가-및-이상치-탐지">4. 모델 평가 및 이상치 탐지</a>
+  <li><a href="#데이터-전처리-및-계절성-제거" id="toc-데이터-전처리-및-계절성-제거" class="nav-link" data-scroll-target="#데이터-전처리-및-계절성-제거">2. 데이터 전처리 및 계절성 제거</a></li>
+  <li><a href="#모델-학습-및-이상치-탐지" id="toc-모델-학습-및-이상치-탐지" class="nav-link" data-scroll-target="#모델-학습-및-이상치-탐지">3. 모델 학습 및 이상치 탐지</a>
   <ul class="collapse">
-  <li><a href="#탐지-결과-시각화" id="toc-탐지-결과-시각화" class="nav-link" data-scroll-target="#탐지-결과-시각화">탐지 결과 시각화</a></li>
+  <li><a href="#모델-정의" id="toc-모델-정의" class="nav-link" data-scroll-target="#모델-정의">3.1. 모델 정의</a></li>
+  <li><a href="#학습-및-평가" id="toc-학습-및-평가" class="nav-link" data-scroll-target="#학습-및-평가">3.2. 학습 및 평가</a></li>
+  <li><a href="#결과-시각화" id="toc-결과-시각화" class="nav-link" data-scroll-target="#결과-시각화">3.3. 결과 시각화</a></li>
   </ul></li>
-  <li><a href="#결론" id="toc-결론" class="nav-link" data-scroll-target="#결론">5. 결론</a>
+  <li><a href="#결론" id="toc-결론" class="nav-link" data-scroll-target="#결론">4. 결론</a>
   <ul class="collapse">
-  <li><a href="#핵심-변경사항" id="toc-핵심-변경사항" class="nav-link" data-scroll-target="#핵심-변경사항">핵심 변경사항</a></li>
-  <li><a href="#실무-적용-교훈" id="toc-실무-적용-교훈" class="nav-link" data-scroll-target="#실무-적용-교훈">실무 적용 교훈</a></li>
-  <li><a href="#한계-및-향후-개선-방향" id="toc-한계-및-향후-개선-방향" class="nav-link" data-scroll-target="#한계-및-향후-개선-방향">한계 및 향후 개선 방향</a></li>
-  <li><a href="#마무리" id="toc-마무리" class="nav-link" data-scroll-target="#마무리">마무리</a></li>
+  <li><a href="#진행-과정" id="toc-진행-과정" class="nav-link" data-scroll-target="#진행-과정">진행 과정</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -438,6 +436,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>이번 주에 사용할 데이터는 Kaggle에 공개된 <strong>‘Residential Power Usage 3-Years Data’</strong>입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 시계열 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.</p>
 <p>먼저, GitHub Raw URL을 통해 데이터를 불러오고, 시계열 분석을 위해 날짜 컬럼을 인덱스로 변환한 뒤, 전력 사용량 컬럼만 추출합니다.</p>
 <div id="data-loading" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.optim <span class="im">as</span> optim</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> TensorDataset, DataLoader</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> StandardScaler</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># GitHub Raw URL을 통해 데이터 불러오기</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>url <span class="op">=</span> <span class="st">'https://raw.githubusercontent.com/beomdo-park/ml-dl-by-dataset/main/datasets/power_usage_2016_to_2020.csv'</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 로딩 시작..."</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 로딩 완료."</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>데이터 로딩 시작...
 데이터 로딩 완료.
@@ -456,302 +471,447 @@ memory usage: 1.1+ MB</code></pre>
 </div>
 <p>데이터는 ‘StartDate’, ‘Value (kWh)’, ‘day_of_week’, ‘notes’ 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 ‘StartDate’를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, ’Value (kWh)’ 컬럼만 사용하겠습니다. 전체 데이터를 사용하여 분석을 진행합니다.</p>
 <div id="cell-data-preprocessing" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 전처리 시작..."</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 'StartDate'를 datetime으로 변환하고 인덱스로 설정</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">'StartDate'</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">'StartDate'</span>])</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">'StartDate'</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 시간순으로 정렬</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>df.sort_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 시간순 정렬 완료."</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 'Value (kWh)' 컬럼만 선택</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># df.info() 결과에 따라 'Value (kWh)'를 사용합니다.</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>value_col <span class="op">=</span> <span class="st">'Value (kWh)'</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>df_value <span class="op">=</span> df[[value_col]].copy()</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 시각화 (전체 기간)</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">6</span>))</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>plt.plot(df_value.index, df_value[value_col], label<span class="op">=</span><span class="st">'전력 사용량 (전체 기간)'</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'시간에 따른 전력 사용량 (전체 기간)'</span>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'날짜'</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 데이터 크기: </span><span class="sc">{</span>df_value<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 전처리 시작..."</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 'StartDate'를 datetime으로 변환하고 인덱스로 설정</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"StartDate"</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">"StartDate"</span>])</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"StartDate"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 시간순으로 정렬</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df.sort_index(inplace<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 시간순 정렬 완료."</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 'Value (kWh)' 컬럼만 선택</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>value_col <span class="op">=</span> <span class="st">"Value (kWh)"</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>df_value <span class="op">=</span> df[[value_col]].copy()</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 시간 단위를 'H'로 재샘플링하고 누락된 값은 선형 보간</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터를 시간 단위로 재샘플링하고 누락된 값을 보간합니다..."</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>df_value <span class="op">=</span> df_value.resample(<span class="st">"H"</span>).mean()</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>df_value[value_col] <span class="op">=</span> df_value[value_col].interpolate(method<span class="op">=</span><span class="st">"linear"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"재샘플링 및 보간 완료."</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># [수정] 분석 효율성을 위해 2019년 데이터만 사용</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"분석 효율성을 위해 2019년 데이터만 사용합니다..."</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>df_value <span class="op">=</span> df_value[df_value.index.year <span class="op">==</span> <span class="dv">2019</span>].copy()</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 슬라이싱 완료."</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 데이터 시각화 (2019년)</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">5</span>))</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>plt.plot(df_value.index, df_value[value_col], label<span class="op">=</span><span class="st">"전력 사용량 (2019년)"</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"시간에 따른 전력 사용량 (2019년)"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"날짜"</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"사용량 (kWh)"</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"2019년 데이터 크기: </span><span class="sc">{</span>df_value<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>데이터 전처리 시작...
-데이터 시간순 정렬 완료.</code></pre>
+데이터 시간순 정렬 완료.
+데이터를 시간 단위로 재샘플링하고 누락된 값을 보간합니다...
+재샘플링 및 보간 완료.
+분석 효율성을 위해 2019년 데이터만 사용합니다...
+데이터 슬라이싱 완료.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_3089/3802000988.py:16: FutureWarning:
+
+'H' is deprecated and will be removed in a future version, please use 'h' instead.
+</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/data-preprocessing-output-2.png" id="data-preprocessing" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/data-preprocessing-output-3.png" id="data-preprocessing" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>전체 데이터 크기: (35952, 1)</code></pre>
+<pre><code>2019년 데이터 크기: (8760, 1)</code></pre>
 </div>
 </div>
 </section>
-<section id="데이터-전처리-및-윈도우-생성" class="level2">
-<h2 class="anchored" data-anchor-id="데이터-전처리-및-윈도우-생성">2. 데이터 전처리 및 윈도우 생성</h2>
-<p>시계열 데이터의 추세(Trend) 영향을 줄이고, 각 윈도우의 지역적 패턴에 집중하기 위해 윈도우별로 독립적인 정규화를 수행합니다. 이 방법은 데이터의 전반적인 스케일 변화에 덜 민감한 모델을 만드는 데 도움이 됩니다.</p>
-<div id="scaling-and-windowing" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"윈도우 생성 및 정규화 시작..."</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 원본 데이터에서 바로 윈도우 생성</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>raw_data <span class="op">=</span> df_value[value_col].values</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 슬라이딩 윈도우 생성 함수</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sliding_window(data, window_size, step_size<span class="op">=</span><span class="dv">1</span>):</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    n_windows <span class="op">=</span> (<span class="bu">len</span>(data) <span class="op">-</span> window_size) <span class="op">//</span> step_size <span class="op">+</span> <span class="dv">1</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array([data[i:i<span class="op">+</span>window_size] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, n_windows <span class="op">*</span> step_size, step_size)])</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 윈도우 생성 (윈도우 크기는 60분(1시간)으로 설정)</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>window_size <span class="op">=</span> <span class="dv">60</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>raw_windows <span class="op">=</span> sliding_window(raw_data, window_size)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 윈도우별 정규화</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>scaled_windows <span class="op">=</span> np.array([StandardScaler().fit_transform(window.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)).flatten() <span class="cf">for</span> window <span class="kw">in</span> raw_windows])</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># PyTorch 텐서 변환 (shape: [batch_size, channels, sequence_length])</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>all_windows_torch <span class="op">=</span> torch.from_numpy(scaled_windows).unsqueeze(<span class="dv">1</span>).<span class="bu">float</span>()  <span class="co"># [N, 1, window_size]</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"생성된 윈도우 데이터 shape: </span><span class="sc">{</span>all_windows_torch<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>윈도우 생성 및 정규화 시작...
-생성된 윈도우 데이터 shape: torch.Size([35893, 1, 60])</code></pre>
-</div>
-</div>
-</section>
-<section id="모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화" class="level2">
-<h2 class="anchored" data-anchor-id="모델-학습을-위한-데이터-분할-및-하이퍼파라미터-최적화">3. 모델 학습을 위한 데이터 분할 및 하이퍼파라미터 최적화</h2>
-<p>실제 데이터에서는 초반부와 이후 구간의 패턴이 다를 수 있습니다(구간 변화, Regime Change). 전체 데이터를 학습하면 변화 자체를 이상으로 탐지할 수 있으므로, <strong>패턴이 안정화된 구간만을 ’정상’으로 정의하고 해당 구간 데이터로만 모델을 학습</strong>합니다.</p>
-<p>실제 적용에서는 더 보수적인 접근이 필요하므로, 전체 데이터의 20-80% 구간을 안정적인 정상 구간으로 설정하고, 하이퍼파라미터도 과적합을 방지하도록 조정합니다.</p>
-<div id="split-data-for-training" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 더 보수적인 학습 구간 설정 (전체 데이터의 20-80% 구간 사용)</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>total_windows <span class="op">=</span> <span class="bu">len</span>(all_windows_torch)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>train_start_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.2</span>)  <span class="co"># 20% 지점부터</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>train_end_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.8</span>)    <span class="co"># 80% 지점까지</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>train_windows_torch <span class="op">=</span> all_windows_torch[train_start_idx:train_end_idx]</span>
+<section id="데이터-전처리-및-계절성-제거" class="level2">
+<h2 class="anchored" data-anchor-id="데이터-전처리-및-계절성-제거">2. 데이터 전처리 및 계절성 제거</h2>
+<p>실제 전력 데이터는 강한 계절성과 일간 패턴을 보입니다. 효과적인 이상 탐지를 위해 다단계 계절성 제거를 적용한 후 윈도우 생성과 정규화를 수행합니다.</p>
+<div id="data-processing-and-windowing" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> STL</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 윈도우 수: </span><span class="sc">{</span>all_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습 구간: </span><span class="sc">{</span>train_start_idx<span class="sc">}</span><span class="ss"> ~ </span><span class="sc">{</span>train_end_idx<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습에 사용할 윈도우 수: </span><span class="sc">{</span>train_windows_torch<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Helper Functions ---</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_sliding_windows(data, window_size):</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""슬라이딩 윈도우 생성"""</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    windows <span class="op">=</span> []</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(data) <span class="op">-</span> window_size <span class="op">+</span> <span class="dv">1</span>):</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        windows.append(data[i : i <span class="op">+</span> window_size])</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(windows)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalize_windows(windows):</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""각 윈도우별로 개별 정규화"""</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    normalized_windows <span class="op">=</span> []</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    scalers <span class="op">=</span> []</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> window <span class="kw">in</span> windows:</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        scaler <span class="op">=</span> MinMaxScaler()</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        normalized_window <span class="op">=</span> scaler.fit_transform(window.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)).flatten()</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        normalized_windows.append(normalized_window)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>        scalers.append(scaler)</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.array(normalized_windows), scalers</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> seasonal_decomposition_approach(data, index):</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""STL 분해를 통한 계절성 제거"""</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 데이터가 너무 짧으면 주기를 조정</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    period <span class="op">=</span> <span class="dv">8760</span>  <span class="co"># 연간 주기 (시간 단위)</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(data) <span class="op">&lt;</span> <span class="dv">2</span> <span class="op">*</span> period:</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        period <span class="op">=</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">365</span>  <span class="co"># 근사치</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">len</span>(data) <span class="op">&lt;</span> <span class="dv">2</span> <span class="op">*</span> period:</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>            period <span class="op">=</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">30</span>  <span class="co"># 월간 주기</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="bu">len</span>(data) <span class="op">&lt;</span> <span class="dv">2</span> <span class="op">*</span> period:</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>                period <span class="op">=</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">7</span>  <span class="co"># 주간 주기</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    <span class="co"># STL의 seasonal 파라미터는 반드시 홀수여야 함</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> period <span class="op">%</span> <span class="dv">2</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>        period <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    ts <span class="op">=</span> pd.Series(data, index<span class="op">=</span>index[: <span class="bu">len</span>(data)])</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    stl <span class="op">=</span> STL(ts, seasonal<span class="op">=</span>period, robust<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> stl.fit()</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    deseasonalized <span class="op">=</span> ts <span class="op">-</span> result.seasonal</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> deseasonalized.values, result</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> comprehensive_deseasonalize(data, index, window_size):</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""다단계 계절성 제거 및 윈도우 생성"""</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"1단계: STL 분해로 주요 계절성 제거..."</span>)</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>    deseason_data, decomp_result <span class="op">=</span> seasonal_decomposition_approach(data, index)</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"2단계: 일간 패턴 제거 (24시간 이동평균)..."</span>)</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>    daily_smooth <span class="op">=</span> pd.Series(deseason_data).rolling(<span class="dv">24</span>, center<span class="op">=</span><span class="va">True</span>).mean()</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    deseason_data <span class="op">=</span> deseason_data <span class="op">-</span> daily_smooth.fillna(<span class="dv">0</span>).values</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"3단계: 윈도우 생성 및 정규화..."</span>)</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a>    windows <span class="op">=</span> create_sliding_windows(deseason_data, window_size)</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a>    normalized_windows, scalers <span class="op">=</span> normalize_windows(windows)</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> normalized_windows, scalers, decomp_result</span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Data Extraction ---</span></span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>raw_data <span class="op">=</span> df_value[value_col].values</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"원본 데이터 크기: </span><span class="sc">{</span><span class="bu">len</span>(raw_data)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 1. 계절성 분해 시각화 ---</span></span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>_, decomp_result_for_plot <span class="op">=</span> seasonal_decomposition_approach(raw_data, df_value.index)</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">8</span>)) <span class="co"># 너비 10으로 수정</span></span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>plt.plot(decomp_result_for_plot.observed)</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'원본 데이터 (2019년)'</span>)</span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"kWh"</span>)</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>plt.plot(decomp_result_for_plot.trend)</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'트렌드 (2019년)'</span>)</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"kWh"</span>)</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>plt.plot(decomp_result_for_plot.seasonal)</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'계절성 (2019년)'</span>)</span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"kWh"</span>)</span>
+<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>)</span>
+<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a><span class="co"># 계절성 제거된 데이터 계산</span></span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>desasonalized_for_plot <span class="op">=</span> (</span>
+<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>    decomp_result_for_plot.observed <span class="op">-</span> decomp_result_for_plot.seasonal</span>
+<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>plt.plot(desasonalized_for_plot)</span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'계절성 제거 후 (2019년)'</span>)</span>
+<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"kWh"</span>)</span>
+<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"시간"</span>)</span>
+<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 2. 최종 데이터 처리 및 윈도우 생성 ---</span></span>
+<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">다단계 계절성 제거 및 윈도우 생성 시작..."</span>)</span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a>window_size <span class="op">=</span> <span class="dv">10</span> <span class="co"># Week4 Optuna 최적값</span></span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>processed_windows, window_scalers, decomp_result <span class="op">=</span> comprehensive_deseasonalize(</span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>    raw_data, df_value.index, window_size</span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"계절성 제거 후 생성된 윈도우 수: </span><span class="sc">{</span><span class="bu">len</span>(processed_windows)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"각 윈도우 크기: </span><span class="sc">{</span>processed_windows<span class="sc">.</span>shape[<span class="dv">1</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a><span class="co"># PyTorch 텐서로 변환</span></span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>all_windows_torch <span class="op">=</span> torch.from_numpy(processed_windows).unsqueeze(<span class="dv">1</span>).<span class="bu">float</span>()</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"텐서 형태: </span><span class="sc">{</span>all_windows_torch<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 3. 처리 전후 비교 시각화 ---</span></span>
+<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">6</span>))</span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>plt.plot(raw_data, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'원본 데이터 (2019년)'</span>)</span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'원본 전력 사용량 데이터 (2019년)'</span>)</span>
+<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'kWh'</span>)</span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>deseason_full <span class="op">=</span> raw_data <span class="op">-</span> decomp_result.seasonal.values</span>
+<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a>plt.plot(deseason_full, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="st">'계절성 제거 후'</span>, color<span class="op">=</span><span class="st">"orange"</span>)</span>
+<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'계절성 제거 후 데이터 (2019년)'</span>)</span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'kWh'</span>)</span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'시간'</span>)</span>
+<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>전체 윈도우 수: 35893
-학습 구간: 7178 ~ 28714
-학습에 사용할 윈도우 수: 21536</code></pre>
+<pre><code>원본 데이터 크기: 8760</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/data-processing-and-windowing-output-2.png" id="data-processing-and-windowing-1" class="img-fluid figure-img"></p>
+</figure>
 </div>
 </div>
-<div id="model-definition-and-training" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CNNAutoencoderWithDropout(nn.Module):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.1</span>):</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(CNNAutoencoderWithDropout, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Encoder</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_conv1 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span>input_channels, out_channels<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">7</span>, padding<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_relu1 <span class="op">=</span> nn.ReLU()</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_drop1 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_pool1 <span class="op">=</span> nn.MaxPool1d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_conv2 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">32</span>, out_channels<span class="op">=</span><span class="dv">16</span>, kernel_size<span class="op">=</span><span class="dv">7</span>, padding<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_relu2 <span class="op">=</span> nn.ReLU()</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_drop2 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_pool2 <span class="op">=</span> nn.MaxPool1d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Decoder</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv_t1 <span class="op">=</span> nn.ConvTranspose1d(in_channels<span class="op">=</span><span class="dv">16</span>, out_channels<span class="op">=</span><span class="dv">16</span>, kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_relu1 <span class="op">=</span> nn.ReLU()</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_drop3 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv_t2 <span class="op">=</span> nn.ConvTranspose1d(in_channels<span class="op">=</span><span class="dv">16</span>, out_channels<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_relu2 <span class="op">=</span> nn.ReLU()</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_drop4 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv_final <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">32</span>, out_channels<span class="op">=</span>input_channels, kernel_size<span class="op">=</span><span class="dv">7</span>, padding<span class="op">=</span><span class="dv">3</span>)</span>
-<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
-<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Encoder</span></span>
-<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_conv1(x)</span>
-<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_relu1(x)</span>
-<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_drop1(x)</span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_pool1(x)</span>
-<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_conv2(x)</span>
-<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_relu2(x)</span>
-<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_drop2(x)</span>
-<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>        encoded <span class="op">=</span> <span class="va">self</span>.encoder_pool2(x)</span>
-<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Decoder</span></span>
-<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_t1(encoded)</span>
-<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_relu1(x)</span>
-<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_drop3(x)</span>
-<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_t2(x)</span>
-<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_relu2(x)</span>
-<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_drop4(x)</span>
-<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_final(x)</span>
-<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span>
-<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="co"># Optuna 최적화 결과(best trial) 하이퍼파라미터 적용</span></span>
-<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a><span class="co"># lr=0.007392392751789862, dropout_rate=0.10244576584681189, optimizer=Adam</span></span>
-<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNNAutoencoderWithDropout(input_channels<span class="op">=</span><span class="dv">1</span>, dropout_rate<span class="op">=</span><span class="fl">0.10244576584681189</span>)</span>
-<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> optim.Adam(model.parameters(), lr<span class="op">=</span><span class="fl">0.007392392751789862</span>)</span>
-<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.MSELoss()</span>
-<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 안정 구간 데이터로 학습</span></span>
-<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> TensorDataset(train_windows_torch)</span>
-<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>data_loader <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">True</span>)  <span class="co"># 배치 크기 감소</span></span>
-<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 시작 (개선된 안정 구간 및 하이퍼파라미터)..."</span>)</span>
-<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">15</span>  <span class="co"># 에포크 증가</span></span>
-<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
-<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
-<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>    epoch_loss <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> data <span class="kw">in</span> data_loader:</span>
-<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> data[<span class="dv">0</span>]</span>
-<span id="cb9-61"><a href="#cb9-61" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
-<span id="cb9-62"><a href="#cb9-62" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model(inputs)</span>
-<span id="cb9-63"><a href="#cb9-63" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> criterion(outputs, inputs)</span>
-<span id="cb9-64"><a href="#cb9-64" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
-<span id="cb9-65"><a href="#cb9-65" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
-<span id="cb9-66"><a href="#cb9-66" aria-hidden="true" tabindex="-1"></a>        epoch_loss <span class="op">+=</span> loss.item()</span>
-<span id="cb9-67"><a href="#cb9-67" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb9-68"><a href="#cb9-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (epoch <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="dv">5</span> <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb9-69"><a href="#cb9-69" aria-hidden="true" tabindex="-1"></a>        avg_loss <span class="op">=</span> epoch_loss <span class="op">/</span> <span class="bu">len</span>(data_loader)</span>
-<span id="cb9-70"><a href="#cb9-70" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Epoch [</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">], Avg Loss: </span><span class="sc">{</span>avg_loss<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb9-71"><a href="#cb9-71" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>모델 학습 시작 (개선된 안정 구간 및 하이퍼파라미터)...
-Epoch [5/15], Avg Loss: 0.072463
-Epoch [10/15], Avg Loss: 0.069328
-Epoch [15/15], Avg Loss: 0.068391
-모델 학습 완료.</code></pre>
+<pre><code>
+다단계 계절성 제거 및 윈도우 생성 시작...
+1단계: STL 분해로 주요 계절성 제거...
+2단계: 일간 패턴 제거 (24시간 이동평균)...
+3단계: 윈도우 생성 및 정규화...
+계절성 제거 후 생성된 윈도우 수: 8751
+각 윈도우 크기: 10
+텐서 형태: torch.Size([8751, 1, 10])</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/data-processing-and-windowing-output-4.png" id="data-processing-and-windowing-2" class="img-fluid figure-img"></p>
+</figure>
+</div>
 </div>
 </div>
 </section>
-<section id="모델-평가-및-이상치-탐지" class="level2">
-<h2 class="anchored" data-anchor-id="모델-평가-및-이상치-탐지">4. 모델 평가 및 이상치 탐지</h2>
-<p>학습된 모델로 전체 데이터의 재구성 오차를 계산하고, 학습 데이터의 재구성 오차 분포를 기반으로 임계값(Quantile 기준)을 설정해 이상치를 탐지합니다.</p>
-<div id="evaluation-and-detection" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 학습 데이터의 재구성 오차를 기반으로 임계값 설정</span></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    reconstructed_train <span class="op">=</span> model(train_windows_torch)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    error_train <span class="op">=</span> torch.mean((train_windows_torch <span class="op">-</span> reconstructed_train)<span class="op">**</span><span class="dv">2</span>, dim<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    train_reconstruction_error <span class="op">=</span> error_train.numpy()</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>quantile_level <span class="op">=</span> <span class="fl">0.99</span>  <span class="co"># 더 관대한 임계값 설정</span></span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> np.quantile(train_reconstruction_error, quantile_level)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"임계값 (학습 데이터 기준 </span><span class="sc">{</span>quantile_level<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% Quantile): </span><span class="sc">{</span>threshold<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 전체 데이터에 대한 재구성 오차 계산</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
-<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>    reconstructed_all <span class="op">=</span> model(all_windows_torch)</span>
-<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>    error_all <span class="op">=</span> torch.mean((all_windows_torch <span class="op">-</span> reconstructed_all)<span class="op">**</span><span class="dv">2</span>, dim<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
-<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>    reconstruction_error <span class="op">=</span> error_all.numpy()</span>
-<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 임계값을 기준으로 전체 데이터에서 이상치 탐지</span></span>
-<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>anomaly_window_indices <span class="op">=</span> np.where(reconstruction_error <span class="op">&gt;</span> threshold)[<span class="dv">0</span>]</span>
-<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 윈도우 내 최대 오차 지점 탐색</span></span>
-<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>pointwise_error <span class="op">=</span> ((all_windows_torch <span class="op">-</span> reconstructed_all)<span class="op">**</span><span class="dv">2</span>).squeeze().numpy()</span>
-<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> []</span>
-<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> window_idx <span class="kw">in</span> anomaly_window_indices:</span>
-<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>    max_error_idx_in_window <span class="op">=</span> np.argmax(pointwise_error[window_idx])</span>
-<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>    absolute_idx <span class="op">=</span> window_idx <span class="op">+</span> max_error_idx_in_window</span>
-<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    predicted_anomaly_points.append(absolute_idx)</span>
-<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(<span class="bu">set</span>(predicted_anomaly_points)))</span>
-<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"탐지된 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a><span class="co"># 안전성 체크: 유효한 인덱스만 필터링</span></span>
-<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> [idx <span class="cf">for</span> idx <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> idx <span class="op">&lt;</span> <span class="bu">len</span>(raw_data)]</span>
-<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"유효한 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="모델-학습-및-이상치-탐지" class="level2">
+<h2 class="anchored" data-anchor-id="모델-학습-및-이상치-탐지">3. 모델 학습 및 이상치 탐지</h2>
+<p>Week4에서 최적화한 CNN 오토인코더 모델을 사용하여 실제 전력 데이터에 대한 이상치 탐지를 수행합니다. 학습, 평가, 시각화 과정을 하나의 논리적 흐름으로 통합하여 설명합니다.</p>
+<section id="모델-정의" class="level3">
+<h3 class="anchored" data-anchor-id="모델-정의">3.1. 모델 정의</h3>
+<p>Week4에서 <code>Optuna</code>를 통해 최적화한 모델 구조와 하이퍼파라미터를 그대로 사용합니다. 이 모델은 <code>Dropout</code>을 포함하여 과적합을 방지하고, <code>ConvTranspose1d</code> 대신 <code>Upsample</code>과 <code>AdaptiveAvgPool1d</code>를 사용하여 다양한 윈도우 크기에 유연하게 대응할 수 있도록 개선되었습니다.</p>
+<div id="model-definition" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CNNAutoencoderWithDropout(nn.Module):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_shape, dropout_rate<span class="op">=</span><span class="fl">0.2</span>):</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(CNNAutoencoderWithDropout, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.input_size <span class="op">=</span> input_shape[<span class="dv">0</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Encoder</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_conv1 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span>input_shape[<span class="dv">1</span>], out_channels<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_relu1 <span class="op">=</span> nn.ReLU()</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_drop1 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_pool1 <span class="op">=</span> nn.MaxPool1d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_conv2 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">32</span>, out_channels<span class="op">=</span><span class="dv">16</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_relu2 <span class="op">=</span> nn.ReLU()</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_drop2 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.encoder_pool2 <span class="op">=</span> nn.MaxPool1d(kernel_size<span class="op">=</span><span class="dv">2</span>, stride<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Decoder</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_upsample1 <span class="op">=</span> nn.Upsample(scale_factor<span class="op">=</span><span class="dv">2</span>, mode<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv1 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">16</span>, out_channels<span class="op">=</span><span class="dv">16</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_relu1 <span class="op">=</span> nn.ReLU()</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_drop3 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_upsample2 <span class="op">=</span> nn.Upsample(scale_factor<span class="op">=</span><span class="dv">2</span>, mode<span class="op">=</span><span class="st">'nearest'</span>)</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv2 <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">16</span>, out_channels<span class="op">=</span><span class="dv">32</span>, kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_relu2 <span class="op">=</span> nn.ReLU()</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_drop4 <span class="op">=</span> nn.Dropout(dropout_rate)</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_adaptive <span class="op">=</span> nn.AdaptiveAvgPool1d(<span class="va">self</span>.input_size)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.decoder_conv_final <span class="op">=</span> nn.Conv1d(in_channels<span class="op">=</span><span class="dv">32</span>, out_channels<span class="op">=</span>input_shape[<span class="dv">1</span>], kernel_size<span class="op">=</span><span class="dv">3</span>, padding<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Encoder</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_conv1(x)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_relu1(x)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_drop1(x)</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_pool1(x)</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_conv2(x)</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_relu2(x)</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.encoder_drop2(x)</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>        encoded <span class="op">=</span> <span class="va">self</span>.encoder_pool2(x)</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Decoder</span></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_upsample1(encoded)</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv1(x)</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_relu1(x)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_drop3(x)</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_upsample2(x)</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv2(x)</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_relu2(x)</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_drop4(x)</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_adaptive(x)</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_final(x)</span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="학습-및-평가" class="level3">
+<h3 class="anchored" data-anchor-id="학습-및-평가">3.2. 학습 및 평가</h3>
+<p>실제 데이터에서는 패턴이 안정화된 구간을 ’정상’으로 간주하고 학습하는 것이 중요합니다. 전체 데이터의 <strong>20% ~ 80% 구간</strong>을 정상 데이터로 정의하고, 이 데이터로만 모델을 학습시킵니다. 그 후, 학습된 모델을 전체 데이터에 적용하여 이상치를 탐지합니다.</p>
+<div id="training-and-evaluation" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 1. 학습 데이터 분할 ---</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>total_windows <span class="op">=</span> <span class="bu">len</span>(all_windows_torch)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>train_start_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.2</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>train_end_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.8</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>train_windows_torch <span class="op">=</span> all_windows_torch[train_start_idx:train_end_idx]</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 윈도우 수: </span><span class="sc">{</span>total_windows<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습 구간: </span><span class="sc">{</span>train_start_idx<span class="sc">}</span><span class="ss"> ~ </span><span class="sc">{</span>train_end_idx<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"학습에 사용할 윈도우 수: </span><span class="sc">{</span><span class="bu">len</span>(train_windows_torch)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 2. 모델 초기화 및 학습 ---</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Week4에서 찾은 최적 하이퍼파라미터 사용</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> CNNAutoencoderWithDropout(input_shape<span class="op">=</span>(window_size, <span class="dv">1</span>), dropout_rate<span class="op">=</span><span class="fl">0.137</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> optim.RMSprop(model.parameters(), lr<span class="op">=</span><span class="fl">0.000981</span>)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>criterion <span class="op">=</span> nn.MSELoss()</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> TensorDataset(train_windows_torch)</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>data_loader <span class="op">=</span> DataLoader(dataset, batch_size<span class="op">=</span><span class="dv">32</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"</span><span class="ch">\n</span><span class="st">모델 학습 시작..."</span>)</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>epochs <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(epochs):</span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> data_batch <span class="kw">in</span> data_loader:</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>        inputs <span class="op">=</span> data_batch[<span class="dv">0</span>]</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a>        outputs <span class="op">=</span> model(inputs)</span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> criterion(outputs, inputs)</span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (epoch <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="dv">5</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"Epoch [</span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>epochs<span class="sc">}</span><span class="ss">], Loss: </span><span class="sc">{</span>loss<span class="sc">.</span>item()<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 3. 임계값 설정 및 이상치 탐지 ---</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a>model.<span class="bu">eval</span>()</span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># 학습 데이터의 재구성 오차로 임계값 설정</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a>    reconstructed_train <span class="op">=</span> model(train_windows_torch)</span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a>    error_train <span class="op">=</span> torch.mean(</span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a>        (train_windows_torch <span class="op">-</span> reconstructed_train) <span class="op">**</span> <span class="dv">2</span>, dim<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a>    train_reconstruction_error <span class="op">=</span> error_train.numpy()</span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>quantile_level <span class="op">=</span> <span class="fl">0.99</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>threshold <span class="op">=</span> np.quantile(train_reconstruction_error, quantile_level)</span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">임계값 (</span><span class="sc">{</span>quantile_level<span class="op">*</span><span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">% Quantile): </span><span class="sc">{</span>threshold<span class="sc">:.6f}</span><span class="ss">"</span>)</span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a><span class="co"># 전체 데이터에 대한 재구성 오차 계산</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> torch.no_grad():</span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>    reconstructed_all <span class="op">=</span> model(all_windows_torch)</span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>    reconstruction_error <span class="op">=</span> torch.mean(</span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>        (all_windows_torch <span class="op">-</span> reconstructed_all) <span class="op">**</span> <span class="dv">2</span>, dim<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>    ).numpy()</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    pointwise_error <span class="op">=</span> ((all_windows_torch <span class="op">-</span> reconstructed_all) <span class="op">**</span> <span class="dv">2</span>).squeeze().numpy()</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a><span class="co"># 이상치 탐지</span></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a>anomaly_window_indices <span class="op">=</span> np.where(reconstruction_error <span class="op">&gt;</span> threshold)[<span class="dv">0</span>]</span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> []</span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> window_idx <span class="kw">in</span> anomaly_window_indices:</span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> window_idx <span class="op">&lt;</span> <span class="bu">len</span>(pointwise_error):</span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a>        max_error_idx_in_window <span class="op">=</span> np.argmax(pointwise_error[window_idx])</span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a>        absolute_idx <span class="op">=</span> window_idx <span class="op">+</span> max_error_idx_in_window</span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a>        predicted_anomaly_points.append(absolute_idx)</span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> <span class="bu">sorted</span>(<span class="bu">list</span>(<span class="bu">set</span>(predicted_anomaly_points)))</span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> [</span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    idx <span class="cf">for</span> idx <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> idx <span class="op">&lt;</span> <span class="bu">len</span>(raw_data)</span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>]</span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"탐지된 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>임계값 (학습 데이터 기준 99.0% Quantile): 0.128954
-탐지된 이상치 포인트 수: 134
-유효한 이상치 포인트 수: 134</code></pre>
+<pre><code>전체 윈도우 수: 8751
+학습 구간: 1750 ~ 7000
+학습에 사용할 윈도우 수: 5250
+
+모델 학습 시작...
+Epoch [5/15], Loss: 0.026040
+Epoch [10/15], Loss: 0.032128
+Epoch [15/15], Loss: 0.043397
+
+임계값 (99.0% Quantile): 0.079095
+탐지된 이상치 포인트 수: 62</code></pre>
 </div>
 </div>
-<section id="탐지-결과-시각화" class="level3">
-<h3 class="anchored" data-anchor-id="탐지-결과-시각화">탐지 결과 시각화</h3>
-<p>이상치로 탐지된 구간과 원본 데이터를 함께 시각화하여, 모델이 어떤 패턴을 ’이상’으로 간주했는지 확인합니다.</p>
-<div id="cell-final-visualization" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 시각화를 위해 원본 데이터 사용</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>original_data <span class="op">=</span> df_value[value_col].values</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 3행 1열의 subplot 구성으로 더 상세한 분석 제공</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="dv">15</span>))</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># 상단: 전체 데이터와 탐지 결과</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.plot(original_data, label<span class="op">=</span><span class="st">'원본 전력 사용량'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'blue'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(predicted_anomaly_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 유효한 인덱스만 사용</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    valid_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(original_data)]</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(valid_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>        plt.scatter(valid_indices, original_data[valid_indices],</span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                    color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'x'</span>, s<span class="op">=</span><span class="dv">80</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f'탐지된 이상치 (</span><span class="sc">{</span><span class="bu">len</span>(valid_indices)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'실제 전력 사용량 데이터 이상 탐지 결과 (전체)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a><span class="co"># 중간: 재구성 오차와 임계값</span></span>
-<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
-<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>plt.plot(reconstruction_error, label<span class="op">=</span><span class="st">'윈도우별 재구성 오차'</span>, color<span class="op">=</span><span class="st">'steelblue'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span>threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, </span>
-<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>           label<span class="op">=</span><span class="ss">f'임계값 (</span><span class="sc">{</span>threshold<span class="sc">:.4f}</span><span class="ss">)'</span>)</span>
-<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(anomaly_window_indices) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>    plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], </span>
-<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>               c<span class="op">=</span><span class="st">'red'</span>, s<span class="op">=</span><span class="dv">60</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="ss">f'이상 윈도우 (</span><span class="sc">{</span><span class="bu">len</span>(anomaly_window_indices)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'윈도우별 재구성 오차 분포'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
-<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'윈도우 인덱스'</span>)</span>
-<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'재구성 오차 (MSE)'</span>)</span>
-<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a><span class="co"># 하단: 세분화된 구간 시각화 (1개월치 데이터)</span></span>
-<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span>
-<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a><span class="co"># 전체 데이터에서 1개월치 정도 (약 44,640분 = 31일 * 24시간 * 60분)</span></span>
-<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a>month_data_points <span class="op">=</span> <span class="bu">min</span>(<span class="dv">44640</span>, <span class="bu">len</span>(original_data))</span>
-<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>start_idx <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>end_idx <span class="op">=</span> month_data_points</span>
-<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a><span class="co"># 1개월치 데이터 시각화</span></span>
-<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>month_data <span class="op">=</span> original_data[start_idx:end_idx]</span>
-<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(start_idx, end_idx), month_data, </span>
-<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>         label<span class="op">=</span><span class="st">'전력 사용량 (초기 1개월)'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, color<span class="op">=</span><span class="st">'navy'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a><span class="co"># 해당 구간의 이상치만 표시</span></span>
-<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a>month_anomaly_count <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">len</span>(predicted_anomaly_points) <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a>    valid_indices <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(original_data)]</span>
-<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a>    month_anomalies <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> valid_indices <span class="cf">if</span> start_idx <span class="op">&lt;=</span> i <span class="op">&lt;</span> end_idx]</span>
-<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a>    month_anomaly_count <span class="op">=</span> <span class="bu">len</span>(month_anomalies)</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> month_anomaly_count <span class="op">&gt;</span> <span class="dv">0</span>:</span>
-<span id="cb13-57"><a href="#cb13-57" aria-hidden="true" tabindex="-1"></a>        plt.scatter(month_anomalies, original_data[month_anomalies],</span>
-<span id="cb13-58"><a href="#cb13-58" aria-hidden="true" tabindex="-1"></a>                    color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'o'</span>, s<span class="op">=</span><span class="dv">100</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, </span>
-<span id="cb13-59"><a href="#cb13-59" aria-hidden="true" tabindex="-1"></a>                    label<span class="op">=</span><span class="ss">f'1개월 구간 이상치 (</span><span class="sc">{</span>month_anomaly_count<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
-<span id="cb13-60"><a href="#cb13-60" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-61"><a href="#cb13-61" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'세분화된 이상 탐지 결과 (초기 1개월 구간)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
-<span id="cb13-62"><a href="#cb13-62" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'시간 스텝'</span>)</span>
-<span id="cb13-63"><a href="#cb13-63" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
-<span id="cb13-64"><a href="#cb13-64" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
-<span id="cb13-65"><a href="#cb13-65" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb13-66"><a href="#cb13-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-67"><a href="#cb13-67" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb13-68"><a href="#cb13-68" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
-<span id="cb13-69"><a href="#cb13-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-70"><a href="#cb13-70" aria-hidden="true" tabindex="-1"></a><span class="co"># 탐지 결과 요약 출력</span></span>
-<span id="cb13-71"><a href="#cb13-71" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">=== 이상 탐지 결과 요약 ==="</span>)</span>
-<span id="cb13-72"><a href="#cb13-72" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 데이터 길이: </span><span class="sc">{</span><span class="bu">len</span>(original_data)<span class="sc">:,}</span><span class="ss">분"</span>)</span>
-<span id="cb13-73"><a href="#cb13-73" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 탐지된 이상치: </span><span class="sc">{</span><span class="bu">len</span>(valid_indices) <span class="cf">if</span> <span class="st">'valid_indices'</span> <span class="kw">in</span> <span class="bu">locals</span>() <span class="cf">else</span> <span class="dv">0</span><span class="sc">}</span><span class="ss">개"</span>)</span>
-<span id="cb13-74"><a href="#cb13-74" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"1개월 구간 이상치: </span><span class="sc">{</span>month_anomaly_count<span class="sc">}</span><span class="ss">개"</span>)</span>
-<span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"이상치 비율: </span><span class="sc">{</span>(<span class="bu">len</span>(valid_indices) <span class="cf">if</span> <span class="st">'valid_indices'</span> <span class="kw">in</span> <span class="bu">locals</span>() <span class="cf">else</span> <span class="dv">0</span>) <span class="op">/</span> <span class="bu">len</span>(original_data) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.3f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="결과-시각화" class="level3">
+<h3 class="anchored" data-anchor-id="결과-시각화">3.3. 결과 시각화</h3>
+<p>탐지된 이상치를 원본 데이터와 함께 시각화하여 모델의 성능을 직관적으로 확인합니다. 전체 기간과 최근 3개월 구간을 나누어 상세히 분석합니다.</p>
+<div id="cell-final-visualization" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">9</span>))</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 상단: 전체 데이터와 탐지 결과</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>plt.plot(raw_data, label<span class="op">=</span><span class="st">'원본 전력 사용량 (2019년)'</span>, alpha<span class="op">=</span><span class="fl">0.7</span>, color<span class="op">=</span><span class="st">'blue'</span>, linewidth<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> predicted_anomaly_points:</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    plt.scatter(predicted_anomaly_points, raw_data[predicted_anomaly_points],</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>                color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'x'</span>, s<span class="op">=</span><span class="dv">80</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f'탐지된 이상치 (</span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'실제 전력 사용량 데이터 이상 탐지 결과 (2019년)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 중간: 재구성 오차와 임계값</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>plt.plot(reconstruction_error, label<span class="op">=</span><span class="st">'윈도우별 재구성 오차'</span>, color<span class="op">=</span><span class="st">'steelblue'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>plt.axhline(y<span class="op">=</span>threshold, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f'임계값 (</span><span class="sc">{</span>threshold<span class="sc">:.4f}</span><span class="ss">)'</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> anomaly_window_indices.<span class="bu">any</span>():</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    plt.scatter(anomaly_window_indices, reconstruction_error[anomaly_window_indices], </span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>               c<span class="op">=</span><span class="st">'red'</span>, s<span class="op">=</span><span class="dv">60</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, label<span class="op">=</span><span class="ss">f'이상 윈도우 (</span><span class="sc">{</span><span class="bu">len</span>(anomaly_window_indices)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'윈도우별 재구성 오차 분포 (2019년)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'윈도우 인덱스'</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'재구성 오차 (MSE)'</span>)</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 하단: 세분화된 구간 시각화 (맨 뒤 3개월치 데이터)</span></span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">3</span>)</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>month_hours <span class="op">=</span> <span class="dv">90</span> <span class="op">*</span> <span class="dv">24</span></span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>start_idx_viz <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, <span class="bu">len</span>(raw_data) <span class="op">-</span> month_hours)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>end_idx_viz <span class="op">=</span> <span class="bu">len</span>(raw_data)</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>plt.plot(<span class="bu">range</span>(start_idx_viz, end_idx_viz), raw_data[start_idx_viz:end_idx_viz], </span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>         label<span class="op">=</span><span class="ss">f'전력 사용량 (2019년, 최근 3개월)'</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, color<span class="op">=</span><span class="st">'navy'</span>, linewidth<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>month_anomalies <span class="op">=</span> [i <span class="cf">for</span> i <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> start_idx_viz <span class="op">&lt;=</span> i <span class="op">&lt;</span> end_idx_viz]</span>
+<span id="cb13-37"><a href="#cb13-37" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> month_anomalies:</span>
+<span id="cb13-38"><a href="#cb13-38" aria-hidden="true" tabindex="-1"></a>    plt.scatter(month_anomalies, raw_data[month_anomalies],</span>
+<span id="cb13-39"><a href="#cb13-39" aria-hidden="true" tabindex="-1"></a>                color<span class="op">=</span><span class="st">'red'</span>, marker<span class="op">=</span><span class="st">'o'</span>, s<span class="op">=</span><span class="dv">100</span>, alpha<span class="op">=</span><span class="fl">0.8</span>, </span>
+<span id="cb13-40"><a href="#cb13-40" aria-hidden="true" tabindex="-1"></a>                label<span class="op">=</span><span class="ss">f'최근 3개월 이상치 (</span><span class="sc">{</span><span class="bu">len</span>(month_anomalies)<span class="sc">}</span><span class="ss">개)'</span>, zorder<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb13-41"><a href="#cb13-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-42"><a href="#cb13-42" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">'세분화된 이상 탐지 결과 (2019년, 최근 3개월)'</span>, fontsize<span class="op">=</span><span class="dv">14</span>, fontweight<span class="op">=</span><span class="st">'bold'</span>)</span>
+<span id="cb13-43"><a href="#cb13-43" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'시간 스텝'</span>)</span>
+<span id="cb13-44"><a href="#cb13-44" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'사용량 (kWh)'</span>)</span>
+<span id="cb13-45"><a href="#cb13-45" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb13-46"><a href="#cb13-46" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb13-47"><a href="#cb13-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-48"><a href="#cb13-48" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb13-49"><a href="#cb13-49" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb13-50"><a href="#cb13-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-51"><a href="#cb13-51" aria-hidden="true" tabindex="-1"></a><span class="co"># 탐지 결과 요약 출력</span></span>
+<span id="cb13-52"><a href="#cb13-52" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="ch">\n</span><span class="ss">=== 이상 탐지 결과 요약 (2019년) ==="</span>)</span>
+<span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"분석 데이터 길이: </span><span class="sc">{</span><span class="bu">len</span>(raw_data)<span class="sc">:,}</span><span class="ss"> 시간"</span>)</span>
+<span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 탐지된 이상치: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">개"</span>)</span>
+<span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"최근 3개월 구간 이상치: </span><span class="sc">{</span><span class="bu">len</span>(month_anomalies)<span class="sc">}</span><span class="ss">개"</span>)</span>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"이상치 비율: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points) <span class="op">/</span> <span class="bu">len</span>(raw_data) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.3f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
@@ -761,42 +921,29 @@ Epoch [15/15], Avg Loss: 0.068391
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
-=== 이상 탐지 결과 요약 ===
-전체 데이터 길이: 35,952분
-전체 탐지된 이상치: 134개
-1개월 구간 이상치: 134개
-이상치 비율: 0.373%</code></pre>
+=== 이상 탐지 결과 요약 (2019년) ===
+분석 데이터 길이: 8,760 시간
+전체 탐지된 이상치: 62개
+최근 3개월 구간 이상치: 18개
+이상치 비율: 0.708%</code></pre>
 </div>
 </div>
 </section>
 </section>
 <section id="결론" class="level2">
-<h2 class="anchored" data-anchor-id="결론">5. 결론</h2>
-<p>이번 Week05에서는 지난 4주간 개발한 CNN 오토인코더 모델을 실제 Kaggle 데이터에 적용하여, 이론적 모델의 실무 적용 과정에서 발생하는 문제점들과 해결 방안을 탐구하였습니다.</p>
-<section id="핵심-변경사항" class="level3">
-<h3 class="anchored" data-anchor-id="핵심-변경사항">핵심 변경사항</h3>
+<h2 class="anchored" data-anchor-id="결론">4. 결론</h2>
+<p>이번 5주차에서는 지난 4주간 개발해온 CNN 오토인코더 모델을 실제 전력 사용량 데이터에 적용해봤습니다. 단순히 모델을 돌려보는 데서 그치지 않고, 실제 데이터가 가진 복잡함과 예측 불가능성을 직접 마주하며, 이론과 실전의 간극을 좁히는 과정을 경험했습니다.</p>
+<section id="진행-과정" class="level3">
+<h3 class="anchored" data-anchor-id="진행-과정">진행 과정</h3>
 <ul>
-<li><strong>학습 구간 설정</strong>: 전체 데이터의 20-80% 구간만 학습에 사용함으로써 과탐지 문제를 효과적으로 해결</li>
-<li><strong>하이퍼파라미터 최적화</strong>: Optuna를 통한 체계적 튜닝으로 lr=0.0074, dropout=0.102 등 최적값 도출</li>
-<li><strong>임계값 조정</strong>: 99.5%에서 99% quantile로 조정하여 정상 구간의 오탐 현상 개선</li>
+<li><p><strong>체계적인 개선</strong><br>
+Week 4에서 정립한 ’윈도우별 정규화 → Dropout으로 과적합 방지 → Optuna 하이퍼파라미터 최적화 → Quantile 기반 임계값 설정’이라는 프로세스가 실제 데이터에서도 효과적이었습니다. 감에 의존하지 않고 논리적으로 접근하는 것이 얼마나 중요한지 다시 한 번 확인할 수 있었습니다.</p></li>
+<li><p><strong>데이터를 중심에 두기</strong><br>
+실제 데이터는 노이즈와 계절성이 강하게 섞여 있습니다. STL 분해와 이동평균을 결합한 다단계 전처리 덕분에, 모델이 본질적인 패턴에 집중할 수 있었고, 이상 신호도 더 명확하게 잡아낼 수 있었습니다. 결국 모델링의 핵심은 데이터를 얼마나 잘 이해하고 다루느냐에 달려 있다는 점을 실감했습니다.</p></li>
+<li><p><strong>’정상’의 기준 고민하기</strong><br>
+실제 데이터에서는 ’정상’이 무엇인지 정의하는 것부터 쉽지 않습니다. 데이터의 20%~80% 구간을 정상으로 간주해 학습에 사용했고, 덕분에 모델이 전체 변동성에 휘둘리지 않고 진짜 이상 신호에 집중할 수 있었습니다. 이상 탐지에서는 도메인 지식과 합리적인 가정이 필수라는 점도 다시 느꼈습니다.</p></li>
 </ul>
-</section>
-<section id="실무-적용-교훈" class="level3">
-<h3 class="anchored" data-anchor-id="실무-적용-교훈">실무 적용 교훈</h3>
-<p>실제 프로젝트에서는 모델 성능과 함께 도메인 지식 활용과 시각적 검증이 필수적입니다. 수치적 결과만으로는 모델의 실효성을 판단하기 어려우며, 반드시 시각화를 통한 검증 과정이 필요합니다.</p>
-</section>
-<section id="한계-및-향후-개선-방향" class="level3">
-<h3 class="anchored" data-anchor-id="한계-및-향후-개선-방향">한계 및 향후 개선 방향</h3>
-<ul>
-<li>정량적 평가를 위한 라벨 데이터 확보 필요</li>
-<li>다변량 모델 확장을 통한 복합적 요인 고려</li>
-<li>윈도우 크기 자동 최적화 알고리즘 개발</li>
-<li>실시간 탐지 시스템 구축 방안 연구</li>
-</ul>
-</section>
-<section id="마무리" class="level3">
-<h3 class="anchored" data-anchor-id="마무리">마무리</h3>
-<p>Week01의 EDA부터 Week05의 실제 데이터 적용까지 시계열 이상 탐지의 전 과정을 체계적으로 수행하였습니다. 특히 이론적 모델과 실제 데이터 간의 성능 차이를 확인하고 이를 해결하는 과정에서 실무 적용을 위한 중요한 인사이트를 얻을 수 있었습니다.</p>
+<p>Week 1의 데이터 탐색부터 Week 5의 실제 데이터 적용까지, 시계열 이상 탐지라는 목표를 향해 한 단계씩 나아갔습니다. 단순한 베이스라인에서 출발해 점진적으로 성능을 개선하고, 실제 데이터의 복잡성까지 다룰 수 있게 된 이번 과정은, 모델링이 단순히 코드를 짜는 일이 아니라 문제를 정의하고, 가설을 세우고, 실험하고, 검증하는 일련의 탐구라는 사실을 다시 한 번 확인했습니다.</p>
 
 
 </section>
