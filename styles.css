@@ -141,26 +141,82 @@ code {
 }
 
 .profile-readme {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 1rem;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.02);
+  width: min(900px, 80vw);
+  margin: 0 auto 2rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+
+:root[data-bs-theme="dark"] .profile-readme {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(15, 21, 32, 0.85);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
 }
 
 .profile-readme table {
   width: 100% !important;
-  display: block;
+  border-collapse: separate;
+  border-spacing: 0;
   overflow-x: auto;
+  background: transparent;
+  color: inherit;
+}
+
+.profile-readme table td,
+.profile-readme table th {
+  padding: 0.85rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.015);
+}
+
+:root[data-bs-theme="dark"] .profile-readme table td,
+:root[data-bs-theme="dark"] .profile-readme table th {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .profile-readme img {
+  display: block;
+  width: min(720px, 100%);
   max-width: 100%;
   height: auto;
+  margin: 0 auto;
+  border-radius: 14px;
 }
 
 .profile-readme div,
 .profile-readme p {
   max-width: 100%;
+  color: inherit;
+}
+
+.profile-readme a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.profile-readme .stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .profile-readme {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+  }
+
+  .profile-readme table,
+  .profile-readme table td,
+  .profile-readme table th {
+    font-size: 0.95rem;
+  }
 }
