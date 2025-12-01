@@ -201,11 +201,11 @@ code {
   }
 }
 
-/* soften callout note colors in dark mode */
+/* callout + syntax colors tuned for Tokyo Night style */
 body.quarto-dark {
-  --callout-note-border: rgba(148, 163, 184, 0.5);
-  --callout-note-bg: rgba(148, 163, 184, 0.16);
-  --callout-note-color: #cbd5f5;
+  --callout-note-border: #565f89;
+  --callout-note-bg: rgba(56, 62, 90, 0.35);
+  /* --callout-note-color: #c0caf5; */
 }
 
 .sourceCode .ex {
@@ -213,7 +213,7 @@ body.quarto-dark {
 }
 
 body.quarto-dark .sourceCode .ex {
-  color: #8ca5f7;
+  color: #7aa2f7;
 }
 
 .sourceCode .fu {
@@ -221,7 +221,7 @@ body.quarto-dark .sourceCode .ex {
 }
 
 body.quarto-dark .sourceCode .fu {
-  color: #93c5fd;
+  color: #9f76eb;
 }
 
 .sourceCode .st {
@@ -229,14 +229,14 @@ body.quarto-dark .sourceCode .fu {
 }
 
 body.quarto-dark .sourceCode .st {
-  color: #f2d096;
+  color: #9ece6a;
 }
 
 .sourceCode .at {
-  color: #7c3aed;
+  color: #925dee;
 }
 
 body.quarto-dark .sourceCode .at {
-  color: #c4b5fd;
+  color: #fe91a5;
 }
 
