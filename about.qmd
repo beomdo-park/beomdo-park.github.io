@@ -2,6 +2,7 @@
 title: ""
 title-block-style: none
 image: profile.jpg
+page-layout: full
 ---
 
 ::: {.profile-readme}

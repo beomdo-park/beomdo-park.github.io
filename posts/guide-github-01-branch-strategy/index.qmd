@@ -7,7 +7,7 @@ categories: ["GitHub"]
 tags: ["Git", "GitHub", "Branch"]
 page-layout: full
 freeze: true
-image: assets/github-mark.png
+image: /assets/github-mark.png
 image-alt: "GitHub Mark"
 ---
 
