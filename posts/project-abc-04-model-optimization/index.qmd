@@ -13,7 +13,7 @@ freeze: true
 > 안녕하세요, ABC 프로젝트 멘토링 8기 네 번째 기술노트입니다. 지난주에는 PyTorch를 이용해 CNN 오토인코더 기반의 시계열 이상 탐지 베이스라인 모델을 구현했습니다. 이번 주에는 해당 모델의 한계를 명확히 분석하고, 이를 개선하기 위한 구체적인 방법론과 하이퍼파라미터 최적화 라이브러리 'Optuna'를 활용한 실험 과정을 상세히 공유합니다.
 
 ::: {.callout-tip title="이전 포스트"}
-[Week3 포스트](https://beomdo-park.github.io/posts/ABC_week03_cnn_baseline/)에서 기본적인 CNN 오토인코더 모델을 구현했습니다. 이번 포스트는 해당 모델을 기반으로 성능을 개선하는 과정에 초점을 맞춥니다.
+[Week3 포스트](/posts/project-abc-03-cnn-baseline/)에서 기본적인 CNN 오토인코더 모델을 구현했습니다. 이번 포스트는 해당 모델을 기반으로 성능을 개선하는 과정에 초점을 맞춥니다.
 :::
 
 ```{python}
@@ -57,7 +57,7 @@ except Exception as e:
 -   **탐지 누락 (False Negative)**: 80번 인덱스 주변의 실제 이상치는 재구성 오차가 임계값을 넘지 않아 탐지되지 않았습니다. 이는 모델이 해당 유형의 이상 패턴(상대적으로 변화의 폭이 작은 이상치)을 정상 데이터의 일부로 학습했음을 의미합니다. 모델이 너무 '관대'하게 데이터를 복원하고 있는 것입니다.
 -   **오탐 (False Positive)**: 시계열 데이터의 시작 부분(0~10 인덱스)에서 재구성 오차가 높게 나타났습니다. 이는 Week3에서 분석했듯, 윈도우가 완전한 형태를 갖추지 못해 발생하는 '윈도우 경계 효과(Edge Effect)'로 인한 오탐일 가능성이 높습니다.
 
-![지난주 탐지 결과 그래프](\posts\ABC_week03_cnn_baseline\index_files\figure-html\visualization-output-1.png)
+![지난주 탐지 결과 그래프](/posts/project-abc-03-cnn-baseline/index_files/figure-html/visualization-output-1.png)
 <center>그림 1. Week3 모델의 이상 탐지 결과. 일부 이상치를 놓치고, 경계면에서 오탐이 발생했다.</center>
 
 ### 1.2. 과적합(Overfitting) 가능성

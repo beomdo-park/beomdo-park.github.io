@@ -8,7 +8,7 @@
 
 <meta name="author" content="Beomdo Park">
 <meta name="dcterms.date" content="2025-12-02">
-<meta name="description" content="팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.">
+<meta name="description" content="팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.">
 
 <title>[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog</title>
 <style>
@@ -110,12 +110,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"December 2, 2025","datePublished":"December 2, 2025","description":"팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.","headline":"[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법","image":"https://beomdo-park.github.io/assets/github-mark.png","keywords":["GitHub"],"url":"https://beomdo-park.github.io"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"December 2, 2025","datePublished":"December 2, 2025","description":"팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.","headline":"[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법","image":"https://beomdo-park.github.io/assets/github-mark.png","keywords":["GitHub"],"url":"https://beomdo-park.github.io"}</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog">
-<meta property="og:description" content="팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.">
+<meta property="og:description" content="팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/assets/github-mark.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
 <meta property="og:image:height" content="560">
@@ -350,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <h1 class="title">[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법</h1>
                   <div>
         <div class="description">
-          팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.
+          팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -410,20 +410,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>“main에 바로 푸시하지 마세요.” 팀 프로젝트에서 자주 듣는 말입니다.<br>
-왜 그래야 하는지, 또 어떻게 쓰면 협업에 더 도움이 되는지 정리해 봤습니다.</p>
+<p>main에 바로 푸시하지 마세요. 팀 프로젝트에서 자주 듣는 말입니다. 왜 그래야 하는지, 또 어떻게 쓰면 협업에 더 도움이 되는지 정리해 봤습니다.</p>
 </blockquote>
 <section id="왜-브랜치를-나눠야-할까" class="level3">
 <h3 class="anchored" data-anchor-id="왜-브랜치를-나눠야-할까">왜 브랜치를 나눠야 할까?</h3>
 <ul>
 <li><strong><code>main</code>은 언제나 실행 가능하게</strong>: 배포용 <code>main</code> 브랜치는 항상 깨끗하게 유지돼야 문제가 생겨도 빠르게 복구할 수 있습니다.</li>
 <li><strong>기능별로 작업해서 충돌 줄이기</strong>: 각자 브랜치를 따로 만들어 작업하면, 충돌이 나더라도 내가 건드린 부분만 집중해서 고치면 됩니다.</li>
-<li><strong>코드 리뷰에 유리</strong>: 브랜치마다 Pull Request(PR)를 만들면 변경 사항을 묶음 단위로 확인할 수 있어 리뷰와 토론이 훨씬 수월해집니다.</li>
+<li><strong>코드 리뷰에 유리</strong>: 브랜치마다 Pull Request(PR)를 만들면 변경 사항을 묶음 단위로 확인할 수 있어 리뷰 및 토론이 훨씬 수월해집니다.</li>
 </ul>
 </section>
 <section id="추천-브랜치-종류" class="level3">
 <h3 class="anchored" data-anchor-id="추천-브랜치-종류">추천 브랜치 종류</h3>
-<p>아래는 소규모 팀/대학 팀플에서 쓰기 좋은 간단한 브랜치 전략 예시입니다.</p>
+<p>아래는 소규모 팀/대학 팀플에서 쓰기 좋은 브랜치 예시입니다.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -436,12 +435,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td><code>main</code></td>
 <td>배포용 최종 코드</td>
-<td>직접 커밋 금지, PR로만 머지</td>
+<td>직접 커밋 금지, PR로만 병합</td>
 </tr>
 <tr class="even">
 <td><code>dev</code></td>
 <td>개발용 통합 코드</td>
-<td>기능 브랜치들을 합치는 기준 브랜치</td>
+<td><code>feature/</code> 브랜치들을 합치는 기준 브랜치</td>
 </tr>
 <tr class="odd">
 <td><code>feature/*</code></td>
@@ -472,7 +471,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 내 브랜치에 푸시</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin feature/12-login-ui</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>팀에서 <code>dev</code> 브랜치를 운영한다면, 위 예시에서 <code>main</code>을 <code>dev</code>로 바꿔서 사용하면 됩니다.</p>
+<p>팀이 <code>dev</code> 브랜치를 운영한다면, 위 예시에서 <code>main</code>을 <code>dev</code>로 바꿔서 사용하면 됩니다.</p>
 </section>
 <section id="좋은-커밋-메시지-작성하기" class="level3">
 <h3 class="anchored" data-anchor-id="좋은-커밋-메시지-작성하기">좋은 커밋 메시지 작성하기</h3>
@@ -523,14 +522,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h4 class="anchored" data-anchor-id="제목과-본문-분리">2. 제목과 본문 분리</h4>
 <ul>
 <li><strong>제목</strong>: 50자 이내, 가능한 한 “무엇을 했는지” 한 줄로 요약합니다. (예: <code>feat: 로그인 기능 추가</code>)</li>
-<li><strong>본문</strong>: 구현 디테일보다는 “무엇을, 왜 바꿨는지”에 초점을 맞춰 적습니다.</li>
+<li><strong>본문</strong>: 필요시 작성하고, 구현의 세부 사항보다는 “무엇을, 왜 바꿨는지”에 초점을 맞춰 적어야 합니다.</li>
 </ul>
 <p>예시:</p>
-<pre class="text"><code>feat: 로그인 폼 UI 구현
-
-- 이메일/비밀번호 입력 필드 추가
-- 폼 유효성 검사 로직 적용
-- 잘못된 입력 시 에러 메시지 표시</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">feat:</span> 로그인 폼 UI 구현</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 이메일/비밀번호 입력 필드 추가</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 폼 유효성 검사 로직 적용</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 잘못된 입력 시 에러 메시지 표시</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>이 정도 규칙만 팀에서 맞춰도, 나중에 <code>git log</code>를 보면서 “이 커밋이 뭘 바꾼 건지”를 훨씬 덜 고생하면서 파악할 수 있습니다.</p>
 
 

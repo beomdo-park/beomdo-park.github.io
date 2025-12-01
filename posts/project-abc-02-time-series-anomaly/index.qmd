@@ -13,7 +13,7 @@ freeze: true
 지난주엔 시계열 데이터 EDA랑 전처리만 했는데, 이번엔 간단한 머신러닝 모델로 이상치 탐지 기법을 소개하려 합니다.  
 
 ::: {.callout-tip title=""}
-이 포스트는 [week01](https://beomdo-park.github.io/posts/ABC_week01_data%20analysis/)에서 진행했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.
+이 포스트는 [Week1 포스트](/posts/project-abc-01-data-analysis/)에서 진행했던 데이터 준비/탐색 내용을 바탕으로, 실제 머신러닝 기반 이상 탐지 실습에 초점을 맞췄습니다.
 :::
 
 ## 1. 데이터 준비

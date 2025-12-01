@@ -437,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p><a href="https://beomdo-park.github.io/posts/ABC_week02_time_series_anomaly/">Week2 포스트</a>에서 머신러닝 기반 이상 탐지 기법을 다뤘습니다. 이번 포스트는 이를 기반으로 PyTorch를 사용한 딥러닝 접근법을 소개합니다.</p>
+<p><a href="../..\posts/project-abc-02-time-series-anomaly/">Week2 포스트</a>에서 머신러닝 기반 이상 탐지 기법을 다뤘습니다. 이번 포스트는 이를 기반으로 PyTorch를 사용한 딥러닝 접근법을 소개합니다.</p>
 </div>
 </div>
 <section id="시계열-데이터를-cnn에-입력하는-방법-윈도잉windowing" class="level2">
@@ -650,11 +650,11 @@ CNNAutoencoder(
 <span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"모델 학습 완료."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Using device: cpu
-Epoch [10/50], Loss: 0.443446
-Epoch [20/50], Loss: 0.266177
-Epoch [30/50], Loss: 0.225018
-Epoch [40/50], Loss: 0.210972
-Epoch [50/50], Loss: 0.207535
+Epoch [10/50], Loss: 0.485761
+Epoch [20/50], Loss: 0.230847
+Epoch [30/50], Loss: 0.215341
+Epoch [40/50], Loss: 0.208849
+Epoch [50/50], Loss: 0.207247
 모델 학습 완료.</code></pre>
 </div>
 </div>
@@ -703,8 +703,8 @@ Epoch [50/50], Loss: 0.207535
 <span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a><span class="co"># anomalies_approx_original_indices = [idx + window_size // 2 for idx in anomalies_indices_in_windows]</span></span>
 <span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): </span><span class="sc">{</span>anomalies_approx_original_indices<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>계산된 MAE 값 (처음 5개): [0.12135064 0.10624936 0.09292315 0.08392817 0.0878529 ]
-이상치 탐지 임계값 (MAE): 0.9662
+<pre><code>계산된 MAE 값 (처음 5개): [0.10953805 0.09630316 0.0786427  0.0780262  0.07156017]
+이상치 탐지 임계값 (MAE): 0.9568
 이상치로 탐지된 윈도우의 수: 8
 이상치로 탐지된 윈도우 인덱스: [17 18 19 20 47 48 49 50]
 원본 데이터의 대략적인 이상치 인덱스 (윈도우 시작점 기준): [17 18 19 20 47 48 49 50]</code></pre>

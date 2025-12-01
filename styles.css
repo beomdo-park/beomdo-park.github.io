@@ -201,3 +201,42 @@ code {
   }
 }
 
+/* soften callout note colors in dark mode */
+body.quarto-dark {
+  --callout-note-border: rgba(148, 163, 184, 0.5);
+  --callout-note-bg: rgba(148, 163, 184, 0.16);
+  --callout-note-color: #cbd5f5;
+}
+
+.sourceCode .ex {
+  color: #475569;
+}
+
+body.quarto-dark .sourceCode .ex {
+  color: #8ca5f7;
+}
+
+.sourceCode .fu {
+  color: #1d4ed8;
+}
+
+body.quarto-dark .sourceCode .fu {
+  color: #93c5fd;
+}
+
+.sourceCode .st {
+  color: #b45309;
+}
+
+body.quarto-dark .sourceCode .st {
+  color: #f2d096;
+}
+
+.sourceCode .at {
+  color: #7c3aed;
+}
+
+body.quarto-dark .sourceCode .at {
+  color: #c4b5fd;
+}
+
