@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.8.26">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -70,18 +70,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../../">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-2fef5ea3f8957b3e4ecc936fc74692ca.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-a3c50a17a2328b7dd90a9ec1dc649364.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-905433ffa22618bb005779f2b23c5ce0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-0b09ff00c81938394d5e4520c57a5f05.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -118,8 +119,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta property="og:description" content="이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/posts/ABC_week05_real_data_analysis/index_files/figure-html/data-preprocessing-output-3.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="466">
-<meta property="og:image:width" content="831">
+<meta property="og:image:height" content="931">
+<meta property="og:image:width" content="1661">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -424,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-이전 포스트
+<span class="screen-reader-only">Tip</span>이전 포스트
 </div>
 </div>
 <div class="callout-body-container callout-body">
@@ -436,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>이번 주에 사용할 데이터는 Kaggle에 공개된 <strong>‘Residential Power Usage 3-Years Data’</strong>입니다. 한 가정의 3년간 전력 사용량이 분 단위로 기록된 시계열 데이터로, 실제 환경에서 발생하는 다양한 패턴과 이상 현상을 포함하고 있습니다.</p>
 <p>먼저, GitHub Raw URL을 통해 데이터를 불러오고, 시계열 분석을 위해 날짜 컬럼을 인덱스로 변환한 뒤, 전력 사용량 컬럼만 추출합니다.</p>
 <div id="data-loading" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
@@ -452,7 +453,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(url)</span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 로딩 완료."</span>)</span>
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>df.info()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>df.info()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>데이터 로딩 시작...
 데이터 로딩 완료.
@@ -471,7 +472,7 @@ memory usage: 1.1+ MB</code></pre>
 </div>
 <p>데이터는 ‘StartDate’, ‘Value (kWh)’, ‘day_of_week’, ‘notes’ 등의 컬럼으로 구성되어 있습니다. 시계열 분석을 위해 ‘StartDate’를 datetime 형식으로 변환하고 인덱스로 설정한 뒤, ’Value (kWh)’ 컬럼만 사용하겠습니다. 전체 데이터를 사용하여 분석을 진행합니다.</p>
 <div id="cell-data-preprocessing" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 전처리 시작..."</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"데이터 전처리 시작..."</span>)</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 'StartDate'를 datetime으로 변환하고 인덱스로 설정</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>df[<span class="st">"StartDate"</span>] <span class="op">=</span> pd.to_datetime(df[<span class="st">"StartDate"</span>])</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> df.set_index(<span class="st">"StartDate"</span>)</span>
@@ -506,7 +507,7 @@ memory usage: 1.1+ MB</code></pre>
 <span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>plt.grid(<span class="va">True</span>)</span>
 <span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
 <span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"2019년 데이터 크기: </span><span class="sc">{</span>df_value<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"2019년 데이터 크기: </span><span class="sc">{</span>df_value<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>데이터 전처리 시작...
 데이터 시간순 정렬 완료.
@@ -516,7 +517,7 @@ memory usage: 1.1+ MB</code></pre>
 데이터 슬라이싱 완료.</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/tmp/ipykernel_3089/3802000988.py:16: FutureWarning:
+<pre><code>/tmp/ipykernel_3139/3802000988.py:16: FutureWarning:
 
 'H' is deprecated and will be removed in a future version, please use 'h' instead.
 </code></pre>
@@ -524,7 +525,7 @@ memory usage: 1.1+ MB</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/data-preprocessing-output-3.png" id="data-preprocessing" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/data-preprocessing-output-3.png" id="data-preprocessing" width="830" height="465" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -537,7 +538,7 @@ memory usage: 1.1+ MB</code></pre>
 <h2 class="anchored" data-anchor-id="데이터-전처리-및-계절성-제거">2. 데이터 전처리 및 계절성 제거</h2>
 <p>실제 전력 데이터는 강한 계절성과 일간 패턴을 보입니다. 효과적인 이상 탐지를 위해 다단계 계절성 제거를 적용한 후 윈도우 생성과 정규화를 수행합니다.</p>
 <div id="data-processing-and-windowing" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> STL</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.seasonal <span class="im">import</span> STL</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> MinMaxScaler</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -670,14 +671,14 @@ memory usage: 1.1+ MB</code></pre>
 <span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
 <span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>원본 데이터 크기: 8760</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/data-processing-and-windowing-output-2.png" id="data-processing-and-windowing-1" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/data-processing-and-windowing-output-2.png" id="data-processing-and-windowing-1" width="989" height="788" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -694,7 +695,7 @@ memory usage: 1.1+ MB</code></pre>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/data-processing-and-windowing-output-4.png" id="data-processing-and-windowing-2" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/data-processing-and-windowing-output-4.png" id="data-processing-and-windowing-2" width="989" height="589" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -707,7 +708,7 @@ memory usage: 1.1+ MB</code></pre>
 <h3 class="anchored" data-anchor-id="모델-정의">3.1. 모델 정의</h3>
 <p>Week4에서 <code>Optuna</code>를 통해 최적화한 모델 구조와 하이퍼파라미터를 그대로 사용합니다. 이 모델은 <code>Dropout</code>을 포함하여 과적합을 방지하고, <code>ConvTranspose1d</code> 대신 <code>Upsample</code>과 <code>AdaptiveAvgPool1d</code>를 사용하여 다양한 윈도우 크기에 유연하게 대응할 수 있도록 개선되었습니다.</p>
 <div id="model-definition" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CNNAutoencoderWithDropout(nn.Module):</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> CNNAutoencoderWithDropout(nn.Module):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_shape, dropout_rate<span class="op">=</span><span class="fl">0.2</span>):</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>(CNNAutoencoderWithDropout, <span class="va">self</span>).<span class="fu">__init__</span>()</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.input_size <span class="op">=</span> input_shape[<span class="dv">0</span>]</span>
@@ -760,14 +761,14 @@ memory usage: 1.1+ MB</code></pre>
 <span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>        </span>
 <span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_adaptive(x)</span>
 <span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> <span class="va">self</span>.decoder_conv_final(x)</span>
-<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="학습-및-평가" class="level3">
 <h3 class="anchored" data-anchor-id="학습-및-평가">3.2. 학습 및 평가</h3>
 <p>실제 데이터에서는 패턴이 안정화된 구간을 ’정상’으로 간주하고 학습하는 것이 중요합니다. 전체 데이터의 <strong>20% ~ 80% 구간</strong>을 정상 데이터로 정의하고, 이 데이터로만 모델을 학습시킵니다. 그 후, 학습된 모델을 전체 데이터에 적용하여 이상치를 탐지합니다.</p>
 <div id="training-and-evaluation" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 1. 학습 데이터 분할 ---</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --- 1. 학습 데이터 분할 ---</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>total_windows <span class="op">=</span> <span class="bu">len</span>(all_windows_torch)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>train_start_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.2</span>)</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>train_end_idx <span class="op">=</span> <span class="bu">int</span>(total_windows <span class="op">*</span> <span class="fl">0.8</span>)</span>
@@ -836,19 +837,19 @@ memory usage: 1.1+ MB</code></pre>
 <span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a>predicted_anomaly_points <span class="op">=</span> [</span>
 <span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a>    idx <span class="cf">for</span> idx <span class="kw">in</span> predicted_anomaly_points <span class="cf">if</span> idx <span class="op">&lt;</span> <span class="bu">len</span>(raw_data)</span>
 <span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a>]</span>
-<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"탐지된 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"탐지된 이상치 포인트 수: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>전체 윈도우 수: 8751
 학습 구간: 1750 ~ 7000
 학습에 사용할 윈도우 수: 5250
 
 모델 학습 시작...
-Epoch [5/15], Loss: 0.026040
-Epoch [10/15], Loss: 0.032128
-Epoch [15/15], Loss: 0.043397
+Epoch [5/15], Loss: 0.073217
+Epoch [10/15], Loss: 0.011168
+Epoch [15/15], Loss: 0.065843
 
-임계값 (99.0% Quantile): 0.079095
-탐지된 이상치 포인트 수: 62</code></pre>
+임계값 (99.0% Quantile): 0.081000
+탐지된 이상치 포인트 수: 65</code></pre>
 </div>
 </div>
 </section>
@@ -856,7 +857,7 @@ Epoch [15/15], Loss: 0.043397
 <h3 class="anchored" data-anchor-id="결과-시각화">3.3. 결과 시각화</h3>
 <p>탐지된 이상치를 원본 데이터와 함께 시각화하여 모델의 성능을 직관적으로 확인합니다. 전체 기간과 최근 3개월 구간을 나누어 상세히 분석합니다.</p>
 <div id="cell-final-visualization" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">9</span>))</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">10</span>, <span class="dv">9</span>))</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co"># 상단: 전체 데이터와 탐지 결과</span></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>plt.subplot(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">1</span>)</span>
@@ -911,11 +912,11 @@ Epoch [15/15], Loss: 0.043397
 <span id="cb13-53"><a href="#cb13-53" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"분석 데이터 길이: </span><span class="sc">{</span><span class="bu">len</span>(raw_data)<span class="sc">:,}</span><span class="ss"> 시간"</span>)</span>
 <span id="cb13-54"><a href="#cb13-54" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"전체 탐지된 이상치: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points)<span class="sc">}</span><span class="ss">개"</span>)</span>
 <span id="cb13-55"><a href="#cb13-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"최근 3개월 구간 이상치: </span><span class="sc">{</span><span class="bu">len</span>(month_anomalies)<span class="sc">}</span><span class="ss">개"</span>)</span>
-<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"이상치 비율: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points) <span class="op">/</span> <span class="bu">len</span>(raw_data) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.3f}</span><span class="ss">%"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb13-56"><a href="#cb13-56" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"이상치 비율: </span><span class="sc">{</span><span class="bu">len</span>(predicted_anomaly_points) <span class="op">/</span> <span class="bu">len</span>(raw_data) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.3f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/final-visualization-output-1.png" id="final-visualization" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/final-visualization-output-1.png" id="final-visualization" width="989" height="890" class="figure-img"></p>
 </figure>
 </div>
 </div>
@@ -923,9 +924,9 @@ Epoch [15/15], Loss: 0.043397
 <pre><code>
 === 이상 탐지 결과 요약 (2019년) ===
 분석 데이터 길이: 8,760 시간
-전체 탐지된 이상치: 62개
-최근 3개월 구간 이상치: 18개
-이상치 비율: 0.708%</code></pre>
+전체 탐지된 이상치: 65개
+최근 3개월 구간 이상치: 17개
+이상치 비율: 0.742%</code></pre>
 </div>
 </div>
 </section>
@@ -1014,13 +1015,14 @@ Week 4에서 정립한 ’윈도우별 정규화 → Dropout으로 과적합 방
       e.clearSelection();
     }
     const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
-        return codeEl.innerText;
+      }
+      return codeEl.innerText;
     }
     const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
       text: getTextToCopy
