@@ -141,7 +141,7 @@ code {
 }
 
 .profile-readme {
-  width: min(900px, 80vw);
+  width: min(900px, 90vw);
   margin: 0 auto 2rem;
   padding: 1.5rem;
   border-radius: 16px;
