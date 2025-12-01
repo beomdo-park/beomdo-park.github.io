@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://beomdo-park.github.io/sitemap.xml
