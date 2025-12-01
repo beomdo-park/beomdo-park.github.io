@@ -18,5 +18,5 @@ about:
 ---
 
 ::: {.profile-readme}
-{{< include assets/profile-readme.md >}}
+{{< include assets/profile-summary.md >}}
 :::

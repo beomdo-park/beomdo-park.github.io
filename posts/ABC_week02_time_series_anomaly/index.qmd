@@ -4,6 +4,7 @@ description: "Python을 활용한 시계열 데이터 이상 탐지 - 머신러�
 date: "2025-06-01"
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업"]
+tags: ["시계열", "머신러닝", "IsolationForest", "이상탐지"]
 page-layout: full
 freeze: true
 ---
