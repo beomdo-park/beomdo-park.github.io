@@ -9,3 +9,6 @@ title-block-banner: true
 
 # Automatically reflect the last git modification date in metadata/sitemap
 date-modified: last-modified
+
+filters:
+  - ../filters/schema-type.lua

@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import pathlib
 import sys
+import traceback
 
 import requests
 
 
 RAW_README_URL = "https://raw.githubusercontent.com/beomdo-park/beomdo-park/main/README.md"
-FULL_PATH = pathlib.Path("assets/profile-readme.md")
 SUMMARY_PATH = pathlib.Path("assets/profile-summary.md")
 
 SUMMARY_START_MARKERS = ["## 👀 About Me", "<h2>👀 About Me"]
@@ -61,26 +61,34 @@ def extract_summary(full_text: str) -> str:
     return summary + "\n" if summary else full_text
 
 
+def _log_error(message: str, exc: Exception, *, show_trace: bool = False) -> None:
+    print(f"{message}: {exc}", file=sys.stderr)
+    if show_trace:
+        traceback.print_exc()
+
+
 def main() -> int:
     try:
         content = download_readme()
     except requests.RequestException as exc:
-        print(f"Failed to download README: {exc}", file=sys.stderr)
-        return 1
+        _log_error("Failed to download README", exc)
+        return 0
+    except Exception as exc:  # pragma: no cover - defensive guard
+        _log_error("Unexpected error while downloading README", exc, show_trace=True)
+        return 0
 
-    FULL_PATH.parent.mkdir(parents=True, exist_ok=True)
-    FULL_PATH.write_text(content, encoding="utf-8")
-    SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
+        summary = extract_summary(content)
+        SUMMARY_PATH.write_text(summary, encoding="utf-8")
+    except OSError as exc:
+        _log_error("Failed to persist profile content", exc)
+        return 0
+    except Exception as exc:  # pragma: no cover - defensive guard
+        _log_error("Unexpected error while writing profile content", exc, show_trace=True)
+        return 0
 
-    summary = extract_summary(content)
-    SUMMARY_PATH.write_text(summary, encoding="utf-8")
-
-    print(
-        "Saved profile README to {full} and summary to {summary}".format(
-            full=FULL_PATH,
-            summary=SUMMARY_PATH,
-        )
-    )
+    print("Saved profile summary to {summary}".format(summary=SUMMARY_PATH))
     return 0
 
 

@@ -105,97 +105,6 @@
     "text": "요약\n이 포스트에서는 Python을 사용하여 가상의 산업 전력 사용량 데이터를 생성하고, 이상 탐지를 위한 기본적인 탐색적 데이터 분석(EDA) 및 전처리 과정을 살펴보았습니다. 시계열 플롯, 분포 확인, 주기성 분석(요일별 Box Plot), 이동 평균 활용 등은 데이터의 특성을 이해하고 잠재적인 이상치를 식별하는 데 효과적인 방법입니다."
   },
   {
-    "objectID": "assets/profile-readme.html",
-    "href": "assets/profile-readme.html",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "header"
-  },
-  {
-    "objectID": "assets/profile-readme.html#tech-stack",
-    "href": "assets/profile-readme.html#tech-stack",
-    "title": "beomdo's ML-DL blog",
-    "section": "Tech Stack",
-    "text": "Tech Stack\n\nLanguages\n\n \n\n\n\nAI & Quantum Sciences\n\n   \n\n\n\nData & Tools"
-  },
-  {
-    "objectID": "assets/profile-readme.html#activities",
-    "href": "assets/profile-readme.html#activities",
-    "title": "beomdo's ML-DL blog",
-    "section": "Activities",
-    "text": "Activities\n\n\n\n기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코\n\n\n\n## 🤔 Github Stats"
-  },
-  {
-    "objectID": "assets/profile-readme.html#github-trophies",
-    "href": "assets/profile-readme.html#github-trophies",
-    "title": "beomdo's ML-DL blog",
-    "section": "📈 GitHub Trophies",
-    "text": "📈 GitHub Trophies"
-  },
-  {
-    "objectID": "assets/profile-readme.html#contact",
-    "href": "assets/profile-readme.html#contact",
-    "title": "beomdo's ML-DL blog",
-    "section": "📬 Contact",
-    "text": "📬 Contact\n\npbeomdo at gmail.com"
-  },
-  {
-    "objectID": "assets/profile-about.html",
-    "href": "assets/profile-about.html",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "👀 About Me\n\n\n\n\n\n\nI am an undergraduate researcher at Eco AI Lab.\n\n\nI aim to become a Data Scientist an AI-powered problem solver applying research to real-world challenges.\n\n\n3rd-year Computer Engineering Student, Hanbat National University (HBNU).\n\n\n📂 You can check out my portfolios:  Blog |  Repository\n\n\n    홈페이지"
-  },
-  {
-    "objectID": "about.html#about-me",
-    "href": "about.html#about-me",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "I am an undergraduate researcher at Eco AI Lab.\n\n\nI aim to become a Data Scientist an AI-powered problem solver applying research to real-world challenges.\n\n\n3rd-year Computer Engineering Student, Hanbat National University (HBNU).\n\n\n📂 You can check out my portfolios:  Blog |  Repository\n\n\n    홈페이지"
-  },
-  {
-    "objectID": "about.html#tech-stack",
-    "href": "about.html#tech-stack",
-    "title": "beomdo's ML-DL blog",
-    "section": "Tech Stack",
-    "text": "Tech Stack\n\nLanguages\n\n \n\n\n\nAI & Quantum Sciences\n\n   \n\n\n\nData & Tools"
-  },
-  {
-    "objectID": "about.html#tech-stack-1",
-    "href": "about.html#tech-stack-1",
-    "title": "beomdo's ML-DL blog",
-    "section": "Tech Stack",
-    "text": "Tech Stack\n\nLanguages\n\n \n\n\n\nAI & Quantum Sciences\n\n   \n\n\n\nData & Tools"
-  },
-  {
-    "objectID": "about.html#activities",
-    "href": "about.html#activities",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코"
-  },
-  {
-    "objectID": "about.html#activities-1",
-    "href": "about.html#activities-1",
-    "title": "beomdo's ML-DL blog",
-    "section": "Activities",
-    "text": "Activities\n\n\n\n기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코\n\n\n\n## 🤔 Github Stats"
-  },
-  {
-    "objectID": "assets/profile-activities.html",
-    "href": "assets/profile-activities.html",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코\n\n\n\n## 🤔 Github Stats"
-  },
-  {
-    "objectID": "assets/profile-activities.html#activities",
-    "href": "assets/profile-activities.html#activities",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코\n\n\n\n## 🤔 Github Stats"
-  },
-  {
     "objectID": "assets/profile-summary.html",
     "href": "assets/profile-summary.html",
     "title": "beomdo's ML-DL blog",
@@ -217,11 +126,25 @@
     "text": "Activities\n\n\n\n기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코"
   },
   {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "beomdo's ML-DL blog",
+    "section": "",
+    "text": "I am an undergraduate researcher at Eco AI Lab.\n\n\nI aim to become a Data Scientist an AI-powered problem solver applying research to real-world challenges.\n\n\n3rd-year Computer Engineering Student, Hanbat National University (HBNU).\n\n\n📂 You can check out my portfolios:  Blog |  Repository\n\n\n    홈페이지\n\n\n\n\n\n\n\n\n \n\n\n\n\n\n   \n\n\n\n\n\n     \n\n\n\n\n\n\n\n\n기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코"
+  },
+  {
+    "objectID": "about.html#activities",
+    "href": "about.html#activities",
+    "title": "beomdo's ML-DL blog",
+    "section": "",
+    "text": "기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코"
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "beomdo's ML-DL blog",
     "section": "",
-    "text": "[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법\n\n\n\nGitHub\n\nCollaboration\n\n\n\n팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.\n\n\n\n\n\nDec 2, 2025\n\n\nBeomdo Park\n\n2 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\n이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다.\n\n\n\n\n\nJun 19, 2025\n\n\nBeomdo Park\n\n13 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 4주차 - 모델 성능 개선 및 하이퍼파라미터 최적화\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\n지난주 CNN 오토인코더 모델의 한계를 분석하고, 성능 개선을 위한 다양한 방법과 하이퍼파라미터 최적화 과정을 기록합니다.\n\n\n\n\n\nJun 14, 2025\n\n\nBeomdo Park\n\n20 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 3주차 - CNN으로 시계열 이상 탐지 (PyTorch)\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPyTorch를 사용하여 1D CNN 오토인코더 기반 시계열 이상 탐지 베이스라인 모델을 구현합니다.\n\n\n\n\n\nJun 8, 2025\n\n\nBeomdo Park\n\n12 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습\n\n\n\n\n\nJun 1, 2025\n\n\nBeomdo Park\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.\n\n\n\n\n\nMay 25, 2025\n\n\nBeomdo Park\n\n8 min\n\n\n\n\nNo matching items"
+    "text": "[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법\n\n\n\nGitHub\n\n\n\n팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.\n\n\n\n\n\nDec 2, 2025\n\n\nBeomdo Park\n\n2 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\n이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다.\n\n\n\n\n\nJun 19, 2025\n\n\nBeomdo Park\n\n13 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 4주차 - 모델 성능 개선 및 하이퍼파라미터 최적화\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\n지난주 CNN 오토인코더 모델의 한계를 분석하고, 성능 개선을 위한 다양한 방법과 하이퍼파라미터 최적화 과정을 기록합니다.\n\n\n\n\n\nJun 14, 2025\n\n\nBeomdo Park\n\n20 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 3주차 - CNN으로 시계열 이상 탐지 (PyTorch)\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPyTorch를 사용하여 1D CNN 오토인코더 기반 시계열 이상 탐지 베이스라인 모델을 구현합니다.\n\n\n\n\n\nJun 8, 2025\n\n\nBeomdo Park\n\n12 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습\n\n\n\n\n\nJun 1, 2025\n\n\nBeomdo Park\n\n5 min\n\n\n\n\n\n\n\n\n\n\n\n[2025 ABC 프로젝트 멘토링 8기] 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리\n\n\n\nABC프로젝트멘토링\n\nPyTorch\n\n\n\nPython을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.\n\n\n\n\n\nMay 25, 2025\n\n\nBeomdo Park\n\n8 min\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "posts/guide-github-01-branch-strategy/index.html",
@@ -299,12 +222,5 @@
     "title": "[2025 ABC 프로젝트 멘토링 8기] 4주차 - 모델 성능 개선 및 하이퍼파라미터 최적화",
     "section": "5. 결론",
     "text": "5. 결론\n이번 4주차 포스트에서는 Week3에서 구현한 CNN 오토인코더 모델의 성능을 체계적으로 개선하는 과정을 상세히 다루었습니다.\n\n주요 개선사항\n\n데이터 전처리 방식 변경: 각 시계열 윈도우별로 독립적인 정규화를 적용하여 지역적 패턴에 대한 민감도를 높였습니다.\n과적합 방지: Dropout 레이어 추가로 모델의 일반화 성능을 향상시켰습니다.\n하이퍼파라미터 최적화: Optuna를 활용하여 학습률, 드롭아웃 비율 등 핵심 파라미터를 체계적으로 탐색했습니다.\n윈도우 크기 최적화: 데이터의 특성에 맞는 최적의 윈도우 크기를 동적으로 발견했습니다.\n효율적인 학습: 조기 종료(Early Stopping)를 구현하여 불필요한 학습을 방지하고 최적의 모델 상태를 포착했습니다.\n\n\n\n핵심 성과\n특히, 정상 데이터만으로 모델을 학습하고, 재구성 오차에 기반한 명확한 임계값 설정을 통해 기존 모델이 놓쳤던 실제 이상치(20, 50, 80번 인덱스)를 모두 정확하게 탐지하는 데 성공했습니다. 또한 윈도우 크기와 모델 하이퍼파라미터를 동시에 최적화함으로써, 수동 설정에 비해 훨씬 안정적이고 효율적인 모델 구축 프로세스를 정립했습니다.\n\n\n한계 및 향후 과제\n이번에 사용한 예제 데이터는 패턴이 비교적 단순하지만, 실제 데이터는 더 복잡한 계절성과 노이즈를 포함합니다. 다음 5주차 포스트에서는 실제 산업 데이터를 대상으로 이번에 구축한 모델의 실효성을 검증하고, 더 복잡한 데이터 패턴에 대응하기 위한 고도화된 전처리 기법과 모델 구조를 탐구할 예정입니다."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "beomdo's ML-DL blog",
-    "section": "",
-    "text": "I am an undergraduate researcher at Eco AI Lab.\n\n\nI aim to become a Data Scientist an AI-powered problem solver applying research to real-world challenges.\n\n\n3rd-year Computer Engineering Student, Hanbat National University (HBNU).\n\n\n📂 You can check out my portfolios:  Blog |  Repository\n\n\n    홈페이지\n\n\n\n\n\n\n\n\n \n\n\n\n\n\n   \n\n\n\n\n\n     \n\n\n\n\n\n\n\n\n기간\n활동명\n내용\n기관(장소)\n\n\n\n\n2026.01.20 ~ 01.27\nAAAI-26 Student Abstract and Poster Program (Accept)\nMulti-Stage Reinforcement Learning for Robust Charging of Quantum Batteries\nAAAI-26 (Singapore EXPO, Singapore)\n\n\n2025.11.20\n한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회\n(🏆우수상 수상) 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]\n라한셀렉트 경주\n\n\n2025.11.19 ~ 11.21\n한국통신학회 추계종합학술발표회 우수논문상(학부생)\n(🏆장려상 수상) 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)\n라한셀렉트 경주\n\n\n2025.11.01\n🪪 TOPCIT 정기평가 (수준 3 달성)\n수준3: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준\n정보통신기획평가원(IITP)\n\n\n2025.10.31\n특허 출원\n커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)\n국립한밭대학교 산학협력단\n\n\n2025.10.30\n컴퓨터공학과 포트폴리오 경진대회\n🏆우수상\n국립한밭대학교 컴퓨터공학과\n\n\n2025.07.14\nA Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data(SCIE)\nDBA K-Means 모델 부분(공저자)\nMDPI journal energies\n\n\n2025.06.30 ~ 07.11\n기업 인턴십\n자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)\n(주) 아군\n\n\n2025.06.24 ~ 06.27\n대한전자공학회 하계 종합학술대회\n고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지\n롯데호텔 제주(중문)\n\n\n2025.05.20 ~ 06.30\nABC 프로젝트 멘토링\n산업 전력 소비량 이상치 검출 및 최적화\n유클리드 소프트\n\n\n2025.06.13\n🪪 데이터분석 준전문가(ADsP) 자격증 취득\n데이터 분석 기획 및 수행 실무자 자격\n한국데이터산업진흥원\n\n\n2025.05.01 ~\nEco AI Lab 랩장\n커뮤니케이션 지원, 일정 조율, 행정 업무 등\n국립한밭대학교 EcoAI Lab\n\n\n2025.04.07 ~\n산학협력 프로젝트\n자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.24 ~\n소중한 JUMP-UP Labs\nAI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지\n국립한밭대학교 SW중심대학사업단\n\n\n2025.03.04 ~ 06.13\n데이터사이언스(이상금 교수님) 실습조교 25-1학기\n실습자료 제작 및 질의응답 관리\n국립한밭대학교 컴퓨터공학과\n\n\n2025.02.05 ~ 02.07\n한국통신학회 동계종합학술발표회\nDBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지\n강원도 용평리조트\n\n\n2025.01.16 ~ 01.21\nIROC 2024/25 세계대회\n대회 진행요원\n부산 벡스코"
   }
 ]

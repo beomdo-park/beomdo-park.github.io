@@ -3,7 +3,7 @@ title: "[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법"
 description: "팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다."
 date: "2025-12-02"
 author: "Beomdo Park"
-categories: ["GitHub", "Collaboration"]
+categories: ["GitHub"]
 tags: ["Git", "GitHub", "Branch"]
 page-layout: full
 freeze: true

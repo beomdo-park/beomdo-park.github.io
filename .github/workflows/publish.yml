@@ -40,6 +40,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-deploy.txt
 
+      - name: Update profile summary content
+        run: |
+          python scripts/update_profile_readme.py
+
       # Quarto 렌더링 단계 추가 (publish 액션은 내부적으로 렌더링하지만 meta 태그 삽입을 위해 명시적으로 렌더링)
       - name: Render Quarto Project
         run: |

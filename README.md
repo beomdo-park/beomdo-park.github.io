@@ -4,6 +4,8 @@
 
 [➡️ **블로그 바로가기**](https://beomdo-park.github.io)
 
+- [검색 색인을 위한 Sitemap](https://beomdo-park.github.io/sitemap.xml)
+
 ## ✨ 기술 스택
 
 [![Quarto](https://img.shields.io/badge/Quarto-4B8BBE?style=for-the-badge&logo=Quarto&logoColor=white)](https://quarto.org/)

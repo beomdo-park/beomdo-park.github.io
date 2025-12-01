@@ -32,6 +32,8 @@ website:
     right:
       - icon: github
         href: https://github.com/beomdo-park/
+      - text: Sitemap
+        href: https://beomdo-park.github.io/sitemap.xml
 
 format:
   html:
