@@ -1,1 +1,3 @@
 /.quarto/
+.venv
+site_libs/

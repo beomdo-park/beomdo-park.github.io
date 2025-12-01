@@ -14,8 +14,7 @@ about:
       text: Github
       href: https://github.com/beomdo-park
     - icon: email
-      text: pbeomdo@gmail.com
+      text: pbeomdo AT gmail.com
 ---
 
-- 컴퓨터공학과 3학년입니다.   
-- Data Scientist AI-powered problem solver who applies research and technology to real-world challenges.
+{{< include assets/profile-readme.md >}}

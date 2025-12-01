@@ -9,4 +9,5 @@ seaborn
 torch
 optuna
 plotly
+requests
 # tensorflow

@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: docs
+  pre-render:
+    - python scripts/update_profile_readme.py
 
 website:
   title: "beomdo's ML-DL blog"
