@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2025-12-02">
+<meta name="description" content="팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.">
 
-<title>About – beomdo’s ML-DL blog</title>
+<title>[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,30 +23,66 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-0b09ff00c81938394d5e4520c57a5f05.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-0b09ff00c81938394d5e4520c57a5f05.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,13 +114,13 @@ ul.task-list li input[type="checkbox"] {
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
 
 
-<link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="About – beomdo’s ML-DL blog">
-<meta property="og:image" content="https://beomdo-park.github.io/profile.jpg">
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog">
+<meta property="og:description" content="팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
 </head>
 
-<body class="nav-fixed fullcontent quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
     const toggleBodyColorMode = (bsSheetEl) => {
       const mode = bsSheetEl.getAttribute("data-mode");
       const bodyEl = window.document.querySelector("body");
@@ -255,11 +294,11 @@ ul.task-list li input[type="checkbox"] {
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">beomdo’s ML-DL blog</span>
     </a>
   </div>
@@ -270,11 +309,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -302,205 +341,190 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법</h1>
+                  <div>
+        <div class="description">
+          팀 프로젝트에 적용 가능한 Git 브랜치 전략과 이름 규칙을 정리했습니다.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">GitHub</div>
+                <div class="quarto-category">Collaboration</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 2, 2025</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">December 1, 2025</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#왜-브랜치를-나눠야-할까" id="toc-왜-브랜치를-나눠야-할까" class="nav-link active" data-scroll-target="#왜-브랜치를-나눠야-할까">왜 브랜치를 나눠야 할까?</a></li>
+  <li><a href="#추천-브랜치-종류" id="toc-추천-브랜치-종류" class="nav-link" data-scroll-target="#추천-브랜치-종류">추천 브랜치 종류</a></li>
+  <li><a href="#간단한-작업-흐름" id="toc-간단한-작업-흐름" class="nav-link" data-scroll-target="#간단한-작업-흐름">간단한 작업 흐름</a></li>
+  <li><a href="#좋은-커밋-메시지-작성하기" id="toc-좋은-커밋-메시지-작성하기" class="nav-link" data-scroll-target="#좋은-커밋-메시지-작성하기">좋은 커밋 메시지 작성하기</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
-<div class="quarto-about-jolla">
-  <img src="profile.jpg" class="about-image
-  round " style="height: 15em; width: 15em;">
- <header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">About</h1>
-</div>
-<div class="quarto-title-meta">
-  </div>
-</header><main class="content" id="quarto-document-content">
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
-<div class="profile-readme">
-<h2>
-👀 About Me
-</h2>
-<table border="0" width="100%">
-<tbody><tr>
-<td width="70%" style="vertical-align: middle;">
+
+
+
+
+
+<blockquote class="blockquote">
+<p>“main에 바로 푸시하지 마세요.” 팀플할 때 국룰이지만, 왜 그래야 하는지, 어떻게 써야 편한지 정리해 봤습니다.</p>
+</blockquote>
+<section id="왜-브랜치를-나눠야-할까" class="level3">
+<h3 class="anchored" data-anchor-id="왜-브랜치를-나눠야-할까">왜 브랜치를 나눠야 할까?</h3>
 <ul>
-<li>
-I am an undergraduate researcher at <a href="https://sites.google.com/view/ecoai/introduction"><b>Eco AI Lab</b></a>.
-</li>
-<li>
-I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying research to real-world challenges.
-</li>
-<li>
-3rd-year Computer Engineering Student, <b>Hanbat National University (HBNU)</b>.
-</li>
+<li><strong><code>main</code>은 언제나 실행 가능하게</strong>: 배포용 <code>main</code> 브랜치는 항상 깨끗해야 복구하기 편합니다.</li>
+<li><strong>기능별로 작업해서 충돌 줄이기</strong>: 각자 브랜치를 파서 작업하면 코드 충돌이 나도 내가 작업한 부분만 고칠 수 있습니다.</li>
+<li><strong>코드 리뷰 용이</strong>: Pull Request(PR) 단위로 변경 사항을 확인하고 리뷰하기 좋습니다.</li>
 </ul>
-<b>📂 You can check out my portfolios:</b>&nbsp; <a href="https://beomdo-park.github.io"><b>Blog</b></a> |&nbsp; <a href="https://github.com/beomdo-park/Portfolio"><b>Repository</b></a>
-</td>
-<td width="30%" align="center" style="vertical-align: middle;">
-<a href="https://sites.google.com/view/ecoai/introduction"> <img src="https://github.com/user-attachments/assets/98519fd4-3bb6-4e5a-a831-2561cbfc41d3" width="260" alt="EcoAI Lab Logo"> </a> <br> <a href="https://sites.google.com/view/ecoai/introduction"><b>홈페이지</b></a>
-</td>
-</tr>
-</tbody></table>
-</div>
-<section id="tech-stack" class="level2">
-<h2 data-anchor-id="tech-stack">Tech Stack</h2>
-<section id="languages" class="level3">
-<h3 data-anchor-id="languages">Languages</h3>
-<p>
-<img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&amp;logo=Python&amp;logoColor=white"> <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&amp;logo=JavaScript&amp;logoColor=white">
-</p>
 </section>
-<section id="ai-quantum-sciences" class="level3">
-<h3 data-anchor-id="ai-quantum-sciences">AI &amp; Quantum Sciences</h3>
-<p>
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&amp;logo=PyTorch&amp;logoColor=white"> <img src="https://img.shields.io/badge/IBM_Qiskit-6929C4?style=flat-square&amp;logo=Qiskit&amp;logoColor=white"> <img src="https://img.shields.io/badge/Reinforcement_Learning-448C8A?style=flat-square"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&amp;logo=scikit-learn&amp;logoColor=white">
-</p>
-</section>
-<section id="data-tools" class="level3">
-<h3 data-anchor-id="data-tools">Data &amp; Tools</h3>
-<p>
-<img src="https://img.shields.io/badge/Pandas-150458?style=flat-square&amp;logo=pandas&amp;logoColor=white"> <img src="https://img.shields.io/badge/Matplotlib-000000?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/Seaborn-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&amp;logo=PostgreSQL&amp;logoColor=white"> <img src="https://img.shields.io/badge/Selenium-43B02A?style=flat-square&amp;logo=Selenium&amp;logoColor=white"> <img src="https://img.shields.io/badge/Quarto-4B4B8A?style=flat-square&amp;logo=Quarto&amp;logoColor=white">
-</p>
-</section>
-</section>
-<section id="activities" class="level2">
-<h2 data-anchor-id="activities">Activities</h2>
+<section id="추천-브랜치-종류" class="level3">
+<h3 class="anchored" data-anchor-id="추천-브랜치-종류">추천 브랜치 종류</h3>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>기간</th>
-<th>활동명</th>
-<th>내용</th>
-<th>기관(장소)</th>
+<th>브랜치</th>
+<th>용도</th>
+<th>특징</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>2026.01.20 ~ 01.27</td>
-<td><strong>AAAI-26 Student Abstract and Poster Program (Accept)</strong></td>
-<td><strong>Multi-Stage Reinforcement Learning for Robust Charging of Quantum Batteries</strong></td>
-<td>AAAI-26 (Singapore EXPO, Singapore)</td>
+<td><code>main</code></td>
+<td>배포용 최종 코드</td>
+<td>직접 커밋 금지</td>
 </tr>
 <tr class="even">
-<td>2025.11.20</td>
-<td>한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회</td>
-<td><strong>(🏆우수상 수상)</strong> 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]</td>
-<td>라한셀렉트 경주</td>
+<td><code>dev</code></td>
+<td>개발용 통합 코드</td>
+<td>기능 브랜치들을 합치는 곳</td>
 </tr>
 <tr class="odd">
-<td>2025.11.19 ~ 11.21</td>
-<td>한국통신학회 추계종합학술발표회 우수논문상(학부생)</td>
-<td><strong>(🏆장려상 수상)</strong> 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)</td>
-<td>라한셀렉트 경주</td>
+<td><code>feature/*</code></td>
+<td>기능 개발</td>
+<td><code>dev</code>에서 만들어서 작업</td>
 </tr>
 <tr class="even">
-<td>2025.11.01</td>
-<td>🪪 TOPCIT 정기평가 (수준 3 달성)</td>
-<td><strong>수준3</strong>: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준</td>
-<td><a href="https://topcit.or.kr/introduction/topcit.do">정보통신기획평가원(IITP)</a></td>
-</tr>
-<tr class="odd">
-<td>2025.10.31</td>
-<td>특허 출원</td>
-<td>커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)</td>
-<td>국립한밭대학교 산학협력단</td>
-</tr>
-<tr class="even">
-<td>2025.10.30</td>
-<td>컴퓨터공학과 포트폴리오 경진대회</td>
-<td>🏆우수상</td>
-<td>국립한밭대학교 컴퓨터공학과</td>
-</tr>
-<tr class="odd">
-<td>2025.07.14</td>
-<td><a href="https://www.mdpi.com/1996-1073/18/14/3720">A Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data</a>(SCIE)</td>
-<td>DBA K-Means 모델 부분(공저자)</td>
-<td>MDPI journal energies</td>
-</tr>
-<tr class="even">
-<td>2025.06.30 ~ 07.11</td>
-<td>기업 인턴십</td>
-<td>자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)</td>
-<td><a href="https://argoon.net">(주) 아군</a></td>
-</tr>
-<tr class="odd">
-<td>2025.06.24 ~ 06.27</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference"><strong>대한전자공학회 하계 종합학술대회</strong></a></td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference">고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지</a></td>
-<td>롯데호텔 제주(중문)</td>
-</tr>
-<tr class="even">
-<td>2025.05.20 ~ 06.30</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0520_0630_ABC_Mentoring"><strong>ABC 프로젝트 멘토링</strong></a></td>
-<td>산업 전력 소비량 이상치 검출 및 최적화</td>
-<td>유클리드 소프트</td>
-</tr>
-<tr class="odd">
-<td>2025.06.13</td>
-<td>🪪 <a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/ADsP.pdf"><strong>데이터분석 준전문가(ADsP) 자격증 취득</strong></a></td>
-<td>데이터 분석 기획 및 수행 실무자 자격</td>
-<td>한국데이터산업진흥원</td>
-</tr>
-<tr class="even">
-<td>2025.05.01 ~</td>
-<td><strong><a href="https://sites.google.com/view/ecoai/introduction">Eco AI Lab</a> 랩장</strong></td>
-<td>커뮤니케이션 지원, 일정 조율, 행정 업무 등</td>
-<td>국립한밭대학교 EcoAI Lab</td>
-</tr>
-<tr class="odd">
-<td>2025.04.07 ~</td>
-<td><strong>산학협력 프로젝트</strong></td>
-<td>자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화</td>
-<td>국립한밭대학교 SW중심대학사업단</td>
-</tr>
-<tr class="even">
-<td>2025.03.24 ~</td>
-<td><strong>소중한 JUMP-UP Labs</strong></td>
-<td>AI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지</td>
-<td>국립한밭대학교 SW중심대학사업단</td>
-</tr>
-<tr class="odd">
-<td>2025.03.04 ~ 06.13</td>
-<td><strong>데이터사이언스(이상금 교수님) 실습조교 25-1학기</strong></td>
-<td>실습자료 제작 및 질의응답 관리</td>
-<td>국립한밭대학교 컴퓨터공학과</td>
-</tr>
-<tr class="even">
-<td>2025.02.05 ~ 02.07</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference"><strong>한국통신학회 동계종합학술발표회</strong></a></td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference/%5B%EB%85%BC%EB%AC%B8%2CPPT%5DDBA%20K-Means%20%EA%B5%B0%EC%A7%91%ED%99%94%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98%20%EA%B8%B0%EB%B0%98%20%ED%99%94%EA%B3%B5%EC%82%B0%EC%97%85%20%EC%A0%84%EB%A0%A5%20%EC%82%AC%EC%9A%A9%EB%9F%89%20%EC%9D%B4%EC%83%81%EC%B9%98%20%ED%83%90%EC%A7%80">DBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지</a></td>
-<td>강원도 용평리조트</td>
-</tr>
-<tr class="odd">
-<td>2025.01.16 ~ 01.21</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0116_0121_IRO"><strong>IROC 2024/25 세계대회</strong></a></td>
-<td>대회 진행요원</td>
-<td>부산 벡스코</td>
+<td><code>hotfix/*</code></td>
+<td>긴급 버그 수정</td>
+<td><code>main</code>에서 바로 만들어서 수정</td>
 </tr>
 </tbody>
 </table>
 </section>
-</main> 
-  <hr class="about-sep">
-   <div class="about-links">
-  <a href="https://github.com/beomdo-park" class="about-link" rel="" target="">
-    <i class="bi bi-github"></i>
-     <span class="about-link-text">Github</span>
-  </a>
-  <a href="" class="about-link" rel="" target="">
-    <i class="bi bi-email"></i>
-     <span class="about-link-text">pbeomdo AT gmail.com</span>
-  </a>
-</div>
-</div>
-</div>
+<section id="간단한-작업-흐름" class="level3">
+<h3 class="anchored" data-anchor-id="간단한-작업-흐름">간단한 작업 흐름</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 최신 코드로 업데이트</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull origin main</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 기능 브랜치 만들기</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature/12-login-ui</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 코드 짜고 커밋</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"feat: 로그인 폼 UI 구현"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 내 브랜치에 푸시</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin feature/12-login-ui</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="좋은-커밋-메시지-작성하기" class="level3">
+<h3 class="anchored" data-anchor-id="좋은-커밋-메시지-작성하기">좋은 커밋 메시지 작성하기</h3>
+<p>커밋 메시지는 작업 이력을 남기는 중요한 기록입니다. 팀원들이 변경 사항을 쉽게 이해할 수 있도록 규칙을 정하는 것이 좋습니다.</p>
+<p><strong>1. 커밋 유형(Type) 명시</strong></p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>유형</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>feat</code></td>
+<td>새로운 기능 추가</td>
+</tr>
+<tr class="even">
+<td><code>fix</code></td>
+<td>버그 수정</td>
+</tr>
+<tr class="odd">
+<td><code>docs</code></td>
+<td>문서 수정</td>
+</tr>
+<tr class="even">
+<td><code>style</code></td>
+<td>코드 포맷팅, 세미콜론 누락 등 (코드 변경 없음)</td>
+</tr>
+<tr class="odd">
+<td><code>refactor</code></td>
+<td>코드 리팩토링</td>
+</tr>
+<tr class="even">
+<td><code>test</code></td>
+<td>테스트 코드 추가/수정</td>
+</tr>
+<tr class="odd">
+<td><code>chore</code></td>
+<td>빌드, 패키지 매니저 설정 등 (프로덕션 코드 변경 없음)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>2. 제목과 본문 분리</strong></p>
+<ul>
+<li><strong>제목</strong>: 50자 이내로, 명령문으로 작성합니다. (예: <code>feat: 로그인 기능 추가</code>)</li>
+<li><strong>본문</strong>: 어떻게보다는 무엇을 왜 변경했는지 설명합니다.</li>
+</ul>
+<pre><code>feat: VAE 기반 이상치 탐지 모델 추가
+
+- Variational Autoencoder 모델 구조 정의
+- 인코더 및 디코더 네트워크 구현
+- 재구성 오류(Reconstruction Error)를 사용한 이상치 스코어 계산 로직 추가</code></pre>
 
 
+</section>
 
-
- <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -516,6 +540,13 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
       window.document.body.appendChild(a);
     }
     setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
     const isCodeAnnotation = (el) => {
       for (const clz of el.classList) {
         if (clz.startsWith('code-annotation-')) {                     
@@ -907,7 +938,7 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
     }
   });
   </script>
- <!-- /content -->
+</div> <!-- /content -->
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
