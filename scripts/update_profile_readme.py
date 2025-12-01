@@ -11,6 +11,7 @@ import requests
 RAW_README_URL = "https://raw.githubusercontent.com/beomdo-park/beomdo-park/main/README.md"
 FULL_PATH = pathlib.Path("assets/profile-readme.md")
 SUMMARY_PATH = pathlib.Path("assets/profile-summary.md")
+
 SUMMARY_START_MARKERS = ["## 👀 About Me", "<h2>👀 About Me"]
 SUMMARY_END_MARKERS = ["## 🤔 Github Stats", "## 📈 GitHub Trophies", "## 📬 Contact"]
 
@@ -31,17 +32,32 @@ def _find_marker(lines: list[str], markers: list[str]) -> int | None:
 
 
 def extract_summary(full_text: str) -> str:
-    """Return the subset used on the About page."""
+    """Return the subset used on the About page.
+
+    Cut from the About Me header through Activities, but stop
+    before Github Stats / Trophies / Contact sections.
+    """
 
     lines = full_text.splitlines()
-    start = _find_marker(lines, SUMMARY_START_MARKERS)
 
+    # 1) 먼저 About Me 시작 위치를 찾는다.
+    start = _find_marker(lines, SUMMARY_START_MARKERS)
     if start is None:
         return full_text
 
-    end = _find_marker(lines[start:], SUMMARY_END_MARKERS)
-    slice_end = start + end if end is not None else len(lines)
-    summary = "\n".join(lines[start:slice_end]).strip()
+    # 2) 시작 지점부터 Stats/Trophies/Contact 중 하나가 나오기 전까지를 사용한다.
+    end_rel = _find_marker(lines[start:], SUMMARY_END_MARKERS)
+    slice_end = start + end_rel if end_rel is not None else len(lines)
+
+    # 3) 이 구간 안에서 README 최상단에서 쓰던 래핑 <div>의 닫는 </div> 만 제거
+    slice_lines = lines[start:slice_end]
+    cleaned_lines: list[str] = []
+    for line in slice_lines:
+        if line.strip() == "</div>":
+            continue
+        cleaned_lines.append(line)
+
+    summary = "\n".join(cleaned_lines).strip()
     return summary + "\n" if summary else full_text
 
 
@@ -54,13 +70,15 @@ def main() -> int:
 
     FULL_PATH.parent.mkdir(parents=True, exist_ok=True)
     FULL_PATH.write_text(content, encoding="utf-8")
+    SUMMARY_PATH.parent.mkdir(parents=True, exist_ok=True)
 
     summary = extract_summary(content)
     SUMMARY_PATH.write_text(summary, encoding="utf-8")
 
     print(
         "Saved profile README to {full} and summary to {summary}".format(
-            full=FULL_PATH, summary=SUMMARY_PATH
+            full=FULL_PATH,
+            summary=SUMMARY_PATH,
         )
     )
     return 0

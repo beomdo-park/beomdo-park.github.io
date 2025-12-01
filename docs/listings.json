@@ -1,0 +1,13 @@
+[
+  {
+    "listing": "/index.html",
+    "items": [
+      "/posts/guide-github-01-branch-strategy/index.html",
+      "/posts/project-abc-05-real-data-analysis/index.html",
+      "/posts/project-abc-04-model-optimization/index.html",
+      "/posts/project-abc-03-cnn-baseline/index.html",
+      "/posts/project-abc-02-time-series-anomaly/index.html",
+      "/posts/project-abc-01-data-analysis/index.html"
+    ]
+  }
+]

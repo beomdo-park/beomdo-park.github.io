@@ -1,52 +1,3 @@
-<h2>👀 About Me</h2>
-  <table border="0" width="100%">
-    <tr>
-      <td width="70%" style="vertical-align: middle;">
-        <ul>
-          <li>I am an undergraduate researcher at <a href="https://sites.google.com/view/ecoai/introduction"><b>Eco AI Lab</b></a>.</li>
-          <li>I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying research to real-world challenges.</li>
-          <li>3rd-year Computer Engineering Student, <b>Hanbat National University (HBNU)</b>.</li>
-        </ul>
-        <b>📂 You can check out my portfolios:</b>&nbsp; <a href="https://beomdo-park.github.io"><b>Blog</b></a> |&nbsp; <a href="https://github.com/beomdo-park/Portfolio"><b>Repository</b></a>
-      </td>
-      <td width="30%" align="center" style="vertical-align: middle;">
-        <a href="https://sites.google.com/view/ecoai/introduction">
-          <img src="https://github.com/user-attachments/assets/98519fd4-3bb6-4e5a-a831-2561cbfc41d3" width="260" alt="EcoAI Lab Logo" />
-        </a>
-        <br>
-        <a href="https://sites.google.com/view/ecoai/introduction"><b>홈페이지</b></a>
-      </td>
-    </tr>
-  </table>
-  
-    
-## Tech Stack
-
-### Languages
-<p>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=Python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=JavaScript&logoColor=white"/>
-</p>
-
-### AI & Quantum Sciences
-<p>
-  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&logo=PyTorch&logoColor=white"/>
-  <img src="https://img.shields.io/badge/IBM_Qiskit-6929C4?style=flat-square&logo=Qiskit&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Reinforcement_Learning-448C8A?style=flat-square"/>
-  <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white"/>
-</p>
-
-### Data & Tools
-<p>
-  <img src="https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Matplotlib-000000?style=flat-square&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Seaborn-3776AB?style=flat-square&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=PostgreSQL&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Selenium-43B02A?style=flat-square&logo=Selenium&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Quarto-4B4B8A?style=flat-square&logo=Quarto&logoColor=white"/>
-</p>
-
-
 ## Activities
 
 | 기간 | 활동명 | 내용 | 기관(장소) |
@@ -68,3 +19,15 @@
 | 2025.03.04 ~ 06.13 | **데이터사이언스(이상금 교수님) 실습조교 25-1학기** | 실습자료 제작 및 질의응답 관리 | 국립한밭대학교 컴퓨터공학과 |
 | 2025.02.05 ~ 02.07 | [**한국통신학회 동계종합학술발표회**](https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference) | [DBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지](https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference/%5B%EB%85%BC%EB%AC%B8%2CPPT%5DDBA%20K-Means%20%EA%B5%B0%EC%A7%91%ED%99%94%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98%20%EA%B8%B0%EB%B0%98%20%ED%99%94%EA%B3%B5%EC%82%B0%EC%97%85%20%EC%A0%84%EB%A0%A5%20%EC%82%AC%EC%9A%A9%EB%9F%89%20%EC%9D%B4%EC%83%81%EC%B9%98%20%ED%83%90%EC%A7%80) | 강원도 용평리조트 |
 | 2025.01.16 ~ 01.21 | [**IROC 2024/25 세계대회**](https://github.com/beomdo-park/Portfolio/tree/main/2025/0116_0121_IRO) | 대회 진행요원 | 부산 벡스코 |
+
+
+
+
+  
+  ## 🤔 Github Stats
+
+<div align="center" style="display: flex; justify-content: center; gap: 20px;">
+  <img src="https://github-readme-stats.vercel.app/api?username=beomdo-park&show_icons=true&theme=dracula" height="180" />
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=beomdo-park&layout=donut&show_icons=true&theme=dracula&hide=scss,css,html" height="180" />
+
+</div>
