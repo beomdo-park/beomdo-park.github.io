@@ -17,4 +17,6 @@ about:
       text: pbeomdo AT gmail.com
 ---
 
+::: {.profile-readme}
 {{< include assets/profile-readme.md >}}
+:::

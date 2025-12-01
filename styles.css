@@ -139,3 +139,28 @@ code {
   line-height: 1.2; /* 줄 높이 조정으로 아이콘과 정렬 개선 */
   vertical-align: middle; /* 아이콘과 텍스트 수직 정렬 */
 }
+
+.profile-readme {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.profile-readme table {
+  width: 100% !important;
+  display: block;
+  overflow-x: auto;
+}
+
+.profile-readme img {
+  max-width: 100%;
+  height: auto;
+}
+
+.profile-readme div,
+.profile-readme p {
+  max-width: 100%;
+}
