@@ -7,6 +7,8 @@ categories: ["GitHub"]
 tags: ["Git", "GitHub", "Branch"]
 page-layout: full
 freeze: true
+image: assets/github-mark.png
+image-alt: "GitHub Mark"
 ---
 
 > "main에 바로 푸시하지 마세요." 팀 프로젝트에서 자주 듣는 말입니다.  
