@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.8.26">
+<meta name="generator" content="quarto-1.9.36">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,6 +12,9 @@
 
 <title>[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog</title>
 <style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
 div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -70,19 +73,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <meta name="quarto:offset" content="../../">
 <script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
 <script src="../../site_libs/quarto-html/popper.min.js"></script>
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b758ccaa5987ceb1b75504551e579abf.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-587c61ba64f3a5504c4d52d930310e48.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-0b09ff00c81938394d5e4520c57a5f05.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-0b37c64f34216b628666a8dac638b53b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d566632b9b556130690f53ea2927da6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -111,14 +113,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"December 1, 2025","datePublished":"December 2, 2025","description":"팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.","headline":"[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법","image":"https://beomdo-park.github.io/assets/github-mark.png","keywords":["GitHub"],"url":"https://beomdo-park.github.io"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"April 6, 2026","datePublished":"December 2, 2025","description":"팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.","headline":"[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법","image":"https://beomdo-park.github.io/assets/github-mark.png","keywords":["GitHub"],"url":"https://beomdo-park.github.io"}</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog">
 <meta property="og:description" content="팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/assets/github-mark.png">
-<meta property="og:site_name" content="beomdo's ML-DL blog">
+<meta property="og:site_name" content="beomdo’s ML-DL blog">
 <meta property="og:image:height" content="560">
 <meta property="og:image:width" content="560">
 <meta property="og:image:alt" content="GitHub Mark">
@@ -380,7 +382,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Modified</div>
       <div class="quarto-title-meta-contents">
-        <p class="date-modified">December 1, 2025</p>
+        <p class="date-modified">April 6, 2026</p>
       </div>
     </div>
       

@@ -6,8 +6,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2026-04-06">
+<meta name="description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
 
-<title>beomdo’s ML-DL blog</title>
+<title>[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,29 +29,27 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-d566632b9b556130690f53ea2927da6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-f418161beb48e0141c760e455f12af2c.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-845c23b38eaddc0f92fda52bfe77a8c8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-d566632b9b556130690f53ea2927da6d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-be3771519f21acc1c5b6733774c6dcd8.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -75,38 +76,9 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script>
-<script>
-
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-date','listing-title','listing-author','listing-image','listing-description','listing-categories','listing-reading-time',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-date","listing-title","listing-author","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-<meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
+}</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"April 6, 2026","datePublished":"April 6, 2026","description":"GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요","keywords":["ABC프로젝트멘토링PyTorch"],"url":"https://beomdo-park.github.io"}</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -138,14 +110,10 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="styles.css">
-<meta property="og:title" content="beomdo’s ML-DL blog">
-<meta property="og:description" content="Posts">
-<meta property="og:image" content="https://beomdo-park.github.io/assets/github-mark.png">
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog">
+<meta property="og:description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
 <meta property="og:site_name" content="beomdo’s ML-DL blog">
-<meta property="og:image:alt" content="GitHub Mark">
-<meta property="og:image:height" content="560">
-<meta property="og:image:width" content="560">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -322,11 +290,11 @@ window.Quarto = {
   </script>
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">beomdo’s ML-DL blog</span>
     </a>
   </div>
@@ -337,11 +305,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" aria-current="page"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
+    <a class="nav-link" href="../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -369,379 +337,370 @@ window.Quarto = {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요</h1>
+                  <div>
+        <div class="description">
+          GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">ABC프로젝트멘토링</div>
+                <div class="quarto-category">PyTorch</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 6, 2026</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">April 6, 2026</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(7)</span></div><div class="category" data-category="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx">ABC프로젝트멘토링 <span class="quarto-category-count">(6)</span></div><div class="category" data-category="R2l0SHVi">GitHub <span class="quarto-category-count">(1)</span></div><div class="category" data-category="UHlUb3JjaA==">PyTorch <span class="quarto-category-count">(6)</span></div></div></div>
-<!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<p class="subtitle lead">Posts</p>
-</div>
-
-
-
-<div class="quarto-title-meta column-page-left">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<!-- HTML in QMD - runs immediately when page loads, not after DOMContentLoaded -->
-<script>
-// 이 방식은 DOMContentLoaded보다 먼저 실행되므로 더 효과적일 수 있음
-(function() {
-  // Google site verification - 페이지 로드 즉시 실행
-  var googleMeta = document.createElement('meta');
-  googleMeta.name = "google-site-verification";
-  googleMeta.content = "tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo";
-  document.head.insertBefore(googleMeta, document.head.firstChild);
-
-  // Naver site verification
-  var naverMeta = document.createElement('meta');
-  naverMeta.name = "naver-site-verification";
-  naverMeta.content = "6c1006d6edf85b99c51f1f82aabd2a4fd68ec739";
-  document.head.insertBefore(naverMeta, document.head.firstChild);
-})();
-</script>
-<!-- 원래 스크립트 -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    let subtitleElement = null;
-    let categoryLinksContainer = null;
-    const maxAttempts = 20; // 최대 20번 시도 (0.5초 간격으로 약 10초)
-    let attempts = 0;
-
-    const findElementsInterval = setInterval(function() {
-        subtitleElement = document.querySelector('.quarto-title-block .subtitle');
-        const marginSidebar = document.querySelector('#quarto-margin-sidebar');
-        attempts++;
-
-        if (marginSidebar) {
-            // console.log('Dynamic subtitle: Found #quarto-margin-sidebar.'); // 로그 확인용
-            categoryLinksContainer = marginSidebar.querySelector('div.quarto-listing-category');
-        } else if (attempts === 1) { // 첫 시도에서 못찾으면 바로 로그 남기기
-            console.warn('Dynamic subtitle: #quarto-margin-sidebar not found on first attempt.');
-        }
-
-        if ((subtitleElement && categoryLinksContainer) || attempts >= maxAttempts) {
-            clearInterval(findElementsInterval);
-            if (subtitleElement && categoryLinksContainer) {
-                console.log('Dynamic subtitle: Successfully found subtitleElement and categoryLinksContainer.');
-                initializeDynamicSubtitle(subtitleElement, categoryLinksContainer);
-            } else {
-                if (!subtitleElement) {
-                    console.warn('Dynamic subtitle: Subtitle element (.quarto-title-block .subtitle) not found after multiple attempts.');
-                }
-                if (!categoryLinksContainer) {
-                    console.warn('Dynamic subtitle: Category links container (div.quarto-listing-category within #quarto-margin-sidebar) not found after multiple attempts.');
-                    if (marginSidebar) {
-                        console.log('Dynamic subtitle: InnerHTML of #quarto-margin-sidebar:');
-                        console.log(marginSidebar.innerHTML);
-                    } else {
-                        console.warn('Dynamic subtitle: #quarto-margin-sidebar was also not found.');
-                    }
-                }
-            }
-        }
-    }, 500); // 500ms (0.5초) 간격으로 확인
-
-    function initializeDynamicSubtitle(subtitleElem, categoriesContainer) {
-        const originalSubtitleText = subtitleElem.textContent.trim();
-
-        const updateSubtitle = () => {
-            const activeFilterElement = categoriesContainer.querySelector('div.category.active');
-            if (activeFilterElement) {
-              let categoryName = activeFilterElement.textContent.trim(); // 예: "All (1)" 또는 "News (3)"
-              const categoryNameOnly = categoryName.replace(/\s*\(\d+\)$/, '').trim(); // 숫자 제거 -> "All" 또는 "News"
-              
-              if (categoryNameOnly === "All") {
-                subtitleElem.textContent = originalSubtitleText;
-              } else {
-                subtitleElem.textContent = `Posts by [${categoryNameOnly}]`;
-              }
-            } else {
-              // 활성 필터가 없으면 원래 부제목으로 되돌립니다.
-              subtitleElem.textContent = originalSubtitleText;
-            }
-        };
-
-        const observer = new MutationObserver((mutationsList) => {
-            for(const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && 
-                    mutation.attributeName === 'class' && 
-                    mutation.target.matches('div.category')) { // categoriesContainer의 자식인 div.category를 감지
-                    updateSubtitle();
-                    return; 
-                }
-            }
-        });
-
-        observer.observe(categoriesContainer, { // 찾은 categoriesContainer를 관찰
-            attributes: true, 
-            childList: false, 
-            subtree: true     
-        });
-
-        updateSubtitle(); // 초기 업데이트
-    }
-});
-</script>
-
-
-
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="listing-actions-group">
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#프로젝트-배경" id="toc-프로젝트-배경" class="nav-link active" data-scroll-target="#프로젝트-배경">프로젝트 배경</a></li>
+  <li><a href="#graph-neural-network-gnn" id="toc-graph-neural-network-gnn" class="nav-link" data-scroll-target="#graph-neural-network-gnn">1. Graph Neural Network (GNN)</a>
+  <ul class="collapse">
+  <li><a href="#gnn이란" id="toc-gnn이란" class="nav-link" data-scroll-target="#gnn이란">1-1. GNN이란?</a></li>
+  <li><a href="#메시지-패싱-message-passing" id="toc-메시지-패싱-message-passing" class="nav-link" data-scroll-target="#메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</a></li>
+  <li><a href="#graphconv-레이어" id="toc-graphconv-레이어" class="nav-link" data-scroll-target="#graphconv-레이어">1-3. GraphConv 레이어</a></li>
+  <li><a href="#프로젝트에서의-gnn-아키텍처" id="toc-프로젝트에서의-gnn-아키텍처" class="nav-link" data-scroll-target="#프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</a></li>
+  </ul></li>
+  <li><a href="#post-training-quantization-ptq" id="toc-post-training-quantization-ptq" class="nav-link" data-scroll-target="#post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</a>
+  <ul class="collapse">
+  <li><a href="#양자화란" id="toc-양자화란" class="nav-link" data-scroll-target="#양자화란">2-1. 양자화란?</a></li>
+  <li><a href="#ptq의-동작-원리" id="toc-ptq의-동작-원리" class="nav-link" data-scroll-target="#ptq의-동작-원리">2-2. PTQ의 동작 원리</a></li>
+  <li><a href="#saturated-relu" id="toc-saturated-relu" class="nav-link" data-scroll-target="#saturated-relu">2-3. Saturated ReLU</a></li>
+  <li><a href="#프로젝트에서의-양자화-전략" id="toc-프로젝트에서의-양자화-전략" class="nav-link" data-scroll-target="#프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</a></li>
+  </ul></li>
+  <li><a href="#정리" id="toc-정리" class="nav-link" data-scroll-target="#정리">정리</a></li>
+  </ul>
+</nav>
     </div>
-</div>
-<div class="list quarto-listing-default">
-<div class="quarto-post image-right" data-index="0" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1775433600000" data-listing-file-modified-sort="1775470426992" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="5" data-listing-word-count-sort="963">
-<div class="thumbnail"><a href="./posts/project-roqet-01-gnn-quantization/index.html" class="no-external">
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
-<div class="listing-item-img-placeholder card-img-top" >&nbsp;</div>
 
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-roqet-01-gnn-quantization/index.html" class="no-external">[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요</a>
-</h3>
-<div class="listing-categories">
 
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
 
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
 
-</div>
-<div class="delink listing-description"><a href="./posts/project-roqet-01-gnn-quantization/index.html" class="no-external">
-<p>GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-roqet-01-gnn-quantization/index.html" class="no-external">
-<div class="listing-date">
-Apr 6, 2026
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">5 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="1" data-categories="R2l0SHVi" data-listing-date-sort="1764633600000" data-listing-file-modified-sort="1775470426987" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="2" data-listing-word-count-sort="356">
-<div class="thumbnail"><a href="./posts/guide-github-01-branch-strategy/index.html" class="no-external">
 
-<img loading="lazy" src="./assets/github-mark.png" class="thumbnail-image" alt="GitHub Mark">
+<blockquote class="blockquote">
+<p>전년도에 이어 2년 연속으로 유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 2기로 참여하게 되었습니다. <br><br> <strong>[(주)플랜아이] 클라우드 서비스 구축 및 AI/데이터 응용 서비스 개발 프로젝트</strong>를 주제로, GNN 기반 양자 오류 정정(QEC) 디코더를 설계하고 FPGA에 온디바이스 구현하는 프로젝트를 진행합니다.</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>1주차에는 프로젝트의 핵심 AI 기법인 <strong>Graph Neural Network(GNN)</strong>와 <strong>Post-Training Quantization(PTQ)</strong>의 개념을 선행 학습 차원에서 정리했습니다. 이 두 기법은 각각 디코더의 추론 모델과 FPGA 경량화 전략의 근간이 됩니다.</p>
+</div>
+</div>
+<section id="프로젝트-배경" class="level2">
+<h2 class="anchored" data-anchor-id="프로젝트-배경">프로젝트 배경</h2>
+<p>양자 컴퓨팅에서 물리적 큐비트는 높은 오류율(~10⁻³)을 가지며, 이를 보정하기 위해 <strong>양자 오류 정정(Quantum Error Correction, QEC)</strong>이 필수적입니다. 현재 가장 유망한 방식인 <strong>Surface Code</strong>는 큐비트들을 2D 격자 형태로 배치하고, 주변 큐비트의 측정 결과(신드롬)를 통해 오류를 추론합니다.</p>
+<p>기존 주류 디코더인 MWPM(Minimum Weight Perfect Matching)은 O(n³)의 시간복잡도로 인해 실시간 디코딩이 어렵습니다. 큐비트의 결맞음 시간(~1μs) 내에 디코딩을 완료해야 하므로, 더 빠르고 정확한 디코더가 필요합니다.</p>
+<p>본 프로젝트에서는 <strong>GNN 기반 디코더</strong>를 설계하여 Surface Code의 신드롬 그래프를 직접 처리하고, <strong>INT8 양자화</strong>를 통해 FPGA에서 1μs 이내 실시간 추론을 달성하는 것을 목표로 합니다.</p>
+<hr>
+</section>
+<section id="graph-neural-network-gnn" class="level2">
+<h2 class="anchored" data-anchor-id="graph-neural-network-gnn">1. Graph Neural Network (GNN)</h2>
+<section id="gnn이란" class="level3">
+<h3 class="anchored" data-anchor-id="gnn이란">1-1. GNN이란?</h3>
+<p>Graph Neural Network(GNN)는 <strong>그래프 구조 데이터</strong>를 직접 입력으로 처리할 수 있는 딥러닝 모델입니다. 일반적인 CNN이 이미지의 격자(grid) 구조를, RNN이 시퀀스 구조를 다루는 것과 달리, GNN은 <strong>노드(node)</strong>와 <strong>엣지(edge)</strong>로 구성된 비정형 그래프를 처리합니다.</p>
+<p>그래프 데이터는 다양한 영역에서 자연스럽게 등장합니다:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>도메인</th>
+<th>노드</th>
+<th>엣지</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>소셜 네트워크</td>
+<td>사용자</td>
+<td>친구 관계</td>
+</tr>
+<tr class="even">
+<td>분자 구조</td>
+<td>원자</td>
+<td>화학 결합</td>
+</tr>
+<tr class="odd">
+<td>추천 시스템</td>
+<td>유저/아이템</td>
+<td>상호작용</td>
+</tr>
+<tr class="even">
+<td><strong>양자 오류 정정</strong></td>
+<td><strong>신드롬 이벤트</strong></td>
+<td><strong>인접 관계</strong></td>
+</tr>
+</tbody>
+</table>
+<p>본 프로젝트에서 Surface Code의 신드롬 데이터는 본질적으로 그래프 구조를 가지므로, GNN이 자연스러운 선택이 됩니다.</p>
+</section>
+<section id="메시지-패싱-message-passing" class="level3">
+<h3 class="anchored" data-anchor-id="메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</h3>
+<p>GNN의 핵심 연산은 <strong>메시지 패싱(Message Passing)</strong> 메커니즘입니다. 각 노드는 이웃 노드들로부터 정보를 수집하고 자신의 표현(representation)을 업데이트합니다. 이 과정을 수식으로 표현하면 다음과 같습니다:</p>
+<p><span class="math display">\[
+h_v^{(l+1)} = \text{UPDATE}\left(h_v^{(l)},\; \text{AGGREGATE}\left(\{h_u^{(l)} : u \in \mathcal{N}(v)\}\right)\right)
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(h_v^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어에서 노드 <span class="math inline">\(v\)</span>의 특성 벡터</li>
+<li><span class="math inline">\(\mathcal{N}(v)\)</span>: 노드 <span class="math inline">\(v\)</span>의 이웃 노드 집합</li>
+<li><strong>AGGREGATE</strong>: 이웃 노드들의 정보를 모으는 함수 (합산, 평균, 최대값 등)</li>
+<li><strong>UPDATE</strong>: 집약된 정보와 자신의 정보를 결합하여 새로운 표현을 생성하는 함수</li>
+</ul>
+<p>직관적으로 설명하면, 각 노드가 “주변에 무슨 일이 일어나고 있는지”를 이웃들에게 물어보고, 그 답변을 종합하여 자신의 상태를 갱신하는 과정입니다. 레이어를 여러 층 쌓으면 더 먼 노드의 정보까지 전파됩니다.</p>
+</section>
+<section id="graphconv-레이어" class="level3">
+<h3 class="anchored" data-anchor-id="graphconv-레이어">1-3. GraphConv 레이어</h3>
+<p>본 프로젝트에서 사용할 <strong>GraphConv</strong>(Graph Convolution) 레이어는 Kipf &amp; Welling (2017)이 제안한 GCN(Graph Convolutional Network)의 핵심 구성 요소입니다. 각 레이어의 연산은 다음과 같습니다:</p>
+<p><span class="math display">\[
+H^{(l+1)} = \sigma\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(\tilde{A} = A + I\)</span>: 자기 연결(self-loop)이 추가된 인접 행렬</li>
+<li><span class="math inline">\(\tilde{D}\)</span>: <span class="math inline">\(\tilde{A}\)</span>의 차수 행렬 (degree matrix)</li>
+<li><span class="math inline">\(H^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어의 노드 특성 행렬</li>
+<li><span class="math inline">\(W^{(l)}\)</span>: 학습 가능한 가중치 행렬</li>
+<li><span class="math inline">\(\sigma\)</span>: 활성화 함수 (ReLU 등)</li>
+</ul>
+<p>핵심 아이디어는 인접 행렬을 정규화하여 이웃 노드 수에 따른 스케일 차이를 보정하고, 가중치 행렬을 통해 특성을 선형 변환한 뒤 비선형 활성화를 적용하는 것입니다.</p>
+</section>
+<section id="프로젝트에서의-gnn-아키텍처" class="level3">
+<h3 class="anchored" data-anchor-id="프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</h3>
+<p>본 프로젝트의 GNN 디코더는 다음과 같은 구조를 가집니다:</p>
+<pre><code>입력 (신드롬 그래프, 노드 특성 5차원)
+    ↓
+GraphConv Layer 1: 5 → 32
+    ↓ ReLU
+GraphConv Layer 2: 32 → 128
+    ↓ ReLU
+GraphConv Layer 3: 128 → 256
+    ↓ ReLU
+Global Mean Pooling
+    ↓
+Dense Layer: 256 → 2 (λX, λZ 논리 오류 확률)</code></pre>
+<ul>
+<li><strong>3-layer Pruned GraphConv</strong>: 경량화된 3층 구조로 신드롬 그래프의 지역~전역 패턴을 포착</li>
+<li><strong>Global Mean Pooling</strong>: 가변 크기 그래프를 고정 크기 벡터로 변환</li>
+<li><strong>Dense Layer</strong>: 최종적으로 X/Z 논리 오류 확률을 출력</li>
+</ul>
+<p>이 구조는 Cicero et al.&nbsp;(2026)의 Pruned 모델을 기반으로 하며, MWPM 대비 낮은 논리 오류율을 달성하면서도 FPGA 구현에 적합한 경량 구조를 갖추고 있습니다.</p>
+<hr>
+</section>
+</section>
+<section id="post-training-quantization-ptq" class="level2">
+<h2 class="anchored" data-anchor-id="post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</h2>
+<section id="양자화란" class="level3">
+<h3 class="anchored" data-anchor-id="양자화란">2-1. 양자화란?</h3>
+<p>딥러닝 모델의 <strong>양자화(Quantization)</strong>는 모델의 가중치와 활성화 값을 높은 정밀도(FP32)에서 낮은 정밀도(INT8, INT16 등)로 변환하는 기법입니다. 이를 통해:</p>
+<ul>
+<li><strong>메모리 사용량 감소</strong>: FP32 → INT8로 약 4배 절감</li>
+<li><strong>연산 속도 향상</strong>: 정수 연산은 부동소수점 연산보다 빠르고 하드웨어 효율적</li>
+<li><strong>전력 소비 감소</strong>: 특히 FPGA, ASIC 등 엣지 디바이스에서 유리</li>
+</ul>
+<p>양자화 방식은 크게 두 가지로 나뉩니다:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 45%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>QAT (Quantization-Aware Training)</th>
+<th>PTQ (Post-Training Quantization)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>시점</td>
+<td>학습 중 양자화 시뮬레이션 포함</td>
+<td>학습 완료 후 양자화 적용</td>
+</tr>
+<tr class="even">
+<td>정확도</td>
+<td>상대적으로 높음</td>
+<td>QAT 대비 약간 낮을 수 있음</td>
+</tr>
+<tr class="odd">
+<td>비용</td>
+<td>재학습 필요 (시간/자원 소모)</td>
+<td>재학습 불필요 (빠른 적용)</td>
+</tr>
+<tr class="even">
+<td>적용 난이도</td>
+<td>학습 코드 수정 필요</td>
+<td>기존 모델에 바로 적용 가능</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ptq의-동작-원리" class="level3">
+<h3 class="anchored" data-anchor-id="ptq의-동작-원리">2-2. PTQ의 동작 원리</h3>
+<p>Post-Training Quantization은 이미 학습이 완료된 모델에 양자화를 적용하는 방식입니다. 재학습 없이 빠르게 경량화할 수 있어 실용적입니다.</p>
+<p><strong>기본 양자화 공식:</strong></p>
+<p><span class="math display">\[
+q = \text{round}\left(\frac{x}{s}\right) + z
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(x\)</span>: 원래의 FP32 값</li>
+<li><span class="math inline">\(s\)</span>: 스케일 팩터 (scale factor)</li>
+<li><span class="math inline">\(z\)</span>: 제로 포인트 (zero point)</li>
+<li><span class="math inline">\(q\)</span>: 양자화된 정수 값</li>
+</ul>
+<p><strong>역양자화 (Dequantization):</strong></p>
+<p><span class="math display">\[
+\hat{x} = s \cdot (q - z)
+\]</span></p>
+<p>스케일 팩터와 제로 포인트는 가중치의 최솟값과 최댓값으로부터 계산됩니다:</p>
+<p><span class="math display">\[
+s = \frac{x_{\max} - x_{\min}}{q_{\max} - q_{\min}}, \quad z = q_{\min} - \text{round}\left(\frac{x_{\min}}{s}\right)
+\]</span></p>
+<p>INT8의 경우 <span class="math inline">\(q_{\min} = -128\)</span>, <span class="math inline">\(q_{\max} = 127\)</span>이 됩니다.</p>
+</section>
+<section id="saturated-relu" class="level3">
+<h3 class="anchored" data-anchor-id="saturated-relu">2-3. Saturated ReLU</h3>
+<p>양자화 시 활성화 함수도 정수 연산에 맞게 조정이 필요합니다. 일반적인 ReLU는 출력 범위가 <span class="math inline">\([0, +\infty)\)</span>로 제한이 없어 양자화에 불리합니다. 이를 해결하기 위해 <strong>Saturated ReLU</strong>를 사용합니다:</p>
+<p><span class="math display">\[
+\text{SaturatedReLU}(x) = \min(\max(x, 0),\; C)
+\]</span></p>
+<p>여기서 <span class="math inline">\(C\)</span>는 클리핑 상한값입니다. 출력 범위를 <span class="math inline">\([0, C]\)</span>로 제한함으로써 양자화 해상도를 높이고, FPGA에서 고정 비트폭 연산으로 구현할 수 있습니다.</p>
+</section>
+<section id="프로젝트에서의-양자화-전략" class="level3">
+<h3 class="anchored" data-anchor-id="프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</h3>
+<p>본 프로젝트에서는 다음과 같은 양자화 전략을 적용할 예정입니다:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>대상</th>
+<th>비트폭</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>가중치 (Weight)</td>
+<td>INT8</td>
+<td>GraphConv 레이어의 가중치 행렬</td>
+</tr>
+<tr class="even">
+<td>바이어스 (Bias)</td>
+<td>INT16</td>
+<td>누적 오차 방지를 위해 높은 정밀도 유지</td>
+</tr>
+<tr class="odd">
+<td>중간 특성 (Feature)</td>
+<td>18-bit</td>
+<td>레이어 간 전달되는 활성화 값</td>
+</tr>
+<tr class="even">
+<td>활성화 함수</td>
+<td>Saturated ReLU</td>
+<td>출력 범위 제한으로 양자화 효율 향상</td>
+</tr>
+</tbody>
+</table>
+<p>양자화된 가중치는 HEX 포맷으로 추출하여 FPGA의 Weight Memory ROM에 저장되며, 소프트웨어(PyTorch)와 하드웨어(Verilog RTL) 간 패리티 검증을 통해 양자화 과정의 정확성을 보장합니다.</p>
+<hr>
+</section>
+</section>
+<section id="정리" class="level2">
+<h2 class="anchored" data-anchor-id="정리">정리</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>기법</th>
+<th>역할</th>
+<th>프로젝트 적용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>GNN (GraphConv)</strong></td>
+<td>그래프 구조 데이터의 패턴 학습</td>
+<td>Surface Code 신드롬 그래프에서 오류 패턴 추론</td>
+</tr>
+<tr class="even">
+<td><strong>PTQ (INT8)</strong></td>
+<td>학습된 모델의 경량화</td>
+<td>FPGA 온디바이스 구현을 위한 가중치/활성화 양자화</td>
+</tr>
+</tbody>
+</table>
+<p>1주차에는 프로젝트의 두 핵심 기법을 개념적으로 정리했습니다. 다음 주차부터는 Stim과 PyMatching을 활용한 Surface Code 데이터셋 생성과 GNN 모델 학습 파이프라인 구축을 진행할 예정입니다.</p>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>참고 문헌
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Kipf, T.N. &amp; Welling, M. (2017). Semi-Supervised Classification with Graph Convolutional Networks. <em>ICLR 2017</em>.</li>
+<li>Cicero, D. et al.&nbsp;(2026). Pruned GNN Decoders for Quantum Error Correction.</li>
+<li>Lange, M. et al.&nbsp;(2025). Graph Neural Network Decoders for Surface Codes.</li>
+</ul>
+</div>
+</div>
 
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/guide-github-01-branch-strategy/index.html" class="no-external">[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법</a>
-</h3>
-<div class="listing-categories">
 
-<div class="listing-category" onclick="window.quartoListingCategory('R2l0SHVi'); return false;">GitHub</div>
+</section>
 
-</div>
-<div class="delink listing-description"><a href="./posts/guide-github-01-branch-strategy/index.html" class="no-external">
-<p>팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/guide-github-01-branch-strategy/index.html" class="no-external">
-<div class="listing-date">
-Dec 2, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">2 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="2" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1750291200000" data-listing-file-modified-sort="1775470426992" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="13" data-listing-word-count-sort="2475">
-<div class="thumbnail"><a href="./posts/project-abc-05-real-data-analysis/index.html" class="no-external">
-
-<p class="card-img-top"><img loading='lazy' src="posts/project-abc-05-real-data-analysis/index_files/figure-html/data-preprocessing-output-3.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-abc-05-real-data-analysis/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 5주차 - 실제 전력 사용량 데이터를 활용한 이상 탐지</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/project-abc-05-real-data-analysis/index.html" class="no-external">
-<p>이전 주차에서 개발한 CNN 오토인코더 모델을 실제 Kaggle의 주택 전력 사용량 데이터에 적용하여, 현실 데이터에서 발생하는 이상 패턴을 탐지하는 과정을 다룹니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-abc-05-real-data-analysis/index.html" class="no-external">
-<div class="listing-date">
-Jun 19, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">13 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="3" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1749859200000" data-listing-file-modified-sort="1775470426991" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="20" data-listing-word-count-sort="3859">
-<div class="thumbnail"><a href="./posts/project-abc-04-model-optimization/index.html" class="no-external">
-
-<img loading="lazy" src="./posts/project-abc-04-model-optimization/image.png" class="thumbnail-image">
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-abc-04-model-optimization/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 4주차 - 모델 성능 개선 및 하이퍼파라미터 최적화</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/project-abc-04-model-optimization/index.html" class="no-external">
-<p>지난주 CNN 오토인코더 모델의 한계를 분석하고, 성능 개선을 위한 다양한 방법과 하이퍼파라미터 최적화 과정을 기록합니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-abc-04-model-optimization/index.html" class="no-external">
-<div class="listing-date">
-Jun 14, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">20 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="4" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1749340800000" data-listing-file-modified-sort="1775470426989" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2233">
-<div class="thumbnail"><a href="./posts/project-abc-03-cnn-baseline/index.html" class="no-external">
-
-<p class="card-img-top"><img loading='lazy' src="posts/project-abc-03-cnn-baseline/index_files/figure-html/visualization-output-1.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-abc-03-cnn-baseline/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 3주차 - CNN으로 시계열 이상 탐지 (PyTorch)</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/project-abc-03-cnn-baseline/index.html" class="no-external">
-<p>PyTorch를 사용하여 1D CNN 오토인코더 기반 시계열 이상 탐지 베이스라인 모델을 구현합니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-abc-03-cnn-baseline/index.html" class="no-external">
-<div class="listing-date">
-Jun 8, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">12 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="5" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1748736000000" data-listing-file-modified-sort="1775470426989" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="5" data-listing-word-count-sort="909">
-<div class="thumbnail"><a href="./posts/project-abc-02-time-series-anomaly/index.html" class="no-external">
-
-<p class="card-img-top"><img loading='lazy' src="posts/project-abc-02-time-series-anomaly/index_files/figure-html/plot-sample-data-output-1.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-abc-02-time-series-anomaly/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 2주차 - 시계열 이상 탐지와 머신러닝 기초 적용</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/project-abc-02-time-series-anomaly/index.html" class="no-external">
-<p>Python을 활용한 시계열 데이터 이상 탐지 - 머신러닝 기법 적용 실습</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-abc-02-time-series-anomaly/index.html" class="no-external">
-<div class="listing-date">
-Jun 1, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">5 min</div>
-</a>
-</div>
-</div>
-<div class="quarto-post image-right" data-index="6" data-categories="QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgxJTJDUHlUb3JjaA==" data-listing-date-sort="1748131200000" data-listing-file-modified-sort="1775470426989" data-listing-date-modified-sort="1775470426000" data-listing-reading-time-sort="8" data-listing-word-count-sort="1483">
-<div class="thumbnail"><a href="./posts/project-abc-01-data-analysis/index.html" class="no-external">
-
-<p class="card-img-top"><img loading='lazy' src="posts/project-abc-01-data-analysis/index_files/figure-html/fig-time-series-plot-power-output-1.png"  class="thumbnail-image card-img"/></p>
-
-</a></div>
-<div class="body">
-<h3 class="no-anchor listing-title">
-<a href="./posts/project-abc-01-data-analysis/index.html" class="no-external">[2025 ABC 프로젝트 멘토링 8기] 1주차 - 시계열 이상 탐지를 위한 EDA 및 전처리</a>
-</h3>
-<div class="listing-categories">
-
-<div class="listing-category" onclick="window.quartoListingCategory('QUJDJUVEJTk0JTg0JUVCJUExJTlDJUVDJUEwJTlEJUVEJThBJUI4JUVCJUE5JTk4JUVEJTg2JUEwJUVCJUE3JTgx'); return false;">ABC프로젝트멘토링</div>
-
-<div class="listing-category" onclick="window.quartoListingCategory('UHlUb3JjaA=='); return false;">PyTorch</div>
-
-</div>
-<div class="delink listing-description"><a href="./posts/project-abc-01-data-analysis/index.html" class="no-external">
-<p>Python을 활용한 시계열 데이터 이상 탐지를 위한 기본 EDA 및 전처리 방법을 다룹니다.</p>
-</a></div>
-</div>
-<div class="metadata">
-<a href="./posts/project-abc-01-data-analysis/index.html" class="no-external">
-<div class="listing-date">
-May 25, 2025
-</div>
-<div class="listing-author">
-Beomdo Park
-</div>
-<div class="listing-reading-time">8 min</div>
-</a>
-</div>
-</div>
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right

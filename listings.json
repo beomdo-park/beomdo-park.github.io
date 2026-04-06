@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/project-roqet-01-gnn-quantization/index.html",
       "/posts/guide-github-01-branch-strategy/index.html",
       "/posts/project-abc-05-real-data-analysis/index.html",
       "/posts/project-abc-04-model-optimization/index.html",
