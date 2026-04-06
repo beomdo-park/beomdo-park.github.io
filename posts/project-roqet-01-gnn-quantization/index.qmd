@@ -1,10 +1,10 @@
 ---
 title: "[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요"
-description: "GNN 기반 양자 오류 정정 디코더 프로젝트의 핵심 기법인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다."
+description: "GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다."
 date: "2026-04-06"
 author: "Beomdo Park"
 categories: ["ABC프로젝트멘토링", "PyTorch"]
-tags: ["GNN", "GraphNeuralNetwork", "양자화", "PTQ", "FPGA", "양자오류정정"]
+tags: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "GNN", "GraphNeuralNetwork", "양자화", "PTQ", "FPGA", "양자오류정정"]
 page-layout: full
 freeze: true
 ---
