@@ -140,6 +140,17 @@ print(f"\n... (총 {len(lines)} 라인)")
 
 `R`은 reset, `H`는 Hadamard, `CX`는 controlled-NOT, `M`은 measurement, `DETECTOR`는 두 측정의 XOR로 정의되는 신드롬 비트, `OBSERVABLE_INCLUDE`는 우리가 보호하려는 논리 관측량 $\langle Z_L \rangle$입니다.
 
+### 2-3. Surface Code 안정자 시각화
+
+Stim은 회로로부터 안정자 배치도를 SVG로 직접 그려줍니다. 빨간 면이 X-stabilizer, 파란 면이 Z-stabilizer이며, 점은 데이터 큐비트 위치입니다. 1-4절에서 설명한 체커보드 구조를 우리 회로에서 그대로 확인할 수 있습니다.
+
+```{python}
+#| label: stim-detslice
+#| fig-cap: "거리 d=3 rotated surface code의 안정자 배치 (Stim 자체 생성). 빨강=X-stabilizer, 파랑=Z-stabilizer."
+from IPython.display import SVG
+SVG(str(circuit.diagram("detslice-svg")))
+```
+
 ---
 
 ## 3. 신드롬 샘플링 — GNN 디코더의 학습 데이터 만들기
@@ -266,6 +277,19 @@ print(f"개선 비율                    : {logical_error_rate / max(logical_err
 
 이 숫자가 우리 GNN 디코더가 따라잡거나 능가해야 할 baseline입니다. 1주차에 본 Lange et al. (2025) 논문에서는 동일한 셋업에서 GNN이 MWPM을 의미 있게 능가했죠.
 
+### 4-1. Match Graph 시각화
+
+MWPM이 실제로 보고 있는 그래프가 어떻게 생겼는지도 Stim이 직접 그려줍니다. 각 노드는 detector이고, 엣지는 "이 두 detector를 동시에 발화시키는 물리적 오류 메커니즘이 존재한다"는 의미입니다. MWPM은 발화한 detector들을 가장 짧은(=가장 그럴듯한) 엣지들로 짝지어 매칭합니다.
+
+```{python}
+#| label: stim-matchgraph
+#| fig-cap: "거리 d=3, 라운드 3인 메모리 회로의 detector match graph. 노드=detector, 엣지=물리적 오류 메커니즘."
+from IPython.display import SVG
+SVG(str(circuit.diagram("matchgraph-svg")))
+```
+
+GNN 디코더는 본질적으로 이 그래프 위에서 메시지 패싱을 돌리는 것이므로, 시각적으로도 MWPM과 GNN이 같은 입력을 다른 방식으로 해석한다는 점이 드러납니다.
+
 ---
 
 ## 5. 거리/잡음에 따른 baseline 스캔
@@ -345,9 +369,7 @@ plt.show()
 
 ---
 
-::: {.callout-tip title="참고 문헌 및 도구"}
+::: {.callout-tip title="참고 문헌"}
 - Gidney, C. (2021). *Stim: a fast stabilizer circuit simulator.* Quantum 5, 497. [github.com/quantumlib/Stim](https://github.com/quantumlib/Stim)
-- Higgott, O. (2022). *PyMatching v2: A fast implementation of the minimum-weight perfect matching decoder.* [github.com/oscarhiggott/PyMatching](https://github.com/oscarhiggott/PyMatching)
-- Fowler, A. G. et al. (2012). *Surface codes: Towards practical large-scale quantum computation.* Physical Review A, 86(3), 032324.
 - Lange, M. et al. (2025). *Data-driven decoding of quantum error correcting codes using graph neural networks.* Physical Review Research, APS.
 :::

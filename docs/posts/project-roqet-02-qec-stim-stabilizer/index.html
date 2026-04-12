@@ -145,10 +145,8 @@ window.Quarto = {
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 2주차 - QEC 기본 동작과 Stim으로 신드롬 데이터 생성하기 – beomdo’s ML-DL blog">
 <meta property="og:description" content="Surface Code의 안정자(Stabilizer) 개념과 양자 오류 정정의 동작 과정을 정리하고, Stim을 이용해 GNN 디코더 학습용 신드롬 데이터를 직접 생성합니다.">
-<meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-02-qec-stim-stabilizer/index_files/figure-html/detector-heatmap-output-1.png">
+<meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-02-qec-stim-stabilizer/index_files/figure-html/stim-detslice-output-1.svg">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="556">
-<meta property="og:image:width" content="1276">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -434,6 +432,7 @@ window.Quarto = {
   <ul class="collapse">
   <li><a href="#surface-code-메모리-회로-생성" id="toc-surface-code-메모리-회로-생성" class="nav-link" data-scroll-target="#surface-code-메모리-회로-생성">2-1. Surface Code 메모리 회로 생성</a></li>
   <li><a href="#회로-내부-들여다보기" id="toc-회로-내부-들여다보기" class="nav-link" data-scroll-target="#회로-내부-들여다보기">2-2. 회로 내부 들여다보기</a></li>
+  <li><a href="#surface-code-안정자-시각화" id="toc-surface-code-안정자-시각화" class="nav-link" data-scroll-target="#surface-code-안정자-시각화">2-3. Surface Code 안정자 시각화</a></li>
   </ul></li>
   <li><a href="#신드롬-샘플링-gnn-디코더의-학습-데이터-만들기" id="toc-신드롬-샘플링-gnn-디코더의-학습-데이터-만들기" class="nav-link" data-scroll-target="#신드롬-샘플링-gnn-디코더의-학습-데이터-만들기">3. 신드롬 샘플링 — GNN 디코더의 학습 데이터 만들기</a>
   <ul class="collapse">
@@ -441,7 +440,10 @@ window.Quarto = {
   <li><a href="#데이터-통계" id="toc-데이터-통계" class="nav-link" data-scroll-target="#데이터-통계">3-2. 데이터 통계</a></li>
   <li><a href="#시각화-시간축에-따른-detector-발화-패턴" id="toc-시각화-시간축에-따른-detector-발화-패턴" class="nav-link" data-scroll-target="#시각화-시간축에-따른-detector-발화-패턴">3-3. 시각화: 시간축에 따른 detector 발화 패턴</a></li>
   </ul></li>
-  <li><a href="#detector-error-model과-pymatching-baseline" id="toc-detector-error-model과-pymatching-baseline" class="nav-link" data-scroll-target="#detector-error-model과-pymatching-baseline">4. Detector Error Model과 PyMatching Baseline</a></li>
+  <li><a href="#detector-error-model과-pymatching-baseline" id="toc-detector-error-model과-pymatching-baseline" class="nav-link" data-scroll-target="#detector-error-model과-pymatching-baseline">4. Detector Error Model과 PyMatching Baseline</a>
+  <ul class="collapse">
+  <li><a href="#match-graph-시각화" id="toc-match-graph-시각화" class="nav-link" data-scroll-target="#match-graph-시각화">4-1. Match Graph 시각화</a></li>
+  </ul></li>
   <li><a href="#거리잡음에-따른-baseline-스캔" id="toc-거리잡음에-따른-baseline-스캔" class="nav-link" data-scroll-target="#거리잡음에-따른-baseline-스캔">5. 거리/잡음에 따른 baseline 스캔</a></li>
   <li><a href="#정리" id="toc-정리" class="nav-link" data-scroll-target="#정리">정리</a></li>
   </ul>
@@ -654,28 +656,44 @@ DEPOLARIZE1(0.005) 2 11 16 25
 </div>
 </div>
 <p><code>R</code>은 reset, <code>H</code>는 Hadamard, <code>CX</code>는 controlled-NOT, <code>M</code>은 measurement, <code>DETECTOR</code>는 두 측정의 XOR로 정의되는 신드롬 비트, <code>OBSERVABLE_INCLUDE</code>는 우리가 보호하려는 논리 관측량 <span class="math inline">\(\langle Z_L \rangle\)</span>입니다.</p>
+</section>
+<section id="surface-code-안정자-시각화" class="level3">
+<h3 class="anchored" data-anchor-id="surface-code-안정자-시각화">2-3. Surface Code 안정자 시각화</h3>
+<p>Stim은 회로로부터 안정자 배치도를 SVG로 직접 그려줍니다. 빨간 면이 X-stabilizer, 파란 면이 Z-stabilizer이며, 점은 데이터 큐비트 위치입니다. 1-4절에서 설명한 체커보드 구조를 우리 회로에서 그대로 확인할 수 있습니다.</p>
+<div id="cell-stim-detslice" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> SVG</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>SVG(<span class="bu">str</span>(circuit.diagram(<span class="st">"detslice-svg"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div id="stim-detslice" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/stim-detslice-output-1.svg" class="img-fluid figure-img"></p>
+<figcaption>거리 d=3 rotated surface code의 안정자 배치 (Stim 자체 생성). 빨강=X-stabilizer, 파랑=Z-stabilizer.</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <hr>
 </section>
 </section>
 <section id="신드롬-샘플링-gnn-디코더의-학습-데이터-만들기" class="level2">
 <h2 class="anchored" data-anchor-id="신드롬-샘플링-gnn-디코더의-학습-데이터-만들기">3. 신드롬 샘플링 — GNN 디코더의 학습 데이터 만들기</h2>
 <p><code>compile_detector_sampler()</code>는 회로를 컴파일해 매우 빠른 detector/observable 샘플러를 만들어 줍니다. 이걸로 한 번에 수만~수십만 샷을 뽑아낼 수 있습니다.</p>
-<div id="sample-syndromes" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> circuit.compile_detector_sampler()</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>N_SHOTS <span class="op">=</span> <span class="dv">100_000</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.time()</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>detection_events, observable_flips <span class="op">=</span> sampler.sample(</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    shots<span class="op">=</span>N_SHOTS, separate_observables<span class="op">=</span><span class="va">True</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.time() <span class="op">-</span> t0</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"샘플링 </span><span class="sc">{</span>N_SHOTS<span class="sc">:,}</span><span class="ss">샷 소요 시간: </span><span class="sc">{</span>elapsed<span class="op">*</span><span class="dv">1000</span><span class="sc">:.1f}</span><span class="ss"> ms"</span>)</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"detection_events.shape : </span><span class="sc">{</span>detection_events<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_detectors)"</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"observable_flips.shape : </span><span class="sc">{</span>observable_flips<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_observables)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="sample-syndromes" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sampler <span class="op">=</span> circuit.compile_detector_sampler()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>N_SHOTS <span class="op">=</span> <span class="dv">100_000</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>t0 <span class="op">=</span> time.time()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>detection_events, observable_flips <span class="op">=</span> sampler.sample(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    shots<span class="op">=</span>N_SHOTS, separate_observables<span class="op">=</span><span class="va">True</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>elapsed <span class="op">=</span> time.time() <span class="op">-</span> t0</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"샘플링 </span><span class="sc">{</span>N_SHOTS<span class="sc">:,}</span><span class="ss">샷 소요 시간: </span><span class="sc">{</span>elapsed<span class="op">*</span><span class="dv">1000</span><span class="sc">:.1f}</span><span class="ss"> ms"</span>)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"detection_events.shape : </span><span class="sc">{</span>detection_events<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_detectors)"</span>)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"observable_flips.shape : </span><span class="sc">{</span>observable_flips<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_observables)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>샘플링 100,000샷 소요 시간: 11.1 ms
+<pre><code>샘플링 100,000샷 소요 시간: 10.0 ms
 detection_events.shape : (100000, 24)  (shots, num_detectors)
 observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
 </div>
@@ -683,33 +701,33 @@ observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
 <p>검출기 행렬의 각 행이 하나의 학습 데이터 포인트, 즉 1주차에 봤던 <span class="math inline">\(D = (\{V_Z\}, \{V_X\}, \lambda_Z)\)</span> 한 개에 해당합니다.</p>
 <section id="샘플-한-개-들여다보기" class="level3">
 <h3 class="anchored" data-anchor-id="샘플-한-개-들여다보기">3-1. 샘플 한 개 들여다보기</h3>
-<div id="inspect-sample" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_sample(idx: <span class="bu">int</span>):</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    det <span class="op">=</span> detection_events[idx].astype(<span class="bu">int</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    obs <span class="op">=</span> observable_flips[idx].astype(<span class="bu">int</span>)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    fired <span class="op">=</span> np.where(det <span class="op">==</span> <span class="dv">1</span>)[<span class="dv">0</span>]</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[shot </span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">]"</span>)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  trigger 된 detector index : </span><span class="sc">{</span>fired<span class="sc">.</span>tolist()<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  trigger 개수              : </span><span class="sc">{</span><span class="bu">len</span>(fired)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  논리 오류(λ_Z)            : </span><span class="sc">{</span>obs[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    show_sample(i)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="inspect-sample" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> show_sample(idx: <span class="bu">int</span>):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    det <span class="op">=</span> detection_events[idx].astype(<span class="bu">int</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    obs <span class="op">=</span> observable_flips[idx].astype(<span class="bu">int</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    fired <span class="op">=</span> np.where(det <span class="op">==</span> <span class="dv">1</span>)[<span class="dv">0</span>]</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"[shot </span><span class="sc">{</span>idx<span class="sc">}</span><span class="ss">]"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  trigger 된 detector index : </span><span class="sc">{</span>fired<span class="sc">.</span>tolist()<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  trigger 개수              : </span><span class="sc">{</span><span class="bu">len</span>(fired)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  논리 오류(λ_Z)            : </span><span class="sc">{</span>obs[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">3</span>):</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    show_sample(i)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[shot 0]
-  trigger 된 detector index : [14, 18]
-  trigger 개수              : 2
-  논리 오류(λ_Z)            : 1
-
-[shot 1]
   trigger 된 detector index : []
   trigger 개수              : 0
   논리 오류(λ_Z)            : 0
 
+[shot 1]
+  trigger 된 detector index : [17]
+  trigger 개수              : 1
+  논리 오류(λ_Z)            : 0
+
 [shot 2]
-  trigger 된 detector index : []
-  trigger 개수              : 0
+  trigger 된 detector index : [2, 15, 21]
+  trigger 개수              : 3
   논리 오류(λ_Z)            : 0
 </code></pre>
 </div>
@@ -718,32 +736,32 @@ observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
 </section>
 <section id="데이터-통계" class="level3">
 <h3 class="anchored" data-anchor-id="데이터-통계">3-2. 데이터 통계</h3>
-<div id="data-stats" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>det_per_shot <span class="op">=</span> detection_events.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>logical_error_rate <span class="op">=</span> observable_flips.mean()</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"논리 오류율 (raw, 디코더 없음): </span><span class="sc">{</span>logical_error_rate<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"평균 detector 발화 수 / 샷    : </span><span class="sc">{</span>det_per_shot<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"detector 발화 수 분포 (0~10):"</span>)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">11</span>):</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    cnt <span class="op">=</span> (det_per_shot <span class="op">==</span> k).<span class="bu">sum</span>()</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    bar <span class="op">=</span> <span class="st">"█"</span> <span class="op">*</span> <span class="bu">int</span>(<span class="dv">60</span> <span class="op">*</span> cnt <span class="op">/</span> N_SHOTS)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>k<span class="sc">:2d}</span><span class="ss"> | </span><span class="sc">{</span>cnt<span class="sc">:6d}</span><span class="ss">  </span><span class="sc">{</span>bar<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="data-stats" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>det_per_shot <span class="op">=</span> detection_events.<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>logical_error_rate <span class="op">=</span> observable_flips.mean()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"논리 오류율 (raw, 디코더 없음): </span><span class="sc">{</span>logical_error_rate<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"평균 detector 발화 수 / 샷    : </span><span class="sc">{</span>det_per_shot<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"detector 발화 수 분포 (0~10):"</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">11</span>):</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    cnt <span class="op">=</span> (det_per_shot <span class="op">==</span> k).<span class="bu">sum</span>()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    bar <span class="op">=</span> <span class="st">"█"</span> <span class="op">*</span> <span class="bu">int</span>(<span class="dv">60</span> <span class="op">*</span> cnt <span class="op">/</span> N_SHOTS)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>k<span class="sc">:2d}</span><span class="ss"> | </span><span class="sc">{</span>cnt<span class="sc">:6d}</span><span class="ss">  </span><span class="sc">{</span>bar<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>논리 오류율 (raw, 디코더 없음): 10.4160%
-평균 detector 발화 수 / 샷    : 1.408
+<pre><code>논리 오류율 (raw, 디코더 없음): 10.3460%
+평균 detector 발화 수 / 샷    : 1.413
 detector 발화 수 분포 (0~10):
-   0 |  42257  █████████████████████████
-   1 |  15739  █████████
-   2 |  20344  ████████████
-   3 |  10210  ██████
-   4 |   6600  ███
-   5 |   2799  █
-   6 |   1334  
-   7 |    503  
-   8 |    158  
-   9 |     44  
-  10 |      9  </code></pre>
+   0 |  42384  █████████████████████████
+   1 |  15641  █████████
+   2 |  20159  ████████████
+   3 |  10173  ██████
+   4 |   6627  ███
+   5 |   2856  █
+   6 |   1438  
+   7 |    475  
+   8 |    159  
+   9 |     62  
+  10 |     18  </code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -763,22 +781,22 @@ Note
 <section id="시각화-시간축에-따른-detector-발화-패턴" class="level3">
 <h3 class="anchored" data-anchor-id="시각화-시간축에-따른-detector-발화-패턴">3-3. 시각화: 시간축에 따른 detector 발화 패턴</h3>
 <p>거리 <span class="math inline">\(d=3\)</span>인 회로는 라운드당 8개의 안정자를 측정하므로, 24개의 detector를 (라운드 × 안정자) 평면으로 reshape 해서 발화 빈도를 그려볼 수 있습니다.</p>
-<div id="cell-detector-heatmap" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>NUM_STAB_PER_ROUND <span class="op">=</span> circuit.num_detectors <span class="op">//</span> ROUNDS</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>fire_rate <span class="op">=</span> detection_events.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>heat <span class="op">=</span> fire_rate[: NUM_STAB_PER_ROUND <span class="op">*</span> ROUNDS].reshape(ROUNDS, NUM_STAB_PER_ROUND)</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">3</span>))</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ax.imshow(heat, aspect<span class="op">=</span><span class="st">"auto"</span>, cmap<span class="op">=</span><span class="st">"viridis"</span>)</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Stabilizer index"</span>)</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Round"</span>)</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"Detector fire rate (d=</span><span class="sc">{</span>DISTANCE<span class="sc">}</span><span class="ss">, rounds=</span><span class="sc">{</span>ROUNDS<span class="sc">}</span><span class="ss">, p=</span><span class="sc">{</span>NOISE<span class="sc">}</span><span class="ss">)"</span>)</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(ROUNDS))</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>fig.colorbar(im, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"fire rate"</span>)</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-detector-heatmap" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>NUM_STAB_PER_ROUND <span class="op">=</span> circuit.num_detectors <span class="op">//</span> ROUNDS</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>fire_rate <span class="op">=</span> detection_events.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>heat <span class="op">=</span> fire_rate[: NUM_STAB_PER_ROUND <span class="op">*</span> ROUNDS].reshape(ROUNDS, NUM_STAB_PER_ROUND)</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">3</span>))</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>im <span class="op">=</span> ax.imshow(heat, aspect<span class="op">=</span><span class="st">"auto"</span>, cmap<span class="op">=</span><span class="st">"viridis"</span>)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Stabilizer index"</span>)</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Round"</span>)</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="ss">f"Detector fire rate (d=</span><span class="sc">{</span>DISTANCE<span class="sc">}</span><span class="ss">, rounds=</span><span class="sc">{</span>ROUNDS<span class="sc">}</span><span class="ss">, p=</span><span class="sc">{</span>NOISE<span class="sc">}</span><span class="ss">)"</span>)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>ax.set_yticks(<span class="bu">range</span>(ROUNDS))</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>fig.colorbar(im, ax<span class="op">=</span>ax, label<span class="op">=</span><span class="st">"fire rate"</span>)</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="detector-heatmap" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -796,13 +814,13 @@ Note
 <h2 class="anchored" data-anchor-id="detector-error-model과-pymatching-baseline">4. Detector Error Model과 PyMatching Baseline</h2>
 <p>GNN 디코더의 성능을 평가하려면 비교 대상이 필요합니다. 사실상의 표준 baseline은 <strong>MWPM(Minimum Weight Perfect Matching)</strong>이며, 빠른 구현체가 <a href="https://github.com/oscarhiggott/PyMatching">PyMatching</a>입니다.</p>
 <p>Stim은 회로로부터 <strong>Detector Error Model(DEM)</strong>을 자동으로 추출해줍니다. DEM은 “어떤 물리적 오류가 어떤 detector를 동시에 발화시키는지”를 확률과 함께 기술하는 그래프이며, MWPM의 입력으로 그대로 쓰입니다.</p>
-<div id="build-dem" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dem <span class="op">=</span> circuit.detector_error_model(decompose_errors<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM 오류 메커니즘 수: </span><span class="sc">{</span>dem<span class="sc">.</span>num_errors<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM detector 수    : </span><span class="sc">{</span>dem<span class="sc">.</span>num_detectors<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM 첫 5개 메커니즘:"</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> instr <span class="kw">in</span> <span class="bu">list</span>(dem)[:<span class="dv">5</span>]:</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>instr<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="build-dem" class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>dem <span class="op">=</span> circuit.detector_error_model(decompose_errors<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM 오류 메커니즘 수: </span><span class="sc">{</span>dem<span class="sc">.</span>num_errors<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM detector 수    : </span><span class="sc">{</span>dem<span class="sc">.</span>num_detectors<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DEM 첫 5개 메커니즘:"</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> instr <span class="kw">in</span> <span class="bu">list</span>(dem)[:<span class="dv">5</span>]:</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>instr<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>DEM 오류 메커니즘 수: 286
 DEM detector 수    : 24
@@ -814,81 +832,98 @@ DEM 첫 5개 메커니즘:
   error(0.0119115) D1 D5</code></pre>
 </div>
 </div>
-<div id="pymatching-decode" class="cell" data-execution_count="9">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymatching</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>matcher <span class="op">=</span> pymatching.Matching.from_detector_error_model(dem)</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>predicted <span class="op">=</span> matcher.decode_batch(detection_events)</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>num_mistakes <span class="op">=</span> np.<span class="bu">sum</span>(np.<span class="bu">any</span>(predicted <span class="op">!=</span> observable_flips, axis<span class="op">=</span><span class="dv">1</span>))</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>logical_error_rate_mwpm <span class="op">=</span> num_mistakes <span class="op">/</span> N_SHOTS</span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"PyMatching(MWPM) 논리 오류율: </span><span class="sc">{</span>logical_error_rate_mwpm<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"디코더 없음(raw) 논리 오류율 : </span><span class="sc">{</span>logical_error_rate<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"개선 비율                    : </span><span class="sc">{</span>logical_error_rate <span class="op">/</span> <span class="bu">max</span>(logical_error_rate_mwpm, <span class="fl">1e-12</span>)<span class="sc">:.1f}</span><span class="ss">x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="pymatching-decode" class="cell" data-execution_count="10">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pymatching</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>matcher <span class="op">=</span> pymatching.Matching.from_detector_error_model(dem)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>predicted <span class="op">=</span> matcher.decode_batch(detection_events)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>num_mistakes <span class="op">=</span> np.<span class="bu">sum</span>(np.<span class="bu">any</span>(predicted <span class="op">!=</span> observable_flips, axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>logical_error_rate_mwpm <span class="op">=</span> num_mistakes <span class="op">/</span> N_SHOTS</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"PyMatching(MWPM) 논리 오류율: </span><span class="sc">{</span>logical_error_rate_mwpm<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"디코더 없음(raw) 논리 오류율 : </span><span class="sc">{</span>logical_error_rate<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"개선 비율                    : </span><span class="sc">{</span>logical_error_rate <span class="op">/</span> <span class="bu">max</span>(logical_error_rate_mwpm, <span class="fl">1e-12</span>)<span class="sc">:.1f}</span><span class="ss">x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>PyMatching(MWPM) 논리 오류율: 1.7460%
-디코더 없음(raw) 논리 오류율 : 10.4160%
-개선 비율                    : 6.0x</code></pre>
+<pre><code>PyMatching(MWPM) 논리 오류율: 1.6870%
+디코더 없음(raw) 논리 오류율 : 10.3460%
+개선 비율                    : 6.1x</code></pre>
 </div>
 </div>
 <p>이 숫자가 우리 GNN 디코더가 따라잡거나 능가해야 할 baseline입니다. 1주차에 본 Lange et al.&nbsp;(2025) 논문에서는 동일한 셋업에서 GNN이 MWPM을 의미 있게 능가했죠.</p>
+<section id="match-graph-시각화" class="level3">
+<h3 class="anchored" data-anchor-id="match-graph-시각화">4-1. Match Graph 시각화</h3>
+<p>MWPM이 실제로 보고 있는 그래프가 어떻게 생겼는지도 Stim이 직접 그려줍니다. 각 노드는 detector이고, 엣지는 “이 두 detector를 동시에 발화시키는 물리적 오류 메커니즘이 존재한다”는 의미입니다. MWPM은 발화한 detector들을 가장 짧은(=가장 그럴듯한) 엣지들로 짝지어 매칭합니다.</p>
+<div id="cell-stim-matchgraph" class="cell" data-execution_count="11">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> SVG</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>SVG(<span class="bu">str</span>(circuit.diagram(<span class="st">"matchgraph-svg"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="11">
+<div id="stim-matchgraph" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="index_files/figure-html/stim-matchgraph-output-1.svg" class="img-fluid figure-img"></p>
+<figcaption>거리 d=3, 라운드 3인 메모리 회로의 detector match graph. 노드=detector, 엣지=물리적 오류 메커니즘.</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>GNN 디코더는 본질적으로 이 그래프 위에서 메시지 패싱을 돌리는 것이므로, 시각적으로도 MWPM과 GNN이 같은 입력을 다른 방식으로 해석한다는 점이 드러납니다.</p>
 <hr>
+</section>
 </section>
 <section id="거리잡음에-따른-baseline-스캔" class="level2">
 <h2 class="anchored" data-anchor-id="거리잡음에-따른-baseline-스캔">5. 거리/잡음에 따른 baseline 스캔</h2>
 <p>마지막으로, 거리 <span class="math inline">\(d \in \{3, 5\}\)</span>와 물리 오류율 <span class="math inline">\(p \in \{0.001, 0.003, 0.005\}\)</span>를 바꿔가며 MWPM baseline이 어떻게 변하는지 빠르게 스캔해 봅니다. 이 표가 다음 주에 만들 GNN 모델 평가의 기준점이 됩니다.</p>
-<div id="scan-baseline" class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mwpm_logical_error_rate(distance, rounds, noise, shots<span class="op">=</span><span class="dv">20_000</span>):</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    circ <span class="op">=</span> stim.Circuit.generated(</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"surface_code:rotated_memory_z"</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>        distance<span class="op">=</span>distance,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>        rounds<span class="op">=</span>rounds,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>        after_clifford_depolarization<span class="op">=</span>noise,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        after_reset_flip_probability<span class="op">=</span>noise,</span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        before_measure_flip_probability<span class="op">=</span>noise,</span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>        before_round_data_depolarization<span class="op">=</span>noise,</span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    sampler_local <span class="op">=</span> circ.compile_detector_sampler()</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    dets, obs <span class="op">=</span> sampler_local.sample(shots<span class="op">=</span>shots, separate_observables<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>    matcher_local <span class="op">=</span> pymatching.Matching.from_detector_error_model(</span>
-<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>        circ.detector_error_model(decompose_errors<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> matcher_local.decode_batch(dets)</span>
-<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(np.<span class="bu">any</span>(pred <span class="op">!=</span> obs, axis<span class="op">=</span><span class="dv">1</span>))</span>
-<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
-<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">5</span>]:</span>
-<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> [<span class="fl">0.001</span>, <span class="fl">0.003</span>, <span class="fl">0.005</span>]:</span>
-<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>        ler <span class="op">=</span> mwpm_logical_error_rate(distance<span class="op">=</span>d, rounds<span class="op">=</span>d, noise<span class="op">=</span>p)</span>
-<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>        results.append((d, p, ler))</span>
-<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"d=</span><span class="sc">{</span>d<span class="sc">}</span><span class="ss">, p=</span><span class="sc">{</span>p<span class="sc">:.3f}</span><span class="ss">  →  MWPM logical error = </span><span class="sc">{</span>ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="scan-baseline" class="cell" data-execution_count="12">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mwpm_logical_error_rate(distance, rounds, noise, shots<span class="op">=</span><span class="dv">20_000</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    circ <span class="op">=</span> stim.Circuit.generated(</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>        <span class="st">"surface_code:rotated_memory_z"</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>        distance<span class="op">=</span>distance,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>        rounds<span class="op">=</span>rounds,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        after_clifford_depolarization<span class="op">=</span>noise,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        after_reset_flip_probability<span class="op">=</span>noise,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>        before_measure_flip_probability<span class="op">=</span>noise,</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>        before_round_data_depolarization<span class="op">=</span>noise,</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>    sampler_local <span class="op">=</span> circ.compile_detector_sampler()</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    dets, obs <span class="op">=</span> sampler_local.sample(shots<span class="op">=</span>shots, separate_observables<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    matcher_local <span class="op">=</span> pymatching.Matching.from_detector_error_model(</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>        circ.detector_error_model(decompose_errors<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> matcher_local.decode_batch(dets)</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean(np.<span class="bu">any</span>(pred <span class="op">!=</span> obs, axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> []</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">5</span>]:</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> [<span class="fl">0.001</span>, <span class="fl">0.003</span>, <span class="fl">0.005</span>]:</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>        ler <span class="op">=</span> mwpm_logical_error_rate(distance<span class="op">=</span>d, rounds<span class="op">=</span>d, noise<span class="op">=</span>p)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>        results.append((d, p, ler))</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"d=</span><span class="sc">{</span>d<span class="sc">}</span><span class="ss">, p=</span><span class="sc">{</span>p<span class="sc">:.3f}</span><span class="ss">  →  MWPM logical error = </span><span class="sc">{</span>ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>d=3, p=0.001  →  MWPM logical error = 0.0850%
-d=3, p=0.003  →  MWPM logical error = 0.6500%
-d=3, p=0.005  →  MWPM logical error = 1.6600%
-d=5, p=0.001  →  MWPM logical error = 0.0100%
-d=5, p=0.003  →  MWPM logical error = 0.3400%
-d=5, p=0.005  →  MWPM logical error = 1.2750%</code></pre>
+<pre><code>d=3, p=0.001  →  MWPM logical error = 0.0750%
+d=3, p=0.003  →  MWPM logical error = 0.8150%
+d=3, p=0.005  →  MWPM logical error = 1.6500%
+d=5, p=0.001  →  MWPM logical error = 0.0150%
+d=5, p=0.003  →  MWPM logical error = 0.4050%
+d=5, p=0.005  →  MWPM logical error = 1.3550%</code></pre>
 </div>
 </div>
-<div id="cell-scan-plot" class="cell" data-execution_count="11">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">5</span>]:</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    xs <span class="op">=</span> [p <span class="cf">for</span> (dd, p, _) <span class="kw">in</span> results <span class="cf">if</span> dd <span class="op">==</span> d]</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>    ys <span class="op">=</span> [ler <span class="cf">for</span> (dd, _, ler) <span class="kw">in</span> results <span class="cf">if</span> dd <span class="op">==</span> d]</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    ax.plot(xs, ys, marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span><span class="ss">f"d = </span><span class="sc">{</span>d<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Physical error rate p"</span>)</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Logical error rate (MWPM)"</span>)</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>ax.set_yscale(<span class="st">"log"</span>)</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Surface code memory: MWPM baseline"</span>)</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>, which<span class="op">=</span><span class="st">"both"</span>, ls<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="cell-scan-plot" class="cell" data-execution_count="13">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> d <span class="kw">in</span> [<span class="dv">3</span>, <span class="dv">5</span>]:</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>    xs <span class="op">=</span> [p <span class="cf">for</span> (dd, p, _) <span class="kw">in</span> results <span class="cf">if</span> dd <span class="op">==</span> d]</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    ys <span class="op">=</span> [ler <span class="cf">for</span> (dd, _, ler) <span class="kw">in</span> results <span class="cf">if</span> dd <span class="op">==</span> d]</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    ax.plot(xs, ys, marker<span class="op">=</span><span class="st">"o"</span>, label<span class="op">=</span><span class="ss">f"d = </span><span class="sc">{</span>d<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"Physical error rate p"</span>)</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"Logical error rate (MWPM)"</span>)</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>ax.set_yscale(<span class="st">"log"</span>)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"Surface code memory: MWPM baseline"</span>)</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>ax.grid(<span class="va">True</span>, which<span class="op">=</span><span class="st">"both"</span>, ls<span class="op">=</span><span class="st">":"</span>, alpha<span class="op">=</span><span class="fl">0.5</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <div id="scan-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
@@ -953,20 +988,18 @@ d=5, p=0.005  →  MWPM logical error = 1.2750%</code></pre>
 </div>
 </div>
 <hr>
-<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌 및 도구">
+<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-참고 문헌 및 도구
+참고 문헌
 </div>
 </div>
 <div class="callout-body-container callout-body">
 <ul>
 <li>Gidney, C. (2021). <em>Stim: a fast stabilizer circuit simulator.</em> Quantum 5, 497. <a href="https://github.com/quantumlib/Stim">github.com/quantumlib/Stim</a></li>
-<li>Higgott, O. (2022). <em>PyMatching v2: A fast implementation of the minimum-weight perfect matching decoder.</em> <a href="https://github.com/oscarhiggott/PyMatching">github.com/oscarhiggott/PyMatching</a></li>
-<li>Fowler, A. G. et al.&nbsp;(2012). <em>Surface codes: Towards practical large-scale quantum computation.</em> Physical Review A, 86(3), 032324.</li>
 <li>Lange, M. et al.&nbsp;(2025). <em>Data-driven decoding of quantum error correcting codes using graph neural networks.</em> Physical Review Research, APS.</li>
 </ul>
 </div>
