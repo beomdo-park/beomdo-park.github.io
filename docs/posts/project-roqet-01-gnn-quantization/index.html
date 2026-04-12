@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2026-04-06">
+<meta name="description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
+
+<title>[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ef56b68f8fa1e9d2ba328e99e439f80.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-e1a5c8363afafaef2c763b6775fbf3ca.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-105fdaddc7326227b590ce197cc26180.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
+<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"April 12, 2026","datePublished":"April 6, 2026","description":"GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업PyTorch"],"url":"https://beomdo-park.github.io"}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog">
+<meta property="og:description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
+<meta property="og:site_name" content="beomdo's ML-DL blog">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">beomdo’s ML-DL blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-my-tech-stacks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">My Tech Stacks</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-my-tech-stacks">    
+        <li class="dropdown-header">Python</li>
+        <li class="dropdown-header">Machine Learning</li>
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요</h1>
+                  <div>
+        <div class="description">
+          GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">ABC프로젝트멘토링</div>
+                <div class="quarto-category">유클리드소프트</div>
+                <div class="quarto-category">고용노동부</div>
+                <div class="quarto-category">대한상공회의소</div>
+                <div class="quarto-category">미래내일일경험사업</div>
+                <div class="quarto-category">PyTorch</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">April 6, 2026</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">April 12, 2026</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#프로젝트-배경" id="toc-프로젝트-배경" class="nav-link active" data-scroll-target="#프로젝트-배경">프로젝트 배경</a></li>
+  <li><a href="#graph-neural-network-gnn" id="toc-graph-neural-network-gnn" class="nav-link" data-scroll-target="#graph-neural-network-gnn">1. Graph Neural Network (GNN)</a>
+  <ul class="collapse">
+  <li><a href="#gnn이란" id="toc-gnn이란" class="nav-link" data-scroll-target="#gnn이란">1-1. GNN이란?</a></li>
+  <li><a href="#메시지-패싱-message-passing" id="toc-메시지-패싱-message-passing" class="nav-link" data-scroll-target="#메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</a></li>
+  <li><a href="#graphconv-레이어" id="toc-graphconv-레이어" class="nav-link" data-scroll-target="#graphconv-레이어">1-3. GraphConv 레이어</a></li>
+  <li><a href="#프로젝트에서의-gnn-아키텍처" id="toc-프로젝트에서의-gnn-아키텍처" class="nav-link" data-scroll-target="#프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</a></li>
+  </ul></li>
+  <li><a href="#post-training-quantization-ptq" id="toc-post-training-quantization-ptq" class="nav-link" data-scroll-target="#post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</a>
+  <ul class="collapse">
+  <li><a href="#양자화란" id="toc-양자화란" class="nav-link" data-scroll-target="#양자화란">2-1. 양자화란?</a></li>
+  <li><a href="#ptq의-동작-원리" id="toc-ptq의-동작-원리" class="nav-link" data-scroll-target="#ptq의-동작-원리">2-2. PTQ의 동작 원리</a></li>
+  <li><a href="#saturated-relu" id="toc-saturated-relu" class="nav-link" data-scroll-target="#saturated-relu">2-3. Saturated ReLU</a></li>
+  <li><a href="#프로젝트에서의-양자화-전략" id="toc-프로젝트에서의-양자화-전략" class="nav-link" data-scroll-target="#프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</a></li>
+  </ul></li>
+  <li><a href="#정리" id="toc-정리" class="nav-link" data-scroll-target="#정리">정리</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
+
+
+
+
+
+<blockquote class="blockquote">
+<p>전년도에 이어 2년 연속으로 유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 2기로 참여하게 되었습니다. <br><br> <strong>[(주)플랜아이] 클라우드 서비스 구축 및 AI/데이터 응용 서비스 개발 프로젝트</strong>를 주제로, GNN 기반 양자 오류 정정(QEC) 디코더를 설계하고 FPGA에 온디바이스 구현하는 프로젝트를 진행합니다.</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>1주차에는 프로젝트의 핵심 AI 기법인 <strong>Graph Neural Network(GNN)</strong>와 <strong>Post-Training Quantization(PTQ)</strong>의 개념을 선행 학습 차원에서 정리했습니다. 이 두 기법은 각각 디코더의 추론 모델과 FPGA 경량화 전략의 근간이 됩니다.</p>
+</div>
+</div>
+<section id="프로젝트-배경" class="level2">
+<h2 class="anchored" data-anchor-id="프로젝트-배경">프로젝트 배경</h2>
+<p>양자 컴퓨팅에서 물리적 큐비트는 높은 오류율(~10⁻³)을 가지며, 이를 보정하기 위해 <strong>양자 오류 정정(Quantum Error Correction, QEC)</strong>이 필수적입니다. 현재 가장 유망한 방식인 <strong>Surface Code</strong>는 큐비트들을 2D 격자 형태로 배치하고, 주변 큐비트의 측정 결과(신드롬)를 통해 오류를 추론합니다.</p>
+<p>기존 주류 디코더인 MWPM(Minimum Weight Perfect Matching)은 O(n³)의 시간복잡도로 인해 실시간 디코딩이 어렵습니다. 큐비트의 결맞음 시간(~1μs) 내에 디코딩을 완료해야 하므로, 더 빠르고 정확한 디코더가 필요합니다.</p>
+<p>본 프로젝트에서는 <strong>GNN 기반 디코더</strong>를 설계하여 Surface Code의 신드롬 그래프를 직접 처리하고, <strong>INT8 양자화</strong>를 통해 FPGA에서 1μs 이내 실시간 추론을 달성하는 것을 목표로 합니다.</p>
+<hr>
+</section>
+<section id="graph-neural-network-gnn" class="level2">
+<h2 class="anchored" data-anchor-id="graph-neural-network-gnn">1. Graph Neural Network (GNN)</h2>
+<section id="gnn이란" class="level3">
+<h3 class="anchored" data-anchor-id="gnn이란">1-1. GNN이란?</h3>
+<p>Graph Neural Network(GNN)는 <strong>그래프 구조 데이터</strong>를 직접 입력으로 처리할 수 있는 딥러닝 모델입니다. 일반적인 CNN이 이미지의 격자(grid) 구조를, RNN이 시퀀스 구조를 다루는 것과 달리, GNN은 <strong>노드(node)</strong>와 <strong>엣지(edge)</strong>로 구성된 비정형 그래프를 처리합니다.</p>
+<p>그래프 데이터는 다양한 영역에서 자연스럽게 등장합니다:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>도메인</th>
+<th>노드</th>
+<th>엣지</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>소셜 네트워크</td>
+<td>사용자</td>
+<td>친구 관계</td>
+</tr>
+<tr class="even">
+<td>분자 구조</td>
+<td>원자</td>
+<td>화학 결합</td>
+</tr>
+<tr class="odd">
+<td>추천 시스템</td>
+<td>유저/아이템</td>
+<td>상호작용</td>
+</tr>
+<tr class="even">
+<td><strong>양자 오류 정정</strong></td>
+<td><strong>신드롬 이벤트</strong></td>
+<td><strong>인접 관계</strong></td>
+</tr>
+</tbody>
+</table>
+<p>본 프로젝트에서 Surface Code의 신드롬 데이터는 본질적으로 그래프 구조를 가지므로, GNN이 자연스러운 선택이 됩니다.</p>
+</section>
+<section id="메시지-패싱-message-passing" class="level3">
+<h3 class="anchored" data-anchor-id="메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</h3>
+<p>GNN의 핵심 연산은 <strong>메시지 패싱(Message Passing)</strong> 메커니즘입니다. 각 노드는 이웃 노드들로부터 정보를 수집하고 자신의 표현(representation)을 업데이트합니다. 이 과정을 수식으로 표현하면 다음과 같습니다:</p>
+<p><span class="math display">\[
+h_v^{(l+1)} = \text{UPDATE}\left(h_v^{(l)},\; \text{AGGREGATE}\left(\{h_u^{(l)} : u \in \mathcal{N}(v)\}\right)\right)
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(h_v^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어에서 노드 <span class="math inline">\(v\)</span>의 특성 벡터</li>
+<li><span class="math inline">\(\mathcal{N}(v)\)</span>: 노드 <span class="math inline">\(v\)</span>의 이웃 노드 집합</li>
+<li><strong>AGGREGATE</strong>: 이웃 노드들의 정보를 모으는 함수 (합산, 평균, 최대값 등)</li>
+<li><strong>UPDATE</strong>: 집약된 정보와 자신의 정보를 결합하여 새로운 표현을 생성하는 함수</li>
+</ul>
+<p>직관적으로 설명하면, 각 노드가 “주변에 무슨 일이 일어나고 있는지”를 이웃들에게 물어보고, 그 답변을 종합하여 자신의 상태를 갱신하는 과정입니다. 레이어를 여러 층 쌓으면 더 먼 노드의 정보까지 전파됩니다.</p>
+</section>
+<section id="graphconv-레이어" class="level3">
+<h3 class="anchored" data-anchor-id="graphconv-레이어">1-3. GraphConv 레이어</h3>
+<p>본 프로젝트에서 사용할 <strong>GraphConv</strong>(Graph Convolution) 레이어는 Kipf &amp; Welling (2017)이 제안한 GCN(Graph Convolutional Network)의 핵심 구성 요소입니다. 각 레이어의 연산은 다음과 같습니다:</p>
+<p><span class="math display">\[
+H^{(l+1)} = \sigma\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(\tilde{A} = A + I\)</span>: 자기 연결(self-loop)이 추가된 인접 행렬</li>
+<li><span class="math inline">\(\tilde{D}\)</span>: <span class="math inline">\(\tilde{A}\)</span>의 차수 행렬 (degree matrix)</li>
+<li><span class="math inline">\(H^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어의 노드 특성 행렬</li>
+<li><span class="math inline">\(W^{(l)}\)</span>: 학습 가능한 가중치 행렬</li>
+<li><span class="math inline">\(\sigma\)</span>: 활성화 함수 (ReLU 등)</li>
+</ul>
+<p>핵심 아이디어는 인접 행렬을 정규화하여 이웃 노드 수에 따른 스케일 차이를 보정하고, 가중치 행렬을 통해 특성을 선형 변환한 뒤 비선형 활성화를 적용하는 것입니다.</p>
+</section>
+<section id="프로젝트에서의-gnn-아키텍처" class="level3">
+<h3 class="anchored" data-anchor-id="프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</h3>
+<p>본 프로젝트의 GNN 디코더는 다음과 같은 구조를 가집니다:</p>
+<pre><code>입력 (신드롬 그래프, 노드 특성 5차원)
+    ↓
+GraphConv Layer 1: 5 → 32
+    ↓ ReLU
+GraphConv Layer 2: 32 → 128
+    ↓ ReLU
+GraphConv Layer 3: 128 → 256
+    ↓ ReLU
+Global Mean Pooling
+    ↓
+Dense Layer: 256 → 2 (λX, λZ 논리 오류 확률)</code></pre>
+<ul>
+<li><strong>3-layer Pruned GraphConv</strong>: 경량화된 3층 구조로 신드롬 그래프의 지역~전역 패턴을 포착</li>
+<li><strong>Global Mean Pooling</strong>: 가변 크기 그래프를 고정 크기 벡터로 변환</li>
+<li><strong>Dense Layer</strong>: 최종적으로 X/Z 논리 오류 확률을 출력</li>
+</ul>
+<p>이 구조는 Cicero et al.&nbsp;(2026)의 Pruned 모델을 기반으로 하며, MWPM 대비 낮은 논리 오류율을 달성하면서도 FPGA 구현에 적합한 경량 구조를 갖추고 있습니다.</p>
+<hr>
+</section>
+</section>
+<section id="post-training-quantization-ptq" class="level2">
+<h2 class="anchored" data-anchor-id="post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</h2>
+<section id="양자화란" class="level3">
+<h3 class="anchored" data-anchor-id="양자화란">2-1. 양자화란?</h3>
+<p>딥러닝 모델의 <strong>양자화(Quantization)</strong>는 모델의 가중치와 활성화 값을 높은 정밀도(FP32)에서 낮은 정밀도(INT8, INT16 등)로 변환하는 기법입니다. 이를 통해:</p>
+<ul>
+<li><strong>메모리 사용량 감소</strong>: FP32 → INT8로 약 4배 절감</li>
+<li><strong>연산 속도 향상</strong>: 정수 연산은 부동소수점 연산보다 빠르고 하드웨어 효율적</li>
+<li><strong>전력 소비 감소</strong>: 특히 FPGA, ASIC 등 엣지 디바이스에서 유리</li>
+</ul>
+<p>양자화 방식은 크게 두 가지로 나뉩니다:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 45%">
+<col style="width: 45%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>QAT (Quantization-Aware Training)</th>
+<th>PTQ (Post-Training Quantization)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>시점</td>
+<td>학습 중 양자화 시뮬레이션 포함</td>
+<td>학습 완료 후 양자화 적용</td>
+</tr>
+<tr class="even">
+<td>정확도</td>
+<td>상대적으로 높음</td>
+<td>QAT 대비 약간 낮을 수 있음</td>
+</tr>
+<tr class="odd">
+<td>비용</td>
+<td>재학습 필요 (시간/자원 소모)</td>
+<td>재학습 불필요 (빠른 적용)</td>
+</tr>
+<tr class="even">
+<td>적용 난이도</td>
+<td>학습 코드 수정 필요</td>
+<td>기존 모델에 바로 적용 가능</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="ptq의-동작-원리" class="level3">
+<h3 class="anchored" data-anchor-id="ptq의-동작-원리">2-2. PTQ의 동작 원리</h3>
+<p>Post-Training Quantization은 이미 학습이 완료된 모델에 양자화를 적용하는 방식입니다. 재학습 없이 빠르게 경량화할 수 있어 실용적입니다.</p>
+<p><strong>기본 양자화 공식:</strong></p>
+<p><span class="math display">\[
+q = \text{round}\left(\frac{x}{s}\right) + z
+\]</span></p>
+<p>여기서:</p>
+<ul>
+<li><span class="math inline">\(x\)</span>: 원래의 FP32 값</li>
+<li><span class="math inline">\(s\)</span>: 스케일 팩터 (scale factor)</li>
+<li><span class="math inline">\(z\)</span>: 제로 포인트 (zero point)</li>
+<li><span class="math inline">\(q\)</span>: 양자화된 정수 값</li>
+</ul>
+<p><strong>역양자화 (Dequantization):</strong></p>
+<p><span class="math display">\[
+\hat{x} = s \cdot (q - z)
+\]</span></p>
+<p>스케일 팩터와 제로 포인트는 가중치의 최솟값과 최댓값으로부터 계산됩니다:</p>
+<p><span class="math display">\[
+s = \frac{x_{\max} - x_{\min}}{q_{\max} - q_{\min}}, \quad z = q_{\min} - \text{round}\left(\frac{x_{\min}}{s}\right)
+\]</span></p>
+<p>INT8의 경우 <span class="math inline">\(q_{\min} = -128\)</span>, <span class="math inline">\(q_{\max} = 127\)</span>이 됩니다.</p>
+</section>
+<section id="saturated-relu" class="level3">
+<h3 class="anchored" data-anchor-id="saturated-relu">2-3. Saturated ReLU</h3>
+<p>양자화 시 활성화 함수도 정수 연산에 맞게 조정이 필요합니다. 일반적인 ReLU는 출력 범위가 <span class="math inline">\([0, +\infty)\)</span>로 제한이 없어 양자화에 불리합니다. 이를 해결하기 위해 <strong>Saturated ReLU</strong>를 사용합니다:</p>
+<p><span class="math display">\[
+\text{SaturatedReLU}(x) = \min(\max(x, 0),\; C)
+\]</span></p>
+<p>여기서 <span class="math inline">\(C\)</span>는 클리핑 상한값입니다. 출력 범위를 <span class="math inline">\([0, C]\)</span>로 제한함으로써 양자화 해상도를 높이고, FPGA에서 고정 비트폭 연산으로 구현할 수 있습니다.</p>
+</section>
+<section id="프로젝트에서의-양자화-전략" class="level3">
+<h3 class="anchored" data-anchor-id="프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</h3>
+<p>본 프로젝트에서는 다음과 같은 양자화 전략을 적용할 예정입니다:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>대상</th>
+<th>비트폭</th>
+<th>설명</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>가중치 (Weight)</td>
+<td>INT8</td>
+<td>GraphConv 레이어의 가중치 행렬</td>
+</tr>
+<tr class="even">
+<td>바이어스 (Bias)</td>
+<td>INT16</td>
+<td>누적 오차 방지를 위해 높은 정밀도 유지</td>
+</tr>
+<tr class="odd">
+<td>중간 특성 (Feature)</td>
+<td>18-bit</td>
+<td>레이어 간 전달되는 활성화 값</td>
+</tr>
+<tr class="even">
+<td>활성화 함수</td>
+<td>Saturated ReLU</td>
+<td>출력 범위 제한으로 양자화 효율 향상</td>
+</tr>
+</tbody>
+</table>
+<p>양자화된 가중치는 HEX 포맷으로 추출하여 FPGA의 Weight Memory ROM에 저장되며, 소프트웨어(PyTorch)와 하드웨어(Verilog RTL) 간 패리티 검증을 통해 양자화 과정의 정확성을 보장합니다.</p>
+<hr>
+</section>
+</section>
+<section id="정리" class="level2">
+<h2 class="anchored" data-anchor-id="정리">정리</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 24%">
+<col style="width: 52%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>기법</th>
+<th>역할</th>
+<th>프로젝트 적용</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>GNN (GraphConv)</strong></td>
+<td>그래프 구조 데이터의 패턴 학습</td>
+<td>Surface Code 신드롬 그래프에서 오류 패턴 추론</td>
+</tr>
+<tr class="even">
+<td><strong>PTQ (INT8)</strong></td>
+<td>학습된 모델의 경량화</td>
+<td>FPGA 온디바이스 구현을 위한 가중치/활성화 양자화</td>
+</tr>
+</tbody>
+</table>
+<p>1주차에는 프로젝트의 두 핵심 기법을 개념적으로 정리했습니다. 다음 주차부터는 Stim과 PyMatching을 활용한 Surface Code 데이터셋 생성과 GNN 모델 학습 파이프라인 구축을 진행할 예정입니다.</p>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+참고 문헌
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Kipf, T.N. &amp; Welling, M. (2017). Semi-Supervised Classification with Graph Convolutional Networks. <em>ICLR 2017</em>.</li>
+<li>Cicero, D. et al.&nbsp;(2026). Pruned GNN Decoders for Quantum Error Correction.</li>
+<li>Lange, M. et al.&nbsp;(2025). Graph Neural Network Decoders for Surface Codes.</li>
+</ul>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/beomdo-park\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2025, Beomdo-Park. Powered by Quarto.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://beomdo-park.github.io/sitemap.xml">
+<p>Sitemap</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

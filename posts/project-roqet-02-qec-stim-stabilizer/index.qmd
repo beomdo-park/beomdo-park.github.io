@@ -3,8 +3,8 @@ title: "[2026 ABC 프로젝트 멘토링 2기] 2주차 - QEC 기본 동작과 St
 description: "Surface Code의 안정자(Stabilizer) 개념과 양자 오류 정정의 동작 과정을 정리하고, Stim을 이용해 GNN 디코더 학습용 신드롬 데이터를 직접 생성합니다."
 date: "2026-04-13"
 author: "Beomdo Park"
-categories: ["ABC프로젝트멘토링", "QEC"]
-tags: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "QEC", "SurfaceCode", "Stim", "Stabilizer", "PyMatching", "양자오류정정"]
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "QEC"]
+tags: ["QEC", "SurfaceCode", "Stim", "Stabilizer", "PyMatching", "양자오류정정"]
 page-layout: full
 freeze: auto
 jupyter:
@@ -22,9 +22,9 @@ jupyter:
 
 이번 주차의 목표는 다음 세 가지입니다.
 
-1. **양자 오류 정정의 기본 동작 과정**과 안정자(Stabilizer) 형식주의를 직관적으로 이해한다.
-2. Google이 공개한 양자 회로 시뮬레이터 **[Stim](https://github.com/quantumlib/Stim)**으로 Surface Code 메모리 실험을 회로 단위에서 구성한다.
-3. GNN 디코더 학습에 사용할 **(신드롬, 논리 라벨) 페어 데이터셋**을 직접 생성하고, PyMatching으로 baseline 디코딩 정확도를 측정한다.
+1. **양자 오류 정정의 기본 동작 과정**과 안정자(Stabilizer) 형식주의를 직관적으로 이해
+2. Google이 공개한 양자 회로 시뮬레이터 **[Stim](https://github.com/quantumlib/Stim)**으로 Surface Code 메모리 실험을 회로 단위에서 구성
+3. GNN 디코더 학습에 사용할 **(신드롬, 논리 라벨) 페어 데이터셋**을 직접 생성하고, PyMatching으로 baseline 디코딩 정확도를 측정
 
 ---
 
@@ -32,7 +32,7 @@ jupyter:
 
 ### 1-1. 왜 직접 측정할 수 없는가?
 
-고전 컴퓨터의 오류 정정은 단순합니다. 비트를 세 번 복제(`0 → 000`)해두고 다수결로 오류를 정정하면 됩니다. 하지만 양자 비트(qubit)는 두 가지 근본적인 제약을 갖습니다.
+고전 컴퓨터의 오류 정정은 단순합니다. 비트를 세 번 복제(`0 → 000`)해두고 다수결로 오류를 정정하면 됩니다. 하지만 양자 비트(qubit)는 두 가지 제약을 갖습니다.
 
 - **No-cloning 정리**: 임의의 미지 양자 상태는 복제할 수 없다.
 - **측정 붕괴**: 큐비트를 직접 측정하는 순간 중첩 상태가 무너진다.
@@ -49,7 +49,7 @@ jupyter:
 | $Z$ | 위상 플립 ($\lvert +\rangle \leftrightarrow \lvert -\rangle$) | 부호가 뒤집힘 |
 | $Y = iXZ$ | 비트 + 위상 플립 동시 발생 | 둘 다 |
 
-임의의 단일 큐비트 오류는 이 세 가지의 선형 결합으로 분해될 수 있다는 것이 QEC의 핵심 통찰입니다. 즉, **이산적인(discrete) X와 Z 오류만 정정할 수 있으면 임의의 연속적인 오류도 정정할 수 있습니다.**
+임의의 단일 큐비트 오류는 이 세 가지의 선형 결합으로 분해될 수 있다는 것이 QEC의 핵심입니다. 즉, **이산적인(discrete) X와 Z 오류만 정정할 수 있으면 임의의 연속적인 오류도 정정할 수 있습니다.**
 
 ### 1-3. Stabilizer 형식주의
 
@@ -345,7 +345,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-거리 $d$가 커질수록 같은 물리 오류율에서 논리 오류율이 빠르게 떨어지는 것을 볼 수 있습니다. 이것이 surface code가 *threshold* 아래에서 보여주는 지수적 억제(exponential suppression) 현상입니다.
+거리 $d$가 커질수록 논리 오류율이 떨어지는 경향은 보이지만, $p=0.005$처럼 회로 수준 *threshold*($p \sim 1\%$) 근방에서는 그 이득이 1.3배 정도로 미미합니다. Surface code의 지수적 억제(exponential suppression)는 threshold보다 충분히 낮은 잡음 영역에서만 분명하게 관찰됩니다.
 
 ---
 
