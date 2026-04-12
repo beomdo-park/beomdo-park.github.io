@@ -80,7 +80,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-105fdaddc7326227b590ce197cc26180.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-dark-10c11f293c954889df803f7c3dc54c62.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="../../site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
@@ -667,7 +667,7 @@ DEPOLARIZE1(0.005) 2 11 16 25
 <div id="cell-stim-detslice" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> SVG</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>SVG(<span class="bu">str</span>(circuit.diagram(<span class="st">"detslice-svg"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="4">
+<div class="cell-output cell-output-display" data-execution_count="17">
 <div id="stim-detslice" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="index_files/figure-html/stim-detslice-output-1.svg" class="img-fluid figure-img"></p>
@@ -697,7 +697,7 @@ DEPOLARIZE1(0.005) 2 11 16 25
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"detection_events.shape : </span><span class="sc">{</span>detection_events<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_detectors)"</span>)</span>
 <span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"observable_flips.shape : </span><span class="sc">{</span>observable_flips<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">  (shots, num_observables)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>샘플링 100,000샷 소요 시간: 10.0 ms
+<pre><code>샘플링 100,000샷 소요 시간: 9.9 ms
 detection_events.shape : (100000, 24)  (shots, num_detectors)
 observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
 </div>
@@ -725,13 +725,13 @@ observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
   논리 오류(λ_Z)            : 0
 
 [shot 1]
-  trigger 된 detector index : [23]
+  trigger 된 detector index : [12]
   trigger 개수              : 1
-  논리 오류(λ_Z)            : 1
+  논리 오류(λ_Z)            : 0
 
 [shot 2]
-  trigger 된 detector index : []
-  trigger 개수              : 0
+  trigger 된 detector index : [6]
+  trigger 개수              : 1
   논리 오류(λ_Z)            : 0
 </code></pre>
 </div>
@@ -752,20 +752,20 @@ observable_flips.shape : (100000, 1)  (shots, num_observables)</code></pre>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    bar <span class="op">=</span> <span class="st">"█"</span> <span class="op">*</span> <span class="bu">int</span>(<span class="dv">60</span> <span class="op">*</span> cnt <span class="op">/</span> N_SHOTS)</span>
 <span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  </span><span class="sc">{</span>k<span class="sc">:2d}</span><span class="ss"> | </span><span class="sc">{</span>cnt<span class="sc">:6d}</span><span class="ss">  </span><span class="sc">{</span>bar<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>논리 오류율 (raw, 디코더 없음): 10.4920%
-평균 detector 발화 수 / 샷    : 1.409
+<pre><code>논리 오류율 (raw, 디코더 없음): 10.3240%
+평균 detector 발화 수 / 샷    : 1.408
 detector 발화 수 분포 (0~10):
-   0 |  42263  █████████████████████████
-   1 |  15631  █████████
-   2 |  20550  ████████████
-   3 |  10080  ██████
-   4 |   6548  ███
-   5 |   2894  █
-   6 |   1330  
-   7 |    467  
-   8 |    175  
-   9 |     45  
-  10 |     12  </code></pre>
+   0 |  42529  █████████████████████████
+   1 |  15358  █████████
+   2 |  20508  ████████████
+   3 |  10066  ██████
+   4 |   6626  ███
+   5 |   2827  █
+   6 |   1324  
+   7 |    505  
+   8 |    187  
+   9 |     56  
+  10 |      8  </code></pre>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -849,9 +849,9 @@ DEM 첫 5개 메커니즘:
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"디코더 없음(raw) 논리 오류율 : </span><span class="sc">{</span>logical_error_rate<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"개선 비율                    : </span><span class="sc">{</span>logical_error_rate <span class="op">/</span> <span class="bu">max</span>(logical_error_rate_mwpm, <span class="fl">1e-12</span>)<span class="sc">:.1f}</span><span class="ss">x"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>PyMatching(MWPM) 논리 오류율: 1.7330%
-디코더 없음(raw) 논리 오류율 : 10.4920%
-개선 비율                    : 6.1x</code></pre>
+<pre><code>PyMatching(MWPM) 논리 오류율: 1.7140%
+디코더 없음(raw) 논리 오류율 : 10.3240%
+개선 비율                    : 6.0x</code></pre>
 </div>
 </div>
 <p>이 숫자가 우리 GNN 디코더가 따라잡거나 능가해야 할 baseline입니다. 1주차에 본 Lange et al.&nbsp;(2025) 논문에서는 동일한 셋업에서 GNN이 MWPM을 의미 있게 능가했죠.</p>
@@ -861,7 +861,7 @@ DEM 첫 5개 메커니즘:
 <div id="cell-stim-matchgraph" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> SVG</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>SVG(<span class="bu">str</span>(circuit.diagram(<span class="st">"matchgraph-svg"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="11">
+<div class="cell-output cell-output-display" data-execution_count="24">
 <div id="stim-matchgraph" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
 <p><img src="index_files/figure-html/stim-matchgraph-output-1.svg" class="img-fluid figure-img"></p>
@@ -903,12 +903,12 @@ DEM 첫 5개 메커니즘:
 <span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>        results.append((d, p, ler))</span>
 <span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"d=</span><span class="sc">{</span>d<span class="sc">}</span><span class="ss">, p=</span><span class="sc">{</span>p<span class="sc">:.3f}</span><span class="ss">  →  MWPM logical error = </span><span class="sc">{</span>ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>d=3, p=0.001  →  MWPM logical error = 0.0750%
-d=3, p=0.003  →  MWPM logical error = 0.5550%
-d=3, p=0.005  →  MWPM logical error = 1.8950%
-d=5, p=0.001  →  MWPM logical error = 0.0150%
-d=5, p=0.003  →  MWPM logical error = 0.3850%
-d=5, p=0.005  →  MWPM logical error = 1.4550%</code></pre>
+<pre><code>d=3, p=0.001  →  MWPM logical error = 0.0800%
+d=3, p=0.003  →  MWPM logical error = 0.5800%
+d=3, p=0.005  →  MWPM logical error = 1.8300%
+d=5, p=0.001  →  MWPM logical error = 0.0250%
+d=5, p=0.003  →  MWPM logical error = 0.3100%
+d=5, p=0.005  →  MWPM logical error = 1.4150%</code></pre>
 </div>
 </div>
 <div id="cell-scan-plot" class="cell" data-execution_count="13">

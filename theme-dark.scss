@@ -238,3 +238,12 @@ div.sourceCode {
   background-color: $body-bg;
   border: 1px solid darken($pre-bg, 10%);
 }
+
+// Figures rendered from code cells (SVG/PNG): wrap in a light background
+// so transparent SVGs (e.g. Stim diagrams) stay readable in dark mode.
+.cell-output-display img,
+.cell-output-display svg {
+  background-color: #fff;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
