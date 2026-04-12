@@ -3,7 +3,7 @@
     <tr>
       <td width="70%" style="vertical-align: middle;">
         <ul>
-          <li>I am an undergraduate researcher at <a href="https://sites.google.com/view/ecoai/introduction"><b>Eco AI Lab</b></a>.</li>
+          <li>I am an undergraduate researcher at <b>Eco AI Lab</b>.</li>
           <li>I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying research to real-world challenges.</li>
           <li>3rd-year Computer Engineering Student, <b>Hanbat National University (HBNU)</b>.</li>
         </ul>
@@ -14,7 +14,7 @@
           <img src="https://github.com/user-attachments/assets/98519fd4-3bb6-4e5a-a831-2561cbfc41d3" width="260" alt="EcoAI Lab Logo" />
         </a>
         <br>
-        <a href="https://sites.google.com/view/ecoai/introduction"><b>홈페이지</b></a>
+        <a href="https://sites.google.com/view/ecoai/introduction"><b>[Link]</b></a>
       </td>
     </tr>
   </table>
@@ -51,7 +51,11 @@
 
 | 기간 | 활동명 | 내용 | 기관(장소) |
 |------|--------------|----------------------------------------|--------------|
-| 2026.01.20 ~ 01.27 | **AAAI-26 Student Abstract and Poster Program (Accept)** | **Multi-Stage Reinforcement Learning for Robust Charging of Quantum Batteries** | AAAI-26 (Singapore EXPO, Singapore) |
+| 2026.03.27 ~ 05.27 | **ABC 프로젝트 멘토링** | 양자오류정정(가주제) | 유클리드 소프트 |
+| 2026.03.01 | **Measurement-Informed Safe Reinforcement Learning for Quantum Battery Charging via Harmonic-Syndrome Diagnostics and BMS Constraints** | 2저자 | IEEE Transactions on Quantum Engineering, 2026 |
+| 2026.02.05 | **한국통신학회 동계종합학술발표회 아이디어 경진대회** | 실시간 네트워크 상태를 스스로 인지하고 서비스 품질을 능동적으로 최적화하는 통신 자율 Agentic AI 서비스 | 강원도 용평리조트 |
+| 2026.02.04 | **한국통신학회 동계종합학술발표회** | 물리 지식 기반 그래프 트랜스포머 강화학습을 이용한 강건한 양자 배터리 충전 최적화 | 강원도 용평리조트 |
+| 2026.01.20 ~ 01.27 | **AAAI-26 Student Abstract and Poster Program** | **Multi-Stage Reinforcement Learning for Robust Charging of Quantum Batteries** | AAAI-26 (Singapore EXPO, Singapore) |
 | 2025.11.20 | 한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회| **(🏆우수상 수상)** 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석] | 라한셀렉트 경주 |
 | 2025.11.19 ~ 11.21 | 한국통신학회 추계종합학술발표회 우수논문상(학부생) | **(🏆장려상 수상)** 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자) | 라한셀렉트 경주 |
 | 2025.11.01 | 🪪 TOPCIT 정기평가 (수준 3 달성) | **수준3**: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준 | [정보통신기획평가원(IITP)](https://topcit.or.kr/introduction/topcit.do) |
@@ -62,7 +66,7 @@
 | 2025.06.24 ~ 06.27 | [**대한전자공학회 하계 종합학술대회**](https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference) | [고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지](https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference) | 롯데호텔 제주(중문) |
 | 2025.05.20 ~ 06.30 | [**ABC 프로젝트 멘토링**](https://github.com/beomdo-park/Portfolio/tree/main/2025/0520_0630_ABC_Mentoring) | 산업 전력 소비량 이상치 검출 및 최적화 | 유클리드 소프트 |
 | 2025.06.13 | 🪪 [**데이터분석 준전문가(ADsP) 자격증 취득**](https://github.com/beomdo-park/Portfolio/tree/main/2025/ADsP.pdf) | 데이터 분석 기획 및 수행 실무자 자격 | 한국데이터산업진흥원 |
-| 2025.05.01 ~ | **[Eco AI Lab](https://sites.google.com/view/ecoai/introduction) 랩장** | 커뮤니케이션 지원, 일정 조율, 행정 업무 등 | 국립한밭대학교 EcoAI Lab |
+| 2025.05.01 ~ 2026.03.03| **[Eco AI Lab](https://sites.google.com/view/ecoai/introduction) 랩장** | 커뮤니케이션 지원, 일정 조율, 행정 업무 등 | 국립한밭대학교 EcoAI Lab |
 | 2025.04.07 ~ | **산학협력 프로젝트** | 자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화 |국립한밭대학교 SW중심대학사업단 |
 | 2025.03.24 ~  | **소중한 JUMP-UP Labs** | AI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지 | 국립한밭대학교 SW중심대학사업단 |
 | 2025.03.04 ~ 06.13 | **데이터사이언스(이상금 교수님) 실습조교 25-1학기** | 실습자료 제작 및 질의응답 관리 | 국립한밭대학교 컴퓨터공학과 |
