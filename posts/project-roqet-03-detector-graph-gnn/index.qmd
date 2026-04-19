@@ -298,7 +298,7 @@ loss_fn = nn.BCEWithLogitsLoss()
 print(f"device={device}, train={len(train_set):,}, val={len(val_set):,}")
 ```
 
-분류 문제이므로 손실은 **BCE with logits**가 자연스럽습니다. 2주차에 측정했던 raw 논리 오류율이 수 %로 *대략 균형이 맞는* 편이라 `pos_weight` 없이 시작해도 크게 문제 되지 않습니다. 오류율이 1% 이하로 떨어지는 설정이라면 이야기가 달라져서 가중치를 꼭 넣어야 합니다.
+분류 문제이므로 손실은 **BCE(Binary Cross-Entropy, 이진 교차 엔트로피) with logits**가 자연스럽습니다. 2주차에 측정했던 raw 논리 오류율이 수 %로 *대략 균형이 맞는* 편이라 `pos_weight` 없이 시작해도 크게 문제 되지 않습니다. 오류율이 1% 이하로 떨어지는 설정이라면 이야기가 달라져서 가중치를 꼭 넣어야 합니다.
 
 ### 4-2. 학습 루프
 
