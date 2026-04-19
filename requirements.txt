@@ -7,6 +7,10 @@ matplotlib
 statsmodels
 seaborn
 torch
+torch_geometric
+stim
+pymatching
+tabulate
 optuna
 plotly
 requests
