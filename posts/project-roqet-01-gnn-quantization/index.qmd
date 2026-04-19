@@ -1,5 +1,5 @@
 ---
-title: "[2026 ABC 프로젝트 멘토링 2기] 1주차 - GNN과 Post-Training Quantization 개요"
+title: "[2026 ABC 프로젝트 멘토링 2기] 프로젝트 1주차 - GNN과 Post-Training Quantization 개요"
 description: "GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다."
 date: "2026-04-06"
 author: "Beomdo Park"

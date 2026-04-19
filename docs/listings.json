@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/project-roqet-03-detector-graph-gnn/index.html",
       "/posts/project-roqet-02-qec-stim-stabilizer/index.html",
       "/posts/project-roqet-01-gnn-quantization/index.html",
       "/posts/guide-github-01-branch-strategy/index.html",

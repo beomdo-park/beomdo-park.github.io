@@ -1,5 +1,5 @@
 ---
-title: "[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습"
+title: "[2026 ABC 프로젝트 멘토링 2기] 프로젝트 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습"
 description: "Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다."
 date: "2026-04-20"
 author: "Beomdo Park"

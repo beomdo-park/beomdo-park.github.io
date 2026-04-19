@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2026-04-20">
 <meta name="description" content="Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다.">
 
-<title>[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습 – beomdo’s ML-DL blog</title>
+<title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습 – beomdo’s ML-DL blog</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"April 19, 2026","datePublished":"April 20, 2026","description":"Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업PyTorchQEC"],"url":"https://beomdo-park.github.io"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"April 19, 2026","datePublished":"April 20, 2026","description":"Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업PyTorchQEC"],"url":"https://beomdo-park.github.io"}</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -143,7 +143,7 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습 – beomdo’s ML-DL blog">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습 – beomdo’s ML-DL blog">
 <meta property="og:description" content="Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-03-detector-graph-gnn/index_files/figure-html/loss-curve-output-1.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
@@ -375,7 +375,7 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
-      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습</h1>
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습</h1>
                   <div>
         <div class="description">
           Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다.
@@ -719,9 +719,9 @@ edge weight 분포 : min=3.96, median=5.06, max=6.62</code></pre>
 <span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Data 객체 생성   : </span><span class="sc">{</span><span class="bu">len</span>(dataset)<span class="sc">:,}</span><span class="ss">개 / </span><span class="sc">{</span>build_s<span class="sc">:.2f}</span><span class="ss"> s"</span>)</span>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"raw 논리 오류율  : </span><span class="sc">{</span>observable_flips<span class="sc">.</span>mean()<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Stim 샘플링      : 30,000샷 / 16.7 ms
-Data 객체 생성   : 30,000개 / 1.60 s
-raw 논리 오류율  : 10.5100%</code></pre>
+<pre><code>Stim 샘플링      : 30,000샷 / 4.0 ms
+Data 객체 생성   : 30,000개 / 1.16 s
+raw 논리 오류율  : 10.3500%</code></pre>
 </div>
 </div>
 <p>PyG의 <code>DataLoader</code>는 내부적으로 배치 안의 그래프들을 하나의 큰 disjoint 그래프로 묶어 주므로, 우리는 단일 그래프인 것처럼 forward만 짜면 됩니다.</p>
@@ -836,12 +836,12 @@ raw 논리 오류율  : 10.5100%</code></pre>
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"epoch </span><span class="sc">{</span>epoch<span class="sc">:02d}</span><span class="ss"> | train loss </span><span class="sc">{</span>tr_loss<span class="sc">:.4f}</span><span class="ss"> / LER </span><span class="sc">{</span>tr_ler<span class="sc">:.4%}</span><span class="ss">"</span></span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>              <span class="ss">f" | val loss </span><span class="sc">{</span>va_loss<span class="sc">:.4f}</span><span class="ss"> / LER </span><span class="sc">{</span>va_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>epoch 01 | train loss 0.7136 / LER 13.6815% | val loss 0.3204 / LER 11.2667%
-epoch 03 | train loss 0.2879 / LER 10.4407% | val loss 0.2779 / LER 11.2667%
-epoch 06 | train loss 0.1620 / LER 6.3519% | val loss 0.1436 / LER 5.4000%
-epoch 09 | train loss 0.1069 / LER 3.2519% | val loss 0.1033 / LER 3.1667%
-epoch 12 | train loss 0.0987 / LER 3.0556% | val loss 0.1048 / LER 2.9667%
-epoch 15 | train loss 0.0930 / LER 2.9444% | val loss 0.0993 / LER 3.0667%</code></pre>
+<pre><code>epoch 01 | train loss 0.6888 / LER 13.5296% | val loss 0.3038 / LER 10.3667%
+epoch 03 | train loss 0.2676 / LER 10.0630% | val loss 0.2454 / LER 8.7333%
+epoch 06 | train loss 0.1830 / LER 7.2296% | val loss 0.1644 / LER 5.9667%
+epoch 09 | train loss 0.1270 / LER 4.2741% | val loss 0.1216 / LER 3.6667%
+epoch 12 | train loss 0.1050 / LER 3.5296% | val loss 0.1062 / LER 3.6667%
+epoch 15 | train loss 0.1014 / LER 3.2926% | val loss 0.0991 / LER 2.9333%</code></pre>
 </div>
 </div>
 </section>
@@ -901,13 +901,13 @@ epoch 15 | train loss 0.0930 / LER 2.9444% | val loss 0.0993 / LER 3.0667%</code
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"MWPM (PyMatching)        : </span><span class="sc">{</span>mwpm_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TinyGraphDecoder (val)   : </span><span class="sc">{</span>gnn_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>raw (디코더 없음)        : 10.5100%
-MWPM (PyMatching)        : 1.7033%
-TinyGraphDecoder (val)   : 3.0667%</code></pre>
+<pre><code>raw (디코더 없음)        : 10.3500%
+MWPM (PyMatching)        : 1.7633%
+TinyGraphDecoder (val)   : 2.9333%</code></pre>
 </div>
 </div>
 <div id="cell-comparison-table" class="cell" data-execution_count="11">
-<div id="comparison-table" class="cell-output cell-output-display cell-output-markdown" data-execution_count="33">
+<div id="comparison-table" class="cell-output cell-output-display cell-output-markdown" data-execution_count="11">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 41%">
@@ -924,17 +924,17 @@ TinyGraphDecoder (val)   : 3.0667%</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">디코더 없음 (raw)</td>
-<td style="text-align: left;">10.51%</td>
+<td style="text-align: left;">10.35%</td>
 <td style="text-align: left;">신드롬을 그냥 무시한 경우</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MWPM (PyMatching)</td>
-<td style="text-align: left;">1.70%</td>
+<td style="text-align: left;">1.76%</td>
 <td style="text-align: left;">그래프-알고리즘 baseline</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">TinyGraphDecoder (본 포스트)</td>
-<td style="text-align: left;">3.07%</td>
+<td style="text-align: left;">2.93%</td>
 <td style="text-align: left;">15 epoch, 엣지 피처 미사용</td>
 </tr>
 </tbody>

@@ -1,5 +1,5 @@
 ---
-title: "[2026 ABC 프로젝트 멘토링 2기] 2주차 - QEC 기본 동작과 Stim으로 신드롬 데이터 생성하기"
+title: "[2026 ABC 프로젝트 멘토링 2기] 프로젝트 2주차 - QEC 기본 동작과 Stim으로 신드롬 데이터 생성하기"
 description: "Surface Code의 안정자(Stabilizer) 개념과 양자 오류 정정의 동작 과정을 정리하고, Stim을 이용해 GNN 디코더 학습용 신드롬 데이터를 직접 생성합니다."
 date: "2026-04-13"
 author: "Beomdo Park"
