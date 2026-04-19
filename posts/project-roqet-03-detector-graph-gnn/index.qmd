@@ -1,0 +1,285 @@
+---
+title: "[2026 ABC 프로젝트 멘토링 2기] 3주차 - Annotated Detector Graph와 GNN 디코더 첫 학습"
+description: "Stim으로 만든 신드롬 데이터를 annotated detector graph로 변환하고, PyTorch Geometric 기반 GraphConv 디코더의 첫 학습 파이프라인을 정리합니다."
+date: "2026-04-20"
+author: "Beomdo Park"
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch", "QEC"]
+tags: ["GNN", "PyTorchGeometric", "GraphConv", "DetectorGraph", "QEC", "SurfaceCode"]
+page-layout: full
+freeze: true
+---
+
+> 안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 세 번째 기술노트입니다. 2주차에 **Stim**으로 `(detection_events, observable_flips)` 페어 데이터를 만들었다면, 이번 주는 그 데이터를 **그래프**로 다시 빚어 GNN 디코더에 흘려보내는 과정을 정리합니다.
+
+::: {.callout-tip title="이전 포스트"}
+- [1주차 포스트](/posts/project-roqet-01-gnn-quantization/) — GNN과 PTQ 개념 정리
+- [2주차 포스트](/posts/project-roqet-02-qec-stim-stabilizer/) — QEC 기본 동작과 Stim으로 신드롬 데이터 생성
+:::
+
+이번 주차의 목표는 세 가지입니다.
+
+1. Stim이 뽑아낸 신드롬/DEM을 **annotated detector graph**로 정의하고 표현 방식을 정하기
+2. DEM → PyTorch Geometric `Data` 객체로 변환하는 **데이터 파이프라인** 구성
+3. **2-layer GraphConv** + global pooling + MLP 구조의 작은 디코더로 **첫 학습 루프**를 돌려 MWPM baseline과 비교
+
+::: {.callout-note}
+이번 주는 *의미 있는 SOTA 성능을 내는 것*이 목표가 아닙니다. 파이프라인이 끝까지 붙어 돌아가고, 손실이 떨어지며, baseline 근처에라도 도달하는지 확인하는 **스모크 테스트** 단계입니다.
+:::
+
+---
+
+## 1. 왜 "그래프"인가 — Detector Graph 다시 보기
+
+2주차 마지막에 Stim으로 그려봤던 **match graph**를 떠올려 봅시다. 그 그래프에서
+
+- **노드**는 detector, 즉 "이전 라운드 대비 변화한 안정자 측정값"
+- **엣지**는 "이 두 detector를 동시에 발화시키는 물리적 오류 메커니즘이 존재한다"는 관계
+
+로 정의됩니다. MWPM은 이 그래프 위에서 발화한 노드들을 가장 짧은 엣지들로 짝짓는 **매칭 문제**를 풉니다.
+
+GNN 디코더의 관점은 조금 다릅니다. 매칭이라는 구체적 알고리즘 대신, 같은 그래프 구조 위에서 **메시지 패싱**으로 각 detector의 표현을 이웃 정보와 함께 업데이트하고, 마지막에 "이 샷은 논리 오류가 났는가?"를 분류합니다.
+
+### 1-1. Annotated Detector Graph의 구성 요소
+
+"annotated"라는 이름이 붙는 이유는 노드와 엣지 모두에 **학습 신호로 쓸 피처**를 달아주기 때문입니다. 이번 주차에서 사용하는 최소 구성은 다음과 같습니다.
+
+| 요소 | 차원 | 설명 |
+|------|------|------|
+| 노드 피처 `x` | `[num_detectors, 4]` | `(detection_event, round_idx_normalized, coord_x_normalized, coord_y_normalized)` |
+| 엣지 인덱스 `edge_index` | `[2, num_edges]` | DEM에서 추출한 두 detector를 잇는 오류 메커니즘 |
+| 엣지 피처 `edge_attr` | `[num_edges, 1]` | 해당 메커니즘의 $-\log(p)$ (MWPM 가중치와 동일) |
+| 그래프 라벨 `y` | `[1]` | 이 샷의 논리 관측량 flip 여부 (0 또는 1) |
+
+Lange et al. (2025) 논문에서는 노드 피처에 "몇 라운드 전에 발화했는가" 같은 추가 정보도 얹습니다. 이번 주차에서는 **거리 $d=3$, 라운드 3** 회로로 그래프 크기가 작으니, 과하게 복잡한 피처는 넣지 않고 위 네 가지만 씁니다.
+
+### 1-2. 왜 PyTorch Geometric인가?
+
+PyTorch Geometric(PyG)은 "노드 피처 × 이웃 피처"를 매번 직접 gather/scatter 하지 않아도 되게 해주는 라이브러리입니다. 회로가 커지고(=그래프가 커지고) 배치가 수백~수천 샷이 되면 이 스캐터 연산이 핵심 병목이 되는데, PyG는 이를 CUDA 커널로 묶어 제공합니다. 디코더 프로토타이핑 용도로 사실상 표준입니다.
+
+---
+
+## 2. Stim DEM → PyG `Data` 변환 파이프라인
+
+한 샷을 그래프 하나로 만드는 변환은 다음 세 단계로 쪼갭니다.
+
+1. **회로-고정 구조**를 한 번만 만든다: `edge_index`, `edge_attr`, detector 좌표
+2. **샷마다 달라지는 부분**을 덮어쓴다: `x[:, 0]` = detection events, `y` = observable flip
+3. 이렇게 만든 `Data` 객체를 `DataLoader`로 배치화
+
+### 2-1. 회로-고정 구조 한 번만 만들기
+
+Stim의 `DetectorErrorModel`은 "어떤 detector들이 동시에 발화하는가"를 `error(p) D0 D1 ...` 형태로 나열합니다. 여기서 detector 두 개를 잇는 모든 메커니즘을 엣지로 가져오고, 확률은 MWPM 가중치와 같은 $w = -\log p$로 변환합니다.
+
+```python
+import numpy as np
+import stim
+import torch
+from torch_geometric.data import Data
+
+
+def build_static_graph(circuit: stim.Circuit):
+    """회로 한 번에 대해 edge_index, edge_attr, detector 좌표를 만든다."""
+    dem = circuit.detector_error_model(decompose_errors=True)
+    num_detectors = dem.num_detectors
+
+    # detector 좌표: Stim이 회로에 이미 박아둔 3D 좌표 (x, y, t)
+    coords = circuit.get_detector_coordinates()
+    coord_arr = np.zeros((num_detectors, 3), dtype=np.float32)
+    for i in range(num_detectors):
+        coord_arr[i] = coords[i]
+
+    edges, weights = [], []
+    for instr in dem.flattened():
+        if instr.type != "error":
+            continue
+        p = instr.args_copy()[0]
+        targets = [t.val for t in instr.targets_copy() if t.is_relative_detector_id()]
+        # 한 메커니즘이 두 개 이상의 detector를 동시에 건드리면 완전 연결로 추가
+        for a in range(len(targets)):
+            for b in range(a + 1, len(targets)):
+                edges.append((targets[a], targets[b]))
+                weights.append(-np.log(max(p, 1e-12)))
+
+    edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    edge_attr = torch.tensor(weights, dtype=torch.float32).unsqueeze(1)
+    return edge_index, edge_attr, coord_arr
+```
+
+한 가지 주의점은 Stim DEM 메커니즘이 항상 2-노드 엣지로 떨어지진 않는다는 것입니다. 일부는 **단일 detector(boundary)** 에 붙은 메커니즘이고, 일부는 Y 오류처럼 **3개 이상의 detector**를 동시에 건드립니다. 위 코드는 간결함을 위해 2-체만 살리고 나머지는 버리는 근사를 쓰는데, 실제로는 boundary 노드를 추가하거나 하이퍼엣지를 펼쳐야 합니다. **다음 주차에 이 부분부터 다듬을 예정입니다.**
+
+### 2-2. 샷 단위로 그래프 만들기
+
+`build_static_graph`에서 나온 구조는 모든 샷이 공유합니다. 각 샷은 "어떤 detector가 발화했는지"와 "논리 관측량이 뒤집혔는지"만 바꿔주면 됩니다.
+
+```python
+def shot_to_data(det_bits, obs_bit, edge_index, edge_attr, coord_arr, num_rounds):
+    """한 샷의 (detection_events, observable_flip)을 PyG Data로."""
+    num_detectors = coord_arr.shape[0]
+
+    # 좌표 정규화: 네트워크가 스케일에 민감하지 않도록
+    t = coord_arr[:, 2] / max(num_rounds - 1, 1)
+    xy = coord_arr[:, :2]
+    xy = (xy - xy.mean(axis=0)) / (xy.std(axis=0) + 1e-6)
+
+    x = np.stack([det_bits.astype(np.float32), t, xy[:, 0], xy[:, 1]], axis=1)
+
+    return Data(
+        x=torch.from_numpy(x),
+        edge_index=edge_index,
+        edge_attr=edge_attr,
+        y=torch.tensor([obs_bit], dtype=torch.float32),
+    )
+```
+
+2주차에 만든 `detection_events`, `observable_flips` 배열을 이 함수에 한 행씩 흘려주면 `List[Data]` 하나가 완성되고, 이것이 곧 학습 데이터셋입니다. PyG의 `DataLoader`는 내부적으로 배치 안의 그래프들을 하나의 큰 disjoint 그래프로 묶어 주므로, 우리는 단일 그래프인 것처럼 forward만 짜면 됩니다.
+
+---
+
+## 3. GraphConv 기반 디코더 — 작게 시작하기
+
+첫 파이프라인의 모토는 **"일단 끝까지 붙어라"**입니다. 모델은 의도적으로 아주 단순하게 잡습니다.
+
+```python
+import torch.nn as nn
+import torch.nn.functional as F
+from torch_geometric.nn import GraphConv, global_mean_pool
+
+
+class TinyGraphDecoder(nn.Module):
+    def __init__(self, in_dim=4, hidden=32):
+        super().__init__()
+        self.conv1 = GraphConv(in_dim, hidden)
+        self.conv2 = GraphConv(hidden, hidden)
+        self.head = nn.Sequential(
+            nn.Linear(hidden, hidden),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden, 1),
+        )
+
+    def forward(self, data):
+        x, edge_index, batch = data.x, data.edge_index, data.batch
+        x = F.relu(self.conv1(x, edge_index))
+        x = F.relu(self.conv2(x, edge_index))
+        x = global_mean_pool(x, batch)  # 그래프 한 개 = 한 벡터
+        return self.head(x).squeeze(-1)  # logit
+```
+
+구조를 정리하면:
+
+- 입력: `(num_nodes, 4)` 노드 피처
+- `GraphConv(4→32) → ReLU → GraphConv(32→32) → ReLU` — 이웃 정보를 두 hop까지만 섞습니다. 거리 $d=3$ / 라운드 3이면 그래프 지름이 크지 않으므로 두 층이면 꽤 먼 detector까지 통신이 닿습니다.
+- `global_mean_pool` — 그래프 하나의 모든 노드 임베딩을 평균 내서 **샷 벡터**로 축소
+- MLP 헤드로 **logical flip 확률 로짓** 하나를 출력
+
+현재 버전에서는 `edge_attr`를 아직 활용하지 않습니다. `GraphConv`를 `GINEConv`나 `NNConv`로 바꾸면 엣지 가중치를 자연스럽게 섞을 수 있는데, 이건 다음 주차 숙제로 남겨둡니다.
+
+---
+
+## 4. 학습 파이프라인
+
+### 4-1. 데이터 / 손실 / 옵티마이저
+
+```python
+from torch_geometric.loader import DataLoader
+
+# Stim에서 10만 샷을 뽑고, 앞서 정의한 변환을 적용해 train/val로 쪼갭니다.
+# dataset: List[Data]  (길이 100_000)
+train_set, val_set = dataset[:90_000], dataset[90_000:]
+
+train_loader = DataLoader(train_set, batch_size=512, shuffle=True)
+val_loader = DataLoader(val_set, batch_size=1024, shuffle=False)
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = TinyGraphDecoder().to(device)
+opt = torch.optim.Adam(model.parameters(), lr=1e-3)
+loss_fn = nn.BCEWithLogitsLoss()
+```
+
+분류 문제이므로 손실은 **BCE with logits**가 자연스럽습니다. 2주차에 측정했던 raw 논리 오류율이 수 %로 *대략 균형이 맞는* 편이라 `pos_weight` 없이 시작해도 크게 문제 되지 않습니다. 오류율이 1% 이하로 떨어지는 설정이라면 이야기가 달라져서 가중치를 꼭 넣어야 합니다.
+
+### 4-2. 학습 루프
+
+```python
+def run_epoch(loader, train=True):
+    model.train(train)
+    total_loss, total_correct, total = 0.0, 0, 0
+    for batch in loader:
+        batch = batch.to(device)
+        logit = model(batch)
+        loss = loss_fn(logit, batch.y)
+
+        if train:
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+
+        pred = (logit.sigmoid() > 0.5).float()
+        total_loss += loss.item() * batch.num_graphs
+        total_correct += (pred == batch.y).sum().item()
+        total += batch.num_graphs
+    return total_loss / total, 1 - total_correct / total  # loss, 논리 오류율
+
+
+for epoch in range(1, 11):
+    tr_loss, tr_ler = run_epoch(train_loader, train=True)
+    va_loss, va_ler = run_epoch(val_loader, train=False)
+    print(f"epoch {epoch:02d} | train loss {tr_loss:.4f} / LER {tr_ler:.4%}"
+          f" | val loss {va_loss:.4f} / LER {va_ler:.4%}")
+```
+
+### 4-3. 예시 로그 (d=3, p=0.005, rounds=3, 10만 샷)
+
+로컬에서 돌려본 10 epoch 결과의 대략적인 모양입니다(러닝이 매 실행마다 미세하게 다르므로 근사값).
+
+```
+epoch 01 | train loss 0.0867 / LER 2.48% | val loss 0.0742 / LER 2.12%
+epoch 03 | train loss 0.0608 / LER 1.67% | val loss 0.0595 / LER 1.58%
+epoch 05 | train loss 0.0551 / LER 1.48% | val loss 0.0546 / LER 1.46%
+epoch 10 | train loss 0.0509 / LER 1.33% | val loss 0.0523 / LER 1.39%
+```
+
+몇 가지 관찰 포인트.
+
+- **손실/오류율이 확실히 떨어진다** → 데이터 파이프라인과 모델이 적어도 논리적으로 연결돼 있다는 신호입니다. 연결이 끊기면 손실이 움직이지 않거나 라벨과 무관한 값으로 수렴합니다.
+- **val과 train의 간격이 크지 않다** → 10만 샷 정도면 이 작은 모델은 과적합 걱정이 거의 없습니다. 모델을 키우기 시작하면 상황이 바뀔 수 있습니다.
+- 수렴 후 논리 오류율이 **1.3~1.4% 근방**에서 정체합니다. 2주차에 측정한 **MWPM baseline은 약 1.2%**였으므로, 초보 수준의 GNN 디코더가 **이미 같은 자릿수**까지는 왔다는 의미입니다. 아직 이기는 건 아니지만요.
+
+---
+
+## 5. MWPM Baseline과 한 줄 비교
+
+| 디코더 | 논리 오류율 (d=3, p=0.005) | 비고 |
+|--------|-----------------------------|------|
+| 디코더 없음 (raw) | ~14% | 2주차 결과 |
+| **MWPM (PyMatching)** | **~1.2%** | 2주차 baseline |
+| TinyGraphDecoder (본 포스트) | ~1.4% | 10 epoch, 엣지 피처 미사용 |
+
+::: {.callout-important}
+이 표는 "GNN이 MWPM보다 잘한다"는 주장을 하기 위한 것이 아닙니다. 오히려 "가장 순진한 GNN도 한 자릿수 안에는 들어온다 → 이후 개선의 여지가 크다"는 쪽을 읽어야 합니다. Lange et al. 논문의 수준에 도달하려면 (1) 엣지 가중치 활용, (2) 더 많은 라운드, (3) 더 큰 거리, (4) 더 많은 샷, (5) 구조를 반영한 readout이 필요합니다.
+:::
+
+---
+
+## 정리
+
+| 단계 | 내용 |
+|------|------|
+| **그래프 정의** | annotated detector graph의 노드/엣지 피처를 표 형태로 고정 |
+| **데이터 변환** | Stim DEM → 공유 `edge_index`/`edge_attr` + 샷마다 `x`/`y`만 갱신 |
+| **모델** | `GraphConv ×2 → global_mean_pool → MLP`의 최소 구성 |
+| **학습** | BCE + Adam + PyG DataLoader로 10 epoch 스모크 테스트 |
+| **결과** | val 논리 오류율 ~1.4% (MWPM ~1.2% 근방) |
+
+"파이프라인이 끝까지 붙어 돌아간다"는 목표는 달성했습니다. 여기서부터는 지표를 올리는 작업입니다.
+
+::: {.callout-note title="다음 주차 예고"}
+4주차에서는 (1) boundary 노드와 하이퍼엣지를 반영하도록 그래프 빌더를 다듬고, (2) `edge_attr`를 실제로 쓰는 convolution으로 교체해 MWPM 대비 **의미 있게 앞서는** 구간을 찾아볼 계획입니다. 여력이 되면 거리 $d=5$ / 라운드 5로 스케일을 한 칸 올려보겠습니다.
+:::
+
+---
+
+::: {.callout-tip title="참고 문헌"}
+- Lange, M. et al. (2025). *Data-driven decoding of quantum error correcting codes using graph neural networks.* Physical Review Research, APS.
+- Fey, M. & Lenssen, J. E. (2019). *Fast Graph Representation Learning with PyTorch Geometric.* ICLR Workshop. [pyg.org](https://pyg.org/)
+- Higgott, O. (2022). *PyMatching v2.* [github.com/oscarhiggott/PyMatching](https://github.com/oscarhiggott/PyMatching)
+:::
