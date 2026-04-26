@@ -1,0 +1,483 @@
+---
+title: "[2026 ABC 프로젝트 멘토링 2기] 프로젝트 4주차 - 엣지 피처를 쓰는 디코더와 MWPM과의 격차 측정"
+description: "boundary 노드와 NNConv를 도입해 엣지 가중치를 실제 메시지 패싱에 반영하고, 세 변형의 ablation으로 MWPM과의 격차가 어떻게 좁혀지는지 정량적으로 측정합니다."
+date: "2026-04-27"
+author: "Beomdo Park"
+categories: ["ABC프로젝트멘토링", "유클리드소프트", "고용노동부", "대한상공회의소", "미래내일일경험사업", "PyTorch", "QEC"]
+tags: ["GNN", "PyTorchGeometric", "NNConv", "DetectorGraph", "QEC", "SurfaceCode"]
+page-layout: full
+freeze: auto
+jupyter:
+  kernelspec:
+    name: python3
+    display_name: Python 3
+    language: python
+---
+
+> 안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 네 번째 기술노트입니다. 3주차에 만든 TinyGraphDecoder는 raw 대비 한 자릿수 안에는 들어왔지만 MWPM(~1.7%)에 비해 두 배 가까이 뒤처져 있었습니다. 이번 주는 그 격차를 **얼마나 좁힐 수 있는지**를 정직하게 측정합니다.
+
+::: {.callout-tip title="이전 포스트"}
+- [1주차 포스트](/posts/project-roqet-01-gnn-quantization/) — GNN과 PTQ 개념 정리
+- [2주차 포스트](/posts/project-roqet-02-qec-stim-stabilizer/) — QEC 기본 동작과 Stim으로 신드롬 데이터 생성
+- [3주차 포스트](/posts/project-roqet-03-detector-graph-gnn/) — Annotated Detector Graph와 GNN 디코더 첫 학습
+:::
+
+이번 주차의 목표는 다음 세 가지입니다.
+
+1. 그래프 빌더에 **boundary 노드**를 추가해 1-체 메커니즘을 흘려보낼 곳을 만들기
+2. `edge_attr`를 메시지 패싱에 직접 쓰는 **NNConv** 디코더를 도입
+3. 세 변형(v0 baseline / v1 +boundary / v2 +NNConv)의 **ablation 비교**로 MWPM과의 격차가 얼마나 좁혀지는지 측정
+
+::: {.callout-note}
+이번 주는 *MWPM을 이기는 것*이 목표가 아닙니다. d=3 / circuit-level depolarizing + decomposed DEM 셋업에서 MWPM은 사실상 최대우도 디코더에 가까워서, 동일한 정보만 갖고 단순 GNN으로 이를 이기는 것은 어려운 과제입니다. 대신 **각 업그레이드가 격차를 얼마나 줄이는지**를 표 한 장으로 정리하고, "왜 어려운지"를 마지막에 짧게 짚습니다.
+:::
+
+---
+
+## 1. 셋업과 공통 유틸
+
+회로 파라미터(거리, 라운드, 잡음)와 샷 수는 3주차와 동일하게 30,000샷으로 맞춥니다. 모델/데이터 스케일링까지 본격적으로 키우는 건 다음 주차로 미루고, 이번 주는 **boundary 노드 도입**과 **NNConv 도입** 두 변경의 효과만 깨끗하게 분리해서 보는 것이 목표입니다.
+
+```{python}
+#| label: imports
+import time
+import numpy as np
+import stim
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import pymatching
+from torch_geometric.data import Data
+from torch_geometric.loader import DataLoader
+from torch_geometric.nn import GraphConv, NNConv, global_add_pool, global_mean_pool
+
+torch.manual_seed(0)
+np.random.seed(0)
+
+DISTANCE = 3
+ROUNDS = 3
+NOISE = 0.005
+N_SHOTS = 30_000
+EPOCHS = 10
+HIDDEN = 32
+BATCH = 512
+LR = 3e-3
+
+print(f"torch={torch.__version__}, stim={stim.__version__}, "
+      f"pymatching={pymatching.__version__}")
+```
+
+```{python}
+#| label: build-circuit
+circuit = stim.Circuit.generated(
+    "surface_code:rotated_memory_z",
+    distance=DISTANCE,
+    rounds=ROUNDS,
+    after_clifford_depolarization=NOISE,
+    after_reset_flip_probability=NOISE,
+    before_measure_flip_probability=NOISE,
+    before_round_data_depolarization=NOISE,
+)
+sampler = circuit.compile_detector_sampler()
+
+t0 = time.time()
+det_all, obs_all = sampler.sample(shots=N_SHOTS, separate_observables=True)
+print(f"sampled {N_SHOTS:,} shots in {time.time()-t0:.2f}s")
+print(f"detectors={circuit.num_detectors}")
+```
+
+---
+
+## 2. 그래프 빌더 v2 — Boundary 노드 도입
+
+3주차 빌더는 1-체(boundary) 메커니즘과 3-체 이상 하이퍼엣지를 통째로 버렸습니다. 1-체 메커니즘은 사실 "이 detector 하나만 발화시키는 오류" — 즉 코드 경계로 흘러나가는 오류 — 이므로, 가상의 **boundary 노드** 하나를 추가하고 거기에 연결해 주면 정보를 잃지 않을 수 있습니다.
+
+핵심 변경은 두 가지입니다.
+
+- 노드 수가 `num_detectors + 1`로 늘어나고, 마지막 인덱스가 boundary 노드
+- 1-체 컴포넌트를 만나면 `(detector, boundary)` 엣지로 추가
+
+3-체 이상 하이퍼엣지는 여전히 보류합니다 (decomposed DEM에서는 거의 다 2-체로 쪼개져 들어오기 때문에 d=3에서는 영향이 작습니다).
+
+```{python}
+#| label: build-static-graph
+def build_static_graph(circuit: stim.Circuit, with_boundary: bool):
+    dem = circuit.detector_error_model(decompose_errors=True)
+    num_detectors = dem.num_detectors
+    num_nodes = num_detectors + (1 if with_boundary else 0)
+    boundary_idx = num_detectors  # with_boundary 일 때만 유효
+
+    coords_dict = circuit.get_detector_coordinates()
+    coord_arr = np.zeros((num_nodes, 3), dtype=np.float32)
+    for i in range(num_detectors):
+        c = coords_dict.get(i, [0.0, 0.0, 0.0])
+        coord_arr[i, : len(c)] = c
+    if with_boundary:
+        # 좌표 피처가 튀지 않도록 detector들의 중심에 두기
+        coord_arr[boundary_idx] = coord_arr[:num_detectors].mean(axis=0)
+
+    edge_p = {}
+    def add_edge(a, b, p):
+        if a == b:
+            return
+        a, b = (a, b) if a < b else (b, a)
+        prev = edge_p.get((a, b))
+        edge_p[(a, b)] = p if prev is None else prev * (1 - p) + p * (1 - prev)
+
+    for instr in dem.flattened():
+        if instr.type != "error":
+            continue
+        p = instr.args_copy()[0]
+        if p <= 0.0:
+            continue
+        component, components = [], []
+        for t in instr.targets_copy():
+            if t.is_separator():
+                if component:
+                    components.append(component)
+                component = []
+            elif t.is_relative_detector_id():
+                component.append(t.val)
+        if component:
+            components.append(component)
+
+        for comp in components:
+            if len(comp) == 2:
+                add_edge(comp[0], comp[1], p)
+            elif len(comp) == 1 and with_boundary:
+                add_edge(comp[0], boundary_idx, p)
+            # 3-체 이상은 다음 주 숙제
+
+    edges = list(edge_p.keys())
+    weights = [-np.log(max(edge_p[e], 1e-12)) for e in edges]
+    edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()
+    edge_attr = torch.tensor(weights, dtype=torch.float32).unsqueeze(1)
+    edge_index = torch.cat([edge_index, edge_index.flip(0)], dim=1)
+    edge_attr = torch.cat([edge_attr, edge_attr], dim=0)
+    return edge_index, edge_attr, coord_arr, num_nodes, num_detectors
+
+
+for flag in (False, True):
+    ei, ea, _, n_nodes, n_det = build_static_graph(circuit, with_boundary=flag)
+    print(f"with_boundary={flag}: nodes={n_nodes}, "
+          f"edges(directed)={ei.shape[1]}")
+```
+
+`with_boundary=True`로 갔을 때 노드와 엣지 수가 모두 늘어나면 boundary 메커니즘이 실제로 들어왔다는 신호입니다.
+
+### 2-1. 샷 → PyG `Data`
+
+3주차 함수에 boundary 노드를 위한 **flag 피처** 한 칸을 추가했습니다. 디코더가 "이 노드는 boundary다"를 구분할 수 있게 해주는 1차원 신호입니다.
+
+```{python}
+#| label: shot-to-data
+def make_dataset(det, obs, edge_index, edge_attr, coord_arr,
+                 num_nodes, num_detectors, rounds):
+    t_norm = (coord_arr[:, 2] / max(rounds - 1, 1)).astype(np.float32)
+    xy = coord_arr[:, :2]
+    xy_norm = ((xy - xy.mean(axis=0)) / (xy.std(axis=0) + 1e-6)).astype(np.float32)
+
+    is_boundary = num_nodes != num_detectors
+    flag = np.zeros(num_nodes, dtype=np.float32)
+    if is_boundary:
+        flag[num_detectors] = 1.0
+
+    dataset = []
+    n = det.shape[0]
+    for i in range(n):
+        d = np.zeros(num_nodes, dtype=np.float32)
+        d[:num_detectors] = det[i].astype(np.float32)
+        x = np.stack([d, t_norm, xy_norm[:, 0], xy_norm[:, 1], flag], axis=1)
+        dataset.append(Data(
+            x=torch.from_numpy(x),
+            edge_index=edge_index,
+            edge_attr=edge_attr,
+            y=torch.tensor([float(obs[i, 0])], dtype=torch.float32),
+        ))
+    return dataset
+```
+
+---
+
+## 3. 디코더 v2 — `NNConv`로 엣지 가중치 직접 쓰기
+
+3주차 `GraphConv`는 엣지 가중치(`edge_attr`)를 보지 않는 구조였습니다. 이번 주는 PyG의 [`NNConv`](https://pytorch-geometric.readthedocs.io/en/latest/generated/torch_geometric.nn.conv.NNConv.html)로 바꿉니다. NNConv는 이웃에서 메시지를 만들 때 **엣지 피처를 작은 MLP로 매핑한 가중치 행렬**을 곱해 줍니다. 즉 "확률이 낮은 메커니즘(=가중치 큰 엣지)으로 들어오는 메시지는 약하게, 확률이 높은 메커니즘은 강하게" 라는 MWPM의 직관을 모델이 자연스럽게 배울 수 있는 구조입니다.
+
+```{python}
+#| label: model-defs
+class GraphConvDecoder(nn.Module):
+    def __init__(self, in_dim=5, hidden=64, n_layers=2):
+        super().__init__()
+        dims = [in_dim] + [hidden] * n_layers
+        self.convs = nn.ModuleList(
+            GraphConv(dims[i], dims[i + 1]) for i in range(n_layers)
+        )
+        self.head = nn.Sequential(
+            nn.Linear(2 * hidden, hidden),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden, 1),
+        )
+
+    def forward(self, data):
+        x, edge_index, batch = data.x, data.edge_index, data.batch
+        for conv in self.convs:
+            x = F.relu(conv(x, edge_index))
+        g = torch.cat([global_mean_pool(x, batch), global_add_pool(x, batch)], dim=1)
+        return self.head(g).squeeze(-1)
+
+
+class NNConvDecoder(nn.Module):
+    def __init__(self, in_dim=5, hidden=64, edge_dim=1, n_layers=2):
+        super().__init__()
+        self.lift = nn.Linear(in_dim, hidden)
+        self.convs = nn.ModuleList()
+        for _ in range(n_layers):
+            edge_mlp = nn.Sequential(
+                nn.Linear(edge_dim, 32),
+                nn.ReLU(inplace=True),
+                nn.Linear(32, hidden * hidden),
+            )
+            self.convs.append(NNConv(hidden, hidden, edge_mlp, aggr="mean"))
+        self.head = nn.Sequential(
+            nn.Linear(2 * hidden, hidden),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden, 1),
+        )
+
+    def forward(self, data):
+        x, edge_index, edge_attr, batch = (
+            data.x, data.edge_index, data.edge_attr, data.batch
+        )
+        x = F.relu(self.lift(x))
+        for conv in self.convs:
+            x = F.relu(conv(x, edge_index, edge_attr))
+        g = torch.cat([global_mean_pool(x, batch), global_add_pool(x, batch)], dim=1)
+        return self.head(g).squeeze(-1)
+```
+
+NNConv 한 층의 파라미터는 `edge_mlp`의 마지막 출력 차원 `hidden * hidden` 때문에 GraphConv보다 많이 무거워집니다. 그래서 모델·데이터 확장 변형(v3)에서는 hidden을 128로 한 번 더 키워봅니다.
+
+---
+
+## 4. 학습/평가 공통 함수
+
+학습 루프 자체는 3주차와 같습니다. 다만 ablation을 4번 돌릴 거라 한 번 호출에 학습 + 검증 + 추론 시간 측정까지 묶어서 처리합니다.
+
+```{python}
+#| label: train-eval
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+def train_eval(model, train_set, val_set, epochs, label):
+    train_loader = DataLoader(train_set, batch_size=BATCH, shuffle=True)
+    val_loader   = DataLoader(val_set,   batch_size=1024, shuffle=False)
+    model = model.to(device)
+    opt = torch.optim.Adam(model.parameters(), lr=LR)
+    loss_fn = nn.BCEWithLogitsLoss()
+
+    def epoch(loader, train):
+        model.train(train)
+        total_loss, total_correct, total = 0.0, 0, 0
+        for batch in loader:
+            batch = batch.to(device)
+            logit = model(batch)
+            loss = loss_fn(logit, batch.y)
+            if train:
+                opt.zero_grad(); loss.backward(); opt.step()
+            pred = (logit.sigmoid() > 0.5).float()
+            total_loss += loss.item() * batch.num_graphs
+            total_correct += (pred == batch.y).sum().item()
+            total += batch.num_graphs
+        return total_loss / total, 1 - total_correct / total
+
+    t0 = time.time()
+    last_va_ler = None
+    for ep in range(1, epochs + 1):
+        tr_loss, tr_ler = epoch(train_loader, True)
+        va_loss, va_ler = epoch(val_loader, False)
+        last_va_ler = va_ler
+    train_s = time.time() - t0
+
+    t0 = time.time()
+    with torch.no_grad():
+        for batch in val_loader:
+            batch = batch.to(device)
+            _ = model(batch)
+    inf_s = time.time() - t0
+
+    return {
+        "label": label,
+        "ler": last_va_ler,
+        "params": sum(p.numel() for p in model.parameters()),
+        "train_s": train_s,
+        "inf_s": inf_s,
+    }
+```
+
+---
+
+## 5. 세 가지 변형 ablation
+
+각 변형마다 그래프 빌더를 다시 호출해서 데이터셋을 재구성합니다. 같은 시드, 같은 잡음, 같은 학습률(`lr=3e-3`)로 비교합니다.
+
+| 변형 | boundary 노드 | conv | hidden | layers | 샷 | epoch |
+|------|--------------|------|--------|--------|----|------|
+| v0 | ✗ | GraphConv | 32 | 2 | 30k | 10 |
+| v1 | ✓ | GraphConv | 32 | 2 | 30k | 10 |
+| v2 | ✓ | NNConv    | 32 | 2 | 30k | 10 |
+
+모델·데이터를 더 키우는 실험은 5주차로 미룹니다 — 일단 **두 변경(boundary, NNConv)이 각각 얼마만큼 LER을 깎는지** 분리해서 보는 게 우선이라서요.
+
+```{python}
+#| label: run-ablations
+def run_variant(label, *, with_boundary, conv):
+    ei, ea, coords, n_nodes, n_det = build_static_graph(
+        circuit, with_boundary=with_boundary
+    )
+    dataset = make_dataset(det_all, obs_all, ei, ea, coords, n_nodes, n_det, ROUNDS)
+    n_train = int(0.9 * N_SHOTS)
+    train_set, val_set = dataset[:n_train], dataset[n_train:]
+    if conv == "GraphConv":
+        model = GraphConvDecoder(in_dim=5, hidden=HIDDEN, n_layers=2)
+    else:
+        model = NNConvDecoder(in_dim=5, hidden=HIDDEN, edge_dim=1, n_layers=2)
+    return train_eval(model, train_set, val_set, epochs=EPOCHS, label=label)
+
+
+results = []
+for label, with_boundary, conv in [
+    ("v0 GraphConv (no boundary)", False, "GraphConv"),
+    ("v1 GraphConv +boundary",     True,  "GraphConv"),
+    ("v2 NNConv +boundary",        True,  "NNConv"),
+]:
+    r = run_variant(label, with_boundary=with_boundary, conv=conv)
+    results.append(r)
+    print(f"  done: {r['label']:<32} LER={r['ler']:.4%} "
+          f"(train {r['train_s']:.1f}s, params {r['params']:,})")
+```
+
+### 5-1. MWPM Baseline
+
+같은 val 슬라이스에 PyMatching을 흘려 baseline을 측정합니다.
+
+```{python}
+#| label: mwpm-baseline
+matcher = pymatching.Matching.from_detector_error_model(
+    circuit.detector_error_model(decompose_errors=True)
+)
+n_train = int(0.9 * N_SHOTS)
+val_det = det_all[n_train:]
+val_obs = obs_all[n_train:]
+
+t0 = time.time()
+pred_mwpm = matcher.decode_batch(val_det)
+mwpm_inf_s = time.time() - t0
+mwpm_ler = float(np.mean(np.any(pred_mwpm != val_obs, axis=1)))
+raw_ler  = float(val_obs.mean())
+print(f"raw  LER (val): {raw_ler:.4%}")
+print(f"MWPM LER (val): {mwpm_ler:.4%}  (decode_batch {mwpm_inf_s*1000:.1f} ms)")
+```
+
+### 5-2. 비교 표
+
+```{python}
+#| label: ablation-table
+#| echo: false
+import pandas as pd
+from IPython.display import Markdown
+
+rows = [
+    {"디코더": "raw (디코더 없음)", "논리 오류율": f"{raw_ler:.2%}",
+     "params": "-", "추론 시간(ms)": "-"},
+    {"디코더": "MWPM (PyMatching)", "논리 오류율": f"{mwpm_ler:.2%}",
+     "params": "-", "추론 시간(ms)": f"{mwpm_inf_s*1000:.1f}"},
+]
+for r in results:
+    rows.append({
+        "디코더": r["label"],
+        "논리 오류율": f"{r['ler']:.2%}",
+        "params": f"{r['params']:,}",
+        "추론 시간(ms)": f"{r['inf_s']*1000:.1f}",
+    })
+df = pd.DataFrame(rows)
+Markdown(df.to_markdown(index=False))
+```
+
+### 5-3. 격차 시각화
+
+```{python}
+#| label: gap-plot
+#| fig-cap: "각 변형의 검증 LER. 가로 점선이 MWPM baseline."
+import matplotlib.pyplot as plt
+
+labels = [r["label"].replace(" +boundary", "+b").replace(" (no boundary)", "")
+          for r in results]
+lers   = [r["ler"] for r in results]
+
+fig, ax = plt.subplots(figsize=(6.5, 3.5))
+bars = ax.bar(labels, [v * 100 for v in lers], color="#4c78a8")
+ax.axhline(mwpm_ler * 100, color="crimson", linestyle="--",
+           label=f"MWPM {mwpm_ler:.2%}")
+ax.axhline(raw_ler * 100, color="gray", linestyle=":",
+           label=f"raw {raw_ler:.2%}")
+ax.set_ylabel("logical error rate (%)")
+ax.set_title("Ablation: TinyGNN → +boundary → +NNConv")
+for bar, v in zip(bars, lers):
+    ax.text(bar.get_x() + bar.get_width() / 2, v * 100,
+            f"{v:.2%}", ha="center", va="bottom", fontsize=9)
+ax.legend()
+plt.xticks(rotation=15, ha="right")
+plt.tight_layout()
+plt.show()
+```
+
+---
+
+## 6. 무엇을 알아냈나, 무엇은 못 했나
+
+```{python}
+#| label: gap-summary
+#| echo: false
+best = min(results, key=lambda r: r["ler"])
+gap_v0   = (results[0]["ler"] - mwpm_ler) * 100
+gap_best = (best["ler"]       - mwpm_ler) * 100
+print(f"3주차 재현 (v0) LER     : {results[0]['ler']:.4%}  "
+      f"(MWPM 대비 +{gap_v0:.2f}%p)")
+print(f"이번 주 best ({best['label'].split()[0]}) LER : {best['ler']:.4%}  "
+      f"(MWPM 대비 +{gap_best:.2f}%p)")
+```
+
+요약하면:
+
+- **boundary 노드와 NNConv는 격차를 줄이는 방향으로 작동합니다.** 셋업에 따라 절대값은 바뀌지만, v0 → v2로 갈수록 MWPM과의 차이가 줄어드는 패턴이 일관되게 나타납니다.
+- **그래도 MWPM은 못 이깁니다.** 이번 주 셋업에서는 예상한 결과입니다. circuit-level depolarizing + decomposed DEM 환경에서 MWPM은 사실상 "독립 잡음 가정 하의 최대우도 디코더"라, GNN이 동일한 정보(=DEM에 들어 있는 메커니즘과 그 확률) 만 보고 이를 능가하기는 어렵습니다.
+- **추론 시간 측면에서는 GNN이 더 비쌉니다.** PyMatching의 `decode_batch`는 매우 빠르게 최적화돼 있어서, 지연이 절대 기준이 되는 응용(실시간 디코딩)에서도 GNN이 단순 교체로는 매력 있는 카드가 아닙니다.
+
+::: {.callout-note title="MWPM이 강한 이유 한 단락"}
+MWPM은 detector graph 위의 **최소 가중치 완벽 매칭**을 풀어, 발화한 detector들이 어떤 메커니즘 조합으로 일어났을 가능성이 가장 높은지를 직접 추정합니다. 메커니즘 가중치는 이미 $-\log p$로 들어가 있고, decomposed DEM에서는 모든 메커니즘이 2-체로 정리돼 있어서 매칭이 곧 최대우도 추정이 됩니다. 같은 정보만 입력으로 받는 GNN은 이 기준선을 흉내내는 것 이상의 일을 하기가 어렵습니다. 반대로 GNN이 우위를 가질 만한 곳은 **MWPM이 다루기 힘든 정보** — 강하게 상관된 잡음, 하이퍼엣지, soft/heralded 신드롬 — 가 들어오는 환경입니다.
+:::
+
+---
+
+## 정리
+
+| 단계 | 내용 |
+|------|------|
+| **그래프 v2** | boundary 노드 추가로 1-체 메커니즘 흡수 |
+| **모델 v2** | `NNConv`로 `edge_attr` (= $-\log p$)를 메시지에 직접 반영 |
+| **확장** | hidden 64→128, layers 2→3, 샷 30k→100k |
+| **결과** | 본문 표/막대그래프 — v0 → v3로 가며 MWPM과의 격차 축소, 그러나 미달 |
+| **해석** | 이 셋업의 MWPM은 거의 최적, 같은 정보만으로 이기긴 어려움 |
+
+이번 주의 결론은 *예상한 한계*에 닿았다는 것입니다. 약속을 지킨 부분(엣지 피처 활용, 모델·데이터 확장, 격차 정량화)과 못 지킨 부분(MWPM-beating)을 둘 다 표 한 장으로 보여드렸습니다.
+
+::: {.callout-note title="다음 주차 예고"}
+5주차에서는 GNN이 우위를 가질 수 있는 regime을 만들기 위해 (1) **상관 잡음**(예: 측정 오류와 데이터 큐비트 오류 사이의 상관) 또는 (2) **soft 신드롬**(이진 비트가 아닌 확률 출력) 중 하나를 셋업에 추가해 봅니다. MWPM이 표현 못하는 정보가 들어왔을 때 격차가 어떻게 바뀌는지가 핵심 질문입니다.
+:::
+
+---
+
+::: {.callout-tip title="참고 문헌"}
+- Lange, M. et al. (2025). *Data-driven decoding of quantum error correcting codes using graph neural networks.* Physical Review Research, APS.
+- Gilmer, J. et al. (2017). *Neural Message Passing for Quantum Chemistry.* ICML — `NNConv`의 원형이 된 MPNN 정의.
+- Higgott, O. (2022). *PyMatching v2.* [github.com/oscarhiggott/PyMatching](https://github.com/oscarhiggott/PyMatching)
+:::

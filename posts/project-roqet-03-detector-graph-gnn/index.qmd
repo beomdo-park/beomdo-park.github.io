@@ -153,7 +153,7 @@ def build_static_graph(circuit: stim.Circuit):
             components.append(component)
 
         for comp in components:
-            if len(comp) != 2:        # 1-체(boundary)/3-체 이상은 다음 주차 숙제
+            if len(comp) != 2:       
                 continue
             a, b = sorted(comp)
             prev = edge_p.get((a, b))
