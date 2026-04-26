@@ -141,10 +141,10 @@ window.Quarto = {
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 4주차 - 엣지 타입을 분리한 디코더와 MWPM과의 격차 측정 – beomdo’s ML-DL blog">
 <meta property="og:description" content="엣지 가중치를 메시지 패싱에 직접 반영하고, DEM에서 추출한 correlation 엣지를 별도 GraphConv 분기로 처리해, ablation으로 MWPM과의 격차가 어떻게 좁혀지는지 정량적으로 측정합니다.">
-<meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-04-edge-aware-decoder/index_files/figure-html/gap-plot-output-2.png">
+<meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-04-edge-aware-decoder/index_files/figure-html/gap-plot-output-1.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
-<meta property="og:image:height" content="326">
-<meta property="og:image:width" content="614">
+<meta property="og:image:height" content="340">
+<meta property="og:image:width" content="640">
 </head>
 
 <body class="nav-fixed">
@@ -353,7 +353,7 @@ Note
 <pre><code>torch=2.11.0+cu130, stim=1.15.0, pymatching=2.3.1, device=cuda</code></pre>
 </div>
 </div>
-<div id="build-circuit" class="cell" data-execution_count="2">
+<div id="build-circuit" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>circuit <span class="op">=</span> stim.Circuit.generated(</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"surface_code:rotated_memory_z"</span>,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    distance<span class="op">=</span>DISTANCE,</span>
@@ -379,7 +379,7 @@ Note
 <h2 class="anchored" data-anchor-id="그래프-빌더-v2-k-nn과-dem-correlation-두-타입">2. 그래프 빌더 v2 — k-NN과 DEM correlation 두 타입</h2>
 <p>3주차 빌더는 k-NN으로만 엣지를 만들었습니다. 이건 <em>같은 라운드, 또는 인접 라운드의 detector</em> 위주로 그래프를 짠다는 뜻입니다 — 공간적/시간적으로 가까운 detector만 메시지를 주고받습니다. 하지만 회로의 잡음 모델이 알려주는 <strong>상관 구조</strong>는 거리만으로는 잡히지 않습니다. 예를 들면 측정 오류는 같은 stabilizer를 두 라운드 연속 발화시키지만, 같은 잡음 메커니즘이 멀리 있는 detector를 함께 발화시키는 경우도 있습니다.</p>
 <p>이번 주는 <strong>decomposed DEM에서 직접 뽑은 2-체 메커니즘</strong>을 두 번째 엣지 타입으로 추가합니다. 한 메커니즘이 detector <span class="math inline">\(i, j\)</span>를 함께 발화시킬 확률을 <span class="math inline">\(p_{ij}\)</span>로 모으고, 그 페어를 type-1 엣지로 등록합니다.</p>
-<div id="coords-and-knn" class="cell" data-execution_count="3">
+<div id="coords-and-knn" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> coords_array(circuit):</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    cd <span class="op">=</span> circuit.get_detector_coordinates()</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    n <span class="op">=</span> circuit.num_detectors</span>
@@ -406,7 +406,7 @@ Note
 <span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    w_s <span class="op">=</span> np.concatenate([w, w])</span>
 <span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> src_s, dst_s, w_s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="dem-edges" class="cell" data-execution_count="4">
+<div id="dem-edges" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dem_edges(circuit):</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""decomposed DEM에서 2-체 메커니즘만 모아 엣지로 만든다.</span></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">    같은 detector 페어 (i, j)에 여러 메커니즘이 기여하면 확률을 합산한다."""</span></span>
@@ -442,7 +442,7 @@ Note
 <span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> src, dst, w</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>엣지 가중치는 두 타입에서 의미가 다릅니다. k-NN 엣지는 <code>1/d²</code>로 <em>기하적 가까움</em>을 표현하고, DEM 엣지는 <code>p_ij</code>로 <em>물리적 동시 발화 확률</em>을 표현합니다. GraphConv에 그대로 넘기면 같은 스칼라 multiplier로 들어갑니다 — 큰 가중치를 가진 엣지에서 들어오는 메시지가 더 강하게 합산됩니다.</p>
-<div id="graph-stats" class="cell" data-execution_count="5">
+<div id="graph-stats" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>coord <span class="op">=</span> coords_array(circuit)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ksrc, kdst, kw <span class="op">=</span> knn_edges(coord, k<span class="op">=</span><span class="dv">6</span>)</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>dsrc, ddst, dw <span class="op">=</span> dem_edges(circuit)</span>
@@ -464,7 +464,7 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 <section id="샷-pyg-data" class="level3">
 <h3 class="anchored" data-anchor-id="샷-pyg-data">2-1. 샷 → PyG <code>Data</code></h3>
 <p>노드 피처는 6차원으로 정리합니다. 활성화 비트 <span class="math inline">\(d_i\)</span>를 그대로 한 차원에 놓고, 좌표 <span class="math inline">\((x, y)\)</span>는 활성화된 detector에서만 살아남도록 곱한 두 차원, 그리고 정규화된 좌표 <span class="math inline">\((x, y, t)\)</span> 자체를 세 차원으로 둡니다. 활성화 자체와 활성화의 위치 정보가 분리돼서 전달되도록 한 구성입니다.</p>
-<div id="shot-to-data" class="cell" data-execution_count="6">
+<div id="shot-to-data" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_dataset(det, obs, coord, knn_pack, dem_pack<span class="op">=</span><span class="va">None</span>):</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    cn <span class="op">=</span> (coord <span class="op">-</span> coord.mean(<span class="dv">0</span>)) <span class="op">/</span> (coord.std(<span class="dv">0</span>) <span class="op">+</span> <span class="fl">1e-6</span>)</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    ksrc, kdst, kw <span class="op">=</span> knn_pack</span>
@@ -508,7 +508,7 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 <section id="디코더-v2-타입별-graphconv-분기" class="level2">
 <h2 class="anchored" data-anchor-id="디코더-v2-타입별-graphconv-분기">3. 디코더 v2 — 타입별 GraphConv 분기</h2>
 <p>3주차에서는 모든 엣지가 한 GraphConv를 통과했습니다. 이번 주는 <strong>같은 노드 피처에 두 GraphConv가 따로 적용</strong>됩니다 — 하나는 type-0(k-NN), 하나는 type-1(DEM) 엣지만 보고, 두 출력은 더해진 뒤에 정규화/활성을 통과합니다. 두 메시지 채널이 독립된 가중치를 학습하기 때문에 <em>기하적 가까움</em>과 <em>물리적 동시 발화</em>가 혼선 없이 합쳐집니다.</p>
-<div id="model-defs" class="cell" data-execution_count="7">
+<div id="model-defs" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TypedBlock(nn.Module):</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""type-0(k-NN) + (옵션) type-1(DEM) 분기 GraphConv 한 층."""</span></span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -567,7 +567,7 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 <section id="학습평가-공통-함수" class="level2">
 <h2 class="anchored" data-anchor-id="학습평가-공통-함수">4. 학습/평가 공통 함수</h2>
 <p>옵티마이저는 <code>AdamW(weight_decay=1e-4)</code>, 스케줄은 2 epoch 선형 warmup 후 cosine annealing, 그라디언트는 L2 norm 1.0으로 클립합니다. 이 셋업은 사용자 <a href="https://arxiv.org/abs/2307.01241">Lange et al.&nbsp;2025</a> 베이스라인 재현에서 안정적이라고 보고된 조합과 일치합니다.</p>
-<div id="train-eval" class="cell" data-execution_count="8">
+<div id="train-eval" class="cell" data-execution_count="9">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_eval(model, train_set, val_set, epochs, label):</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    train_loader <span class="op">=</span> DataLoader(train_set, batch_size<span class="op">=</span>BATCH, shuffle<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    val_loader   <span class="op">=</span> DataLoader(val_set,   batch_size<span class="op">=</span><span class="dv">1024</span>, shuffle<span class="op">=</span><span class="va">False</span>)</span>
@@ -674,7 +674,7 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 </tbody>
 </table>
 <p>v0 → v1은 <strong>같은 그래프 위에서 학습 셋업을 키운 효과</strong>를, v1 → v2는 <strong>DEM 엣지 분기를 추가한 효과</strong>를 분리해서 보여줍니다.</p>
-<div id="run-ablations" class="cell" data-execution_count="9">
+<div id="run-ablations" class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>knn_pack <span class="op">=</span> (ksrc, kdst, kw)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>dem_pack <span class="op">=</span> (dsrc, ddst, dw)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ds_knn  <span class="op">=</span> make_dataset(det_all, obs_all, coord, knn_pack, dem_pack<span class="op">=</span><span class="va">None</span>)</span>
@@ -698,15 +698,15 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"  done: </span><span class="sc">{</span>r[<span class="st">'label'</span>]<span class="sc">:&lt;36}</span><span class="ss"> LER=</span><span class="sc">{</span>r[<span class="st">'ler'</span>]<span class="sc">:.4%}</span><span class="ss"> "</span></span>
 <span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"(train </span><span class="sc">{</span>r[<span class="st">'train_s'</span>]<span class="sc">:.1f}</span><span class="ss">s, params </span><span class="sc">{</span>r[<span class="st">'params'</span>]<span class="sc">:,}</span><span class="ss">)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>  done: v0 baseline (k-NN, weight off)       LER=5.3600% (train 19.1s, params 4,737)
-  done: v1 +edge_weight +depth/width         LER=4.9200% (train 20.9s, params 34,433)
-  done: v2 +DEM correlation 분기               LER=4.2400% (train 24.5s, params 60,033)</code></pre>
+<pre><code>  done: v0 baseline (k-NN, weight off)       LER=5.0800% (train 19.1s, params 4,737)
+  done: v1 +edge_weight +depth/width         LER=4.7600% (train 20.9s, params 34,433)
+  done: v2 +DEM correlation 분기               LER=4.5200% (train 24.5s, params 60,033)</code></pre>
 </div>
 </div>
 <section id="mwpm-baseline" class="level3">
 <h3 class="anchored" data-anchor-id="mwpm-baseline">5-1. MWPM Baseline</h3>
 <p>같은 val 슬라이스에 PyMatching을 흘려 baseline을 측정합니다.</p>
-<div id="mwpm-baseline" class="cell" data-execution_count="10">
+<div id="mwpm-baseline" class="cell" data-execution_count="11">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>matcher <span class="op">=</span> pymatching.Matching.from_detector_error_model(</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    circuit.detector_error_model(decompose_errors<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>)</span>
@@ -722,15 +722,15 @@ overlap (k-NN ∩ DEM): 70  (DEM 고유 추가분: 38)</code></pre>
 <span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"MWPM LER (val): </span><span class="sc">{</span>mwpm_ler<span class="sc">:.4%}</span><span class="ss">  "</span></span>
 <span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>      <span class="ss">f"(decode_batch </span><span class="sc">{</span>mwpm_inf_s<span class="op">*</span><span class="dv">1000</span><span class="sc">:.1f}</span><span class="ss"> ms)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>raw  LER (val): 10.7000%
-MWPM LER (val): 1.3000%  (decode_batch 1.2 ms)</code></pre>
+<pre><code>raw  LER (val): 10.5200%
+MWPM LER (val): 1.7200%  (decode_batch 1.1 ms)</code></pre>
 </div>
 </div>
 </section>
 <section id="비교-표" class="level3">
 <h3 class="anchored" data-anchor-id="비교-표">5-2. 비교 표</h3>
-<div id="cell-ablation-table" class="cell" data-execution_count="11">
-<div id="ablation-table" class="cell-output cell-output-display cell-output-markdown" data-execution_count="11">
+<div id="cell-ablation-table" class="cell" data-execution_count="12">
+<div id="ablation-table" class="cell-output cell-output-display cell-output-markdown" data-execution_count="12">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 43%">
@@ -749,33 +749,33 @@ MWPM LER (val): 1.3000%  (decode_batch 1.2 ms)</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">raw (디코더 없음)</td>
-<td style="text-align: left;">10.70%</td>
+<td style="text-align: left;">10.52%</td>
 <td style="text-align: left;">-</td>
 <td style="text-align: left;">-</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MWPM (PyMatching)</td>
-<td style="text-align: left;">1.30%</td>
+<td style="text-align: left;">1.72%</td>
 <td style="text-align: left;">-</td>
-<td style="text-align: left;">1.2</td>
+<td style="text-align: left;">1.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">v0 baseline (k-NN, weight off)</td>
-<td style="text-align: left;">5.36%</td>
+<td style="text-align: left;">5.08%</td>
 <td style="text-align: left;">4,737</td>
-<td style="text-align: left;">52.7</td>
+<td style="text-align: left;">52.5</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">v1 +edge_weight +depth/width</td>
-<td style="text-align: left;">4.92%</td>
+<td style="text-align: left;">4.76%</td>
 <td style="text-align: left;">34,433</td>
-<td style="text-align: left;">58.8</td>
+<td style="text-align: left;">62.6</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">v2 +DEM correlation 분기</td>
-<td style="text-align: left;">4.24%</td>
+<td style="text-align: left;">4.52%</td>
 <td style="text-align: left;">60,033</td>
-<td style="text-align: left;">64.7</td>
+<td style="text-align: left;">65.8</td>
 </tr>
 </tbody>
 </table>
@@ -784,7 +784,7 @@ MWPM LER (val): 1.3000%  (decode_batch 1.2 ms)</code></pre>
 </section>
 <section id="격차-시각화" class="level3">
 <h3 class="anchored" data-anchor-id="격차-시각화">5-3. 격차 시각화</h3>
-<div id="cell-gap-plot" class="cell" data-execution_count="12">
+<div id="cell-gap-plot" class="cell" data-execution_count="13">
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">"v0"</span>, <span class="st">"v1"</span>, <span class="st">"v2"</span>]</span>
@@ -804,28 +804,10 @@ MWPM LER (val): 1.3000%  (decode_batch 1.2 ms)</code></pre>
 <span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>ax.legend()</span>
 <span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
 <span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/tmp/ipykernel_29700/2133925473.py:18: UserWarning: Glyph 51452 (\N{HANGUL SYLLABLE JU}) missing from font(s) DejaVu Sans.
-  plt.tight_layout()
-/tmp/ipykernel_29700/2133925473.py:18: UserWarning: Glyph 52264 (\N{HANGUL SYLLABLE CA}) missing from font(s) DejaVu Sans.
-  plt.tight_layout()
-/tmp/ipykernel_29700/2133925473.py:18: UserWarning: Glyph 48516 (\N{HANGUL SYLLABLE BUN}) missing from font(s) DejaVu Sans.
-  plt.tight_layout()
-/tmp/ipykernel_29700/2133925473.py:18: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
-  plt.tight_layout()
-/home/beomdo/박범도/기타/1.GithubRepos/beomdo-park.github.io/.venv/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 51452 (\N{HANGUL SYLLABLE JU}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/home/beomdo/박범도/기타/1.GithubRepos/beomdo-park.github.io/.venv/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 52264 (\N{HANGUL SYLLABLE CA}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/home/beomdo/박범도/기타/1.GithubRepos/beomdo-park.github.io/.venv/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 48516 (\N{HANGUL SYLLABLE BUN}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)
-/home/beomdo/박범도/기타/1.GithubRepos/beomdo-park.github.io/.venv/lib/python3.11/site-packages/IPython/core/pylabtools.py:170: UserWarning: Glyph 44592 (\N{HANGUL SYLLABLE GI}) missing from font(s) DejaVu Sans.
-  fig.canvas.print_figure(bytes_io, **kw)</code></pre>
-</div>
 <div class="cell-output cell-output-display">
 <div id="gap-plot" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure">
-<p><img src="index_files/figure-html/gap-plot-output-2.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/gap-plot-output-1.png" class="img-fluid figure-img"></p>
 <figcaption>각 변형의 검증 LER. 가로 점선이 MWPM baseline, 점은 raw.</figcaption>
 </figure>
 </div>
@@ -836,13 +818,13 @@ MWPM LER (val): 1.3000%  (decode_batch 1.2 ms)</code></pre>
 </section>
 <section id="무엇을-알아냈나" class="level2">
 <h2 class="anchored" data-anchor-id="무엇을-알아냈나">6. 무엇을 알아냈나</h2>
-<div id="gap-summary" class="cell" data-execution_count="13">
+<div id="gap-summary" class="cell" data-execution_count="14">
 <div class="cell-output cell-output-stdout">
-<pre><code>v0 LER : 5.3600%  (MWPM 대비 +4.06%p)
-v1 LER : 4.9200%  (MWPM 대비 +3.62%p)
-v2 LER : 4.2400%  (MWPM 대비 +2.94%p)
-v0 → v1 격차 감소: 0.44%p
-v1 → v2 격차 감소: 0.68%p</code></pre>
+<pre><code>v0 LER : 5.0800%  (MWPM 대비 +3.36%p)
+v1 LER : 4.7600%  (MWPM 대비 +3.04%p)
+v2 LER : 4.5200%  (MWPM 대비 +2.80%p)
+v0 → v1 격차 감소: 0.32%p
+v1 → v2 격차 감소: 0.24%p</code></pre>
 </div>
 </div>
 <p>요약하면:</p>

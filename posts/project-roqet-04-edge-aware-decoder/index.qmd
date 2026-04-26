@@ -70,6 +70,37 @@ print(f"torch={torch.__version__}, stim={stim.__version__}, "
 ```
 
 ```{python}
+#| label: matplotlib-font-setup
+#| echo: false
+#| include: false
+#| eval: true
+
+### 포스트의 한글 폰트를 불러오는 코드. 배포 시 보이지 않도록 echo, include: false
+import os
+import sys
+
+font_setup_script_path = "../../scripts/matplotlib_font_setup.py"
+
+try:
+    if os.path.exists(font_setup_script_path):
+        exec(open(font_setup_script_path, encoding='utf-8').read())
+    else:
+        import platform
+        import matplotlib.pyplot as plt
+        if platform.system() == 'Windows':
+            plt.rc('font', family='NanumGothic')
+        elif platform.system() == 'Darwin':
+            plt.rc('font', family='AppleGothic')
+        elif platform.system() == 'Linux':
+            plt.rc('font', family='NanumSquare')
+        plt.rcParams['axes.unicode_minus'] = False
+except Exception as e:
+    print(f"ERROR executing font setup script '{font_setup_script_path}': {e}")
+    import matplotlib.pyplot as plt
+    plt.rcParams['axes.unicode_minus'] = False
+```
+
+```{python}
 #| label: build-circuit
 circuit = stim.Circuit.generated(
     "surface_code:rotated_memory_z",
