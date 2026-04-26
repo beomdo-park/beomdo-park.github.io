@@ -544,8 +544,8 @@ edge weight 분포 : min=3.96, median=5.06, max=6.62</code></pre>
 <span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"raw 논리 오류율  : </span><span class="sc">{</span>observable_flips<span class="sc">.</span>mean()<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Stim 샘플링      : 30,000샷 / 3.3 ms
-Data 객체 생성   : 30,000개 / 0.72 s
-raw 논리 오류율  : 10.2100%</code></pre>
+Data 객체 생성   : 30,000개 / 0.71 s
+raw 논리 오류율  : 10.2300%</code></pre>
 </div>
 </div>
 <p>PyG의 <code>DataLoader</code>는 내부적으로 배치 안의 그래프들을 하나의 큰 disjoint 그래프로 묶어 주므로, 우리는 단일 그래프인 것처럼 forward만 짜면 됩니다.</p>
@@ -660,12 +660,12 @@ raw 논리 오류율  : 10.2100%</code></pre>
 <span id="cb14-28"><a href="#cb14-28" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f"epoch </span><span class="sc">{</span>epoch<span class="sc">:02d}</span><span class="ss"> | train loss </span><span class="sc">{</span>tr_loss<span class="sc">:.4f}</span><span class="ss"> / LER </span><span class="sc">{</span>tr_ler<span class="sc">:.4%}</span><span class="ss">"</span></span>
 <span id="cb14-29"><a href="#cb14-29" aria-hidden="true" tabindex="-1"></a>              <span class="ss">f" | val loss </span><span class="sc">{</span>va_loss<span class="sc">:.4f}</span><span class="ss"> / LER </span><span class="sc">{</span>va_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>epoch 01 | train loss 0.7239 / LER 13.7481% | val loss 0.2947 / LER 9.9000%
-epoch 03 | train loss 0.2618 / LER 10.2444% | val loss 0.2390 / LER 9.9000%
-epoch 06 | train loss 0.1862 / LER 7.7963% | val loss 0.1638 / LER 4.9667%
-epoch 09 | train loss 0.1283 / LER 4.2519% | val loss 0.1248 / LER 4.0000%
-epoch 12 | train loss 0.0947 / LER 2.9593% | val loss 0.1581 / LER 6.0333%
-epoch 15 | train loss 0.0924 / LER 3.0407% | val loss 0.0841 / LER 2.7333%</code></pre>
+<pre><code>epoch 01 | train loss 0.7224 / LER 13.8481% | val loss 0.3100 / LER 10.6000%
+epoch 03 | train loss 0.2645 / LER 10.2222% | val loss 0.2569 / LER 10.4667%
+epoch 06 | train loss 0.1994 / LER 8.3333% | val loss 0.1810 / LER 6.8000%
+epoch 09 | train loss 0.1294 / LER 4.2296% | val loss 0.1220 / LER 3.5667%
+epoch 12 | train loss 0.0959 / LER 3.2074% | val loss 0.0965 / LER 3.1333%
+epoch 15 | train loss 0.0824 / LER 2.5519% | val loss 0.0815 / LER 2.3667%</code></pre>
 </div>
 </div>
 </section>
@@ -725,9 +725,9 @@ epoch 15 | train loss 0.0924 / LER 3.0407% | val loss 0.0841 / LER 2.7333%</code
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"MWPM (PyMatching)        : </span><span class="sc">{</span>mwpm_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TinyGraphDecoder (val)   : </span><span class="sc">{</span>gnn_ler<span class="sc">:.4%}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>raw (디코더 없음)        : 10.2100%
-MWPM (PyMatching)        : 1.6433%
-TinyGraphDecoder (val)   : 2.7333%</code></pre>
+<pre><code>raw (디코더 없음)        : 10.2300%
+MWPM (PyMatching)        : 1.6667%
+TinyGraphDecoder (val)   : 2.3667%</code></pre>
 </div>
 </div>
 <div id="cell-comparison-table" class="cell" data-execution_count="11">
@@ -748,17 +748,17 @@ TinyGraphDecoder (val)   : 2.7333%</code></pre>
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">디코더 없음 (raw)</td>
-<td style="text-align: left;">10.21%</td>
+<td style="text-align: left;">10.23%</td>
 <td style="text-align: left;">신드롬을 그냥 무시한 경우</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">MWPM (PyMatching)</td>
-<td style="text-align: left;">1.64%</td>
+<td style="text-align: left;">1.67%</td>
 <td style="text-align: left;">그래프-알고리즘 baseline</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">TinyGraphDecoder (본 포스트)</td>
-<td style="text-align: left;">2.73%</td>
+<td style="text-align: left;">2.37%</td>
 <td style="text-align: left;">15 epoch, 엣지 피처 미사용</td>
 </tr>
 </tbody>
