@@ -2,54 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://beomdo-park.github.io/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.990Z</lastmod>
+    <lastmod>2026-05-10T09:25:28.786Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/posts/project-abc-05-real-data-analysis/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.996Z</lastmod>
+    <lastmod>2026-05-10T09:25:28.792Z</lastmod>
   </url>
   <url>
-    <loc>https://beomdo-park.github.io/posts/project-abc-03-cnn-baseline/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.994Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/guide-github-01-branch-strategy/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.991Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-roqet-03-detector-graph-gnn/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.997Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-roqet-02-qec-stim-stabilizer/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.997Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-abc-04-model-optimization/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.996Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/assets/profile-summary.html</loc>
-    <lastmod>2026-04-26T18:33:55.300Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-abc-01-data-analysis/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.994Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-roqet-04-edge-aware-decoder/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.997Z</lastmod>
-  </url>
-  <url>
-    <loc>https://beomdo-park.github.io/posts/project-abc-02-time-series-anomaly/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.994Z</lastmod>
+    <loc>https://beomdo-park.github.io/posts/project-roqet-06-dispatch-gate/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.796Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/posts/project-roqet-01-gnn-quantization/index.html</loc>
-    <lastmod>2026-04-26T18:33:12.997Z</lastmod>
+    <lastmod>2026-05-10T09:25:28.792Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-abc-02-time-series-anomaly/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.790Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-roqet-04-edge-aware-decoder/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.793Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-roqet-02-qec-stim-stabilizer/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.792Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-abc-04-model-optimization/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.792Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/assets/profile-summary.html</loc>
+    <lastmod>2026-05-10T09:26:21.882Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-abc-01-data-analysis/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.790Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-roqet-05-predecoder-helpfulness/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.794Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-roqet-03-detector-graph-gnn/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.793Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/guide-github-01-branch-strategy/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.787Z</lastmod>
+  </url>
+  <url>
+    <loc>https://beomdo-park.github.io/posts/project-abc-03-cnn-baseline/index.html</loc>
+    <lastmod>2026-05-10T09:25:28.790Z</lastmod>
   </url>
   <url>
     <loc>https://beomdo-park.github.io/about.html</loc>
-    <lastmod>2026-04-26T18:33:12.969Z</lastmod>
+    <lastmod>2026-05-10T09:25:28.763Z</lastmod>
   </url>
 </urlset>

@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Beomdo Park">
-<meta name="dcterms.date" content="2025-12-02">
-<meta name="description" content="팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.">
+<meta name="dcterms.date" content="2026-05-10">
+<meta name="description" content="5주차에서 드러난 사전 디코더의 손해 영역을 학습으로 흡수하는 58.9k 파라미터 게이트를 설계하고, 분포 외 거리 15/17에서의 자동 회피와 27.7% 호출만으로 MWPM 단독보다 낮은 결합 LER에 도달하는 운용점을 측정합니다.">
 
-<title>[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog</title>
+<title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 6주차 - 작은 게이트가 자동으로 손해 영역을 회피한다 – beomdo’s ML-DL blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,45 +26,10 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -111,19 +76,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
-<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 10, 2026","datePublished":"December 2, 2025","description":"팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.","headline":"[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법","image":"https://beomdo-park.github.io/assets/github-mark.png","keywords":["GitHub"],"url":"https://beomdo-park.github.io"}</script>
+}</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
 
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
+<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 10, 2026","datePublished":"May 10, 2026","description":"5주차에서 드러난 사전 디코더의 손해 영역을 학습으로 흡수하는 58.9k 파라미터 게이트를 설계하고, 분포 외 거리 15/17에서의 자동 회피와 27.7% 호출만으로 MWPM 단독보다 낮은 결합 LER에 도달하는 운용점을 측정합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 6주차 - 작은 게이트가 자동으로 손해 영역을 회피한다","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업QEC"],"url":"https://beomdo-park.github.io"}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법 – beomdo’s ML-DL blog">
-<meta property="og:description" content="팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.">
-<meta property="og:image" content="https://beomdo-park.github.io/assets/github-mark.png">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 6주차 - 작은 게이트가 자동으로 손해 영역을 회피한다 – beomdo’s ML-DL blog">
+<meta property="og:description" content="5주차에서 드러난 사전 디코더의 손해 영역을 학습으로 흡수하는 58.9k 파라미터 게이트를 설계하고, 분포 외 거리 15/17에서의 자동 회피와 27.7% 호출만으로 MWPM 단독보다 낮은 결합 LER에 도달하는 운용점을 측정합니다.">
+<meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-06-dispatch-gate/figs/architecture_compare-1.png">
 <meta property="og:site_name" content="beomdo’s ML-DL blog">
-<meta property="og:image:height" content="560">
-<meta property="og:image:width" content="560">
-<meta property="og:image:alt" content="GitHub Mark">
+<meta property="og:image:height" content="342">
+<meta property="og:image:width" content="1038">
 </head>
 
 <body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
@@ -350,14 +345,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
-      <h1 class="title">[GitHub] Feature 등 브랜치 활용법, 커밋 메시지 작성법</h1>
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 6주차 - 작은 게이트가 자동으로 손해 영역을 회피한다</h1>
                   <div>
         <div class="description">
-          팀 프로젝트에 적용 가능한 Git 브랜치 활용법과 커밋 메시지 작성법을 정리했습니다.
+          5주차에서 드러난 사전 디코더의 손해 영역을 학습으로 흡수하는 58.9k 파라미터 게이트를 설계하고, 분포 외 거리 15/17에서의 자동 회피와 27.7% 호출만으로 MWPM 단독보다 낮은 결합 LER에 도달하는 운용점을 측정합니다.
         </div>
       </div>
                           <div class="quarto-categories">
-                <div class="quarto-category">GitHub</div>
+                <div class="quarto-category">ABC프로젝트멘토링</div>
+                <div class="quarto-category">유클리드소프트</div>
+                <div class="quarto-category">고용노동부</div>
+                <div class="quarto-category">대한상공회의소</div>
+                <div class="quarto-category">미래내일일경험사업</div>
+                <div class="quarto-category">QEC</div>
               </div>
                   </div>
   </div>
@@ -375,7 +375,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">December 2, 2025</p>
+        <p class="date">May 10, 2026</p>
       </div>
     </div>
     
@@ -397,10 +397,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#왜-브랜치를-나눠야-할까" id="toc-왜-브랜치를-나눠야-할까" class="nav-link active" data-scroll-target="#왜-브랜치를-나눠야-할까">왜 브랜치를 나눠야 할까?</a></li>
-  <li><a href="#추천-브랜치-종류" id="toc-추천-브랜치-종류" class="nav-link" data-scroll-target="#추천-브랜치-종류">추천 브랜치 종류</a></li>
-  <li><a href="#간단한-작업-흐름" id="toc-간단한-작업-흐름" class="nav-link" data-scroll-target="#간단한-작업-흐름">간단한 작업 흐름</a></li>
-  <li><a href="#좋은-커밋-메시지-작성하기" id="toc-좋은-커밋-메시지-작성하기" class="nav-link" data-scroll-target="#좋은-커밋-메시지-작성하기">좋은 커밋 메시지 작성하기</a></li>
+  <li><a href="#주차가-남긴-빈-칸" id="toc-주차가-남긴-빈-칸" class="nav-link active" data-scroll-target="#주차가-남긴-빈-칸">1. 5주차가 남긴 빈 칸</a></li>
+  <li><a href="#게이트-설계-한-장" id="toc-게이트-설계-한-장" class="nav-link" data-scroll-target="#게이트-설계-한-장">2. 게이트 설계 한 장</a></li>
+  <li><a href="#호출-정책" id="toc-호출-정책" class="nav-link" data-scroll-target="#호출-정책">3. 호출 정책</a></li>
+  <li><a href="#결과-1-무이득-영역에서의-자동-회피" id="toc-결과-1-무이득-영역에서의-자동-회피" class="nav-link" data-scroll-target="#결과-1-무이득-영역에서의-자동-회피">4. 결과 1: 무이득 영역에서의 자동 회피</a></li>
+  <li><a href="#결과-2-이득-영역에서의-선택적-호출" id="toc-결과-2-이득-영역에서의-선택적-호출" class="nav-link" data-scroll-target="#결과-2-이득-영역에서의-선택적-호출">5. 결과 2: 이득 영역에서의 선택적 호출</a></li>
+  <li><a href="#결과-3-분포-외-거리에서의-일반화" id="toc-결과-3-분포-외-거리에서의-일반화" class="nav-link" data-scroll-target="#결과-3-분포-외-거리에서의-일반화">6. 결과 3: 분포 외 거리에서의 일반화</a></li>
+  <li><a href="#지연-비용을-솔직하게" id="toc-지연-비용을-솔직하게" class="nav-link" data-scroll-target="#지연-비용을-솔직하게">7. 지연 비용을 솔직하게</a></li>
+  <li><a href="#회고-roqet-본-줄기와-사이드-트랙" id="toc-회고-roqet-본-줄기와-사이드-트랙" class="nav-link" data-scroll-target="#회고-roqet-본-줄기와-사이드-트랙">8. 회고: ROQET 본 줄기와 사이드 트랙</a></li>
+  <li><a href="#정리" id="toc-정리" class="nav-link" data-scroll-target="#정리">9. 정리</a></li>
   </ul>
 </nav>
     </div>
@@ -413,130 +418,278 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <blockquote class="blockquote">
-<p>main에 바로 푸시하지 마세요. 팀 프로젝트에서 자주 듣는 말입니다. 왜 그래야 하는지, 또 어떻게 쓰면 협업에 더 도움이 되는지 정리해 봤습니다.</p>
+<p>안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 여섯 번째 기술노트입니다. 지난주는 <em>문제 발견</em> 이었고, 이번 주는 <em>해결책</em> 입니다. 5주차에서 NVIDIA Ising-Decoding의 균일 호출 가정이 거리 13/17에서 통계적으로 깨진다는 사실을 표와 forest plot으로 보였습니다. 이번 주는 그 손해 영역을 <em>학습으로 흡수</em> 하는 58.9k 파라미터 게이트를 설계하고, 분포 외 거리에서의 자동 회피와 운용점 Pareto 곡선까지 정직하게 들여다보겠습니다.</p>
 </blockquote>
-<section id="왜-브랜치를-나눠야-할까" class="level3">
-<h3 class="anchored" data-anchor-id="왜-브랜치를-나눠야-할까">왜 브랜치를 나눠야 할까?</h3>
+<div class="callout callout-style-default callout-tip callout-titled" title="이전 포스트">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>이전 포스트
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <ul>
-<li><strong><code>main</code>은 언제나 실행 가능하게</strong>: 배포용 <code>main</code> 브랜치는 항상 깨끗하게 유지돼야 문제가 생겨도 빠르게 복구할 수 있습니다.</li>
-<li><strong>기능별로 작업해서 충돌 줄이기</strong>: 각자 브랜치를 따로 만들어 작업하면, 충돌이 나더라도 내가 건드린 부분만 집중해서 고치면 됩니다.</li>
-<li><strong>코드 리뷰에 유리</strong>: 브랜치마다 Pull Request(PR)를 만들면 변경 사항을 묶음 단위로 확인할 수 있어 리뷰 및 토론이 훨씬 수월해집니다.</li>
+<li><a href="../../posts/project-roqet-01-gnn-quantization/">1주차 포스트</a> — GNN과 PTQ 개념 정리</li>
+<li><a href="../../posts/project-roqet-02-qec-stim-stabilizer/">2주차 포스트</a> — QEC 기본 동작과 Stim으로 신드롬 데이터 생성</li>
+<li><a href="../../posts/project-roqet-03-detector-graph-gnn/">3주차 포스트</a> — Annotated Detector Graph와 GNN 디코더 첫 학습</li>
+<li><a href="../../posts/project-roqet-04-edge-aware-decoder/">4주차 포스트</a> — 엣지 타입 분리 디코더와 MWPM 격차 측정</li>
+<li><a href="../../posts/project-roqet-05-predecoder-helpfulness/">5주차 포스트</a> — 사전 디코더 호출이 항상 도움일까? 균일 호출 가정의 측정</li>
 </ul>
+</div>
+</div>
+<hr>
+<section id="주차가-남긴-빈-칸" class="level2">
+<h2 class="anchored" data-anchor-id="주차가-남긴-빈-칸">1. 5주차가 남긴 빈 칸</h2>
+<p>지난 회차의 결론을 한 단락으로 압축하면 다음과 같습니다. 거리 5에서는 NN 사전 디코더가 분명히 이득(LER 비율 1.29~1.53), 거리 9에서는 무이득(비율 ≈ 0.98), 거리 13/17에서는 통계적으로 유의한 손해(비율 0.41~0.74)였습니다. 균일 호출은 이 모든 영역에 동일하게 4 µs를 지불하므로 <em>낭비</em> 와 <em>역효과</em> 가 동시에 발생합니다.</p>
+<p>빈 칸은 다음과 같이 정의됩니다. <strong>“손해 영역은 회피하면서 이득 영역에서는 호출을 살리는, 그러면서 단일 샷 지연시간을 늘리지 않는 메커니즘이 필요합니다.”</strong> 추가로 한 가지 제약이 있습니다. 거리 13/<span class="math inline">\(p=6{\times}10^{-3}\)</span> 같은 셀에서는 다시 NN 이득이 회복되므로 <em>(거리, 오류율, 기저)</em> 의 단순 if-else로는 분리되지 않습니다. 결국 <strong>신드롬 텐서 <span class="math inline">\(X\)</span> 자체를 보고</strong> 호출/기각을 결정하는 학습된 분류기가 필요합니다.</p>
+<hr>
 </section>
-<section id="추천-브랜치-종류" class="level3">
-<h3 class="anchored" data-anchor-id="추천-브랜치-종류">추천 브랜치 종류</h3>
-<p>아래는 소규모 팀/대학 팀플에서 쓰기 좋은 브랜치 예시입니다.</p>
+<section id="게이트-설계-한-장" class="level2">
+<h2 class="anchored" data-anchor-id="게이트-설계-한-장">2. 게이트 설계 한 장</h2>
+<div id="fig-arch" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-arch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/architecture_compare-1.png" class="img-fluid figure-img" style="width:92.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-arch-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: 선택적 호출 게이트 파이프라인. 신드롬 <span class="math inline">\(X\)</span>가 사전 디코더 <span class="math inline">\(f_\theta\)</span>와 게이트 <span class="math inline">\(g_\phi\)</span>에 <em>동시에</em> 들어갑니다. 게이트 점수가 임계 <span class="math inline">\(\tau\)</span>를 넘으면 NN 보정된 신드롬이 MWPM으로(실선), 그렇지 않으면 원본 신드롬이 곧바로 MWPM으로(점선) 향합니다.
+</figcaption>
+</figure>
+</div>
+<p>게이트 <span class="math inline">\(g_\phi : \mathbb{R}^{T \times d \times d \times 4} \rightarrow [0, 1]\)</span>의 구조는 다음과 같습니다.</p>
+<ul>
+<li><strong>5층 3차원 합성곱 이진 분류기</strong>, 은닉 폭 32, 합성곱 깊이 3</li>
+<li>적응형 전역 풀링으로 <span class="math inline">\((T, d)\)</span> 의존성 제거 → 학습 시점과 다른 거리/라운드 수에도 <em>동일 가중치</em> 적용 가능</li>
+<li>총 파라미터 <strong>58,881개</strong>, NVIDIA Ising-Decoding (Fast)의 912,772개 대비 <strong>약 1/15</strong></li>
+</ul>
+<p>설계의 핵심은 입력입니다. 게이트는 <em>사전 디코더의 출력</em> <span class="math inline">\(f_\theta(X)\)</span>가 아니라 <strong>신드롬 텐서 <span class="math inline">\(X\)</span> 자체</strong> 를 입력으로 받습니다. 이 결정 한 줄이 단일 샷 지연시간 회계 전체를 바꿉니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="왜 신드롬을 직접 입력으로 받나">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>왜 신드롬을 직접 입력으로 받나
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>게이트가 NN 출력을 봐야 한다면 결정 자체가 NN 호출 <em>후</em> 가능합니다. 이 경우 “NN을 호출하지 않기로 결정한 샷” 도 이미 NN을 한 번 돌린 뒤이므로 NN 회피의 의미가 사라집니다. 신드롬 직접 입력은 게이트와 사전 디코더를 <strong>병렬로 실행</strong> 가능하게 만들어, 게이트 비용이 단일 샷 지연시간에 <em>추가</em> 되지 않게 합니다.</p>
+</div>
+</div>
+<p>학습은 5주차에서 정의한 긍정 기여 라벨 <span class="math inline">\(y_{\mathrm{help}}\)</span>에 대한 이항 교차 엔트로피로 진행했습니다. 학습 분포는 6개 조건 (<span class="math inline">\(d \in \{5, 9, 13\} \times p \in \{3{\times}10^{-3}, 6{\times}10^{-3}\}\)</span>, <span class="math inline">\(Z\)</span> 기저), 조건당 10,000 학습/3,000 검증, AdamW(lr <span class="math inline">\(10^{-3}\)</span>), 배치 128, 12 에폭, 시드 42. 양성 비율은 1.24% — 즉 학습 데이터의 98.76%가 <em>NN을 부르지 않아도 되는 신드롬</em> 입니다. 평가는 학습과 시드를 분리한 조건당 20,000 샷에서 수행했습니다.</p>
+<hr>
+</section>
+<section id="호출-정책" class="level2">
+<h2 class="anchored" data-anchor-id="호출-정책">3. 호출 정책</h2>
+<p>추론 단계의 호출 정책은 임계 <span class="math inline">\(\tau\)</span> 한 줄로 정의됩니다.</p>
+<p><span class="math display">\[
+\pi_\tau(X) = \begin{cases} \hat{\ell}_{\mathrm{NN}}(X) &amp; z_\phi(X) &gt; \tau, \\ \hat{\ell}_{\mathrm{MWPM}}(X) &amp; \text{otherwise}, \end{cases}
+\]</span></p>
+<p>여기서 <span class="math inline">\(z_\phi(X)\)</span>는 게이트의 로짓입니다. 두 극한이 의미를 명확히 해 줍니다. <span class="math inline">\(\tau \to +\infty\)</span> 극한은 모든 샷에서 게이트가 기각하므로 <strong>MWPM 단독</strong> 과 같고, <span class="math inline">\(\tau \to -\infty\)</span> 극한은 모든 샷에서 호출하므로 <strong>NVIDIA의 상시 호출</strong> 과 같습니다. 그 사이의 임계는 LER과 연산량의 균형 곡선, 즉 <strong>Pareto 곡선</strong> 을 그립니다.</p>
+<p>핵심은 게이트가 <em>학습 후</em> 어떤 임계에서도 손해 영역을 호출하지 않는 가중치로 수렴해야 한다는 것입니다. 다음 두 절이 이를 측정으로 확인합니다.</p>
+<hr>
+</section>
+<section id="결과-1-무이득-영역에서의-자동-회피" class="level2">
+<h2 class="anchored" data-anchor-id="결과-1-무이득-영역에서의-자동-회피">4. 결과 1: 무이득 영역에서의 자동 회피</h2>
+<p>거리 9/<span class="math inline">\(p=3{\times}10^{-3}\)</span> 조건은 학습 분포에 <em>포함된</em> 무이득 조건입니다. 균일 호출은 LER 0.00130에 4 µs/샷을 지불합니다. 한편 MWPM 단독 LER은 0.00095입니다. NN을 매번 부르는 것이 LER을 0.00035 늘리면서 비용까지 지불하는 셈입니다.</p>
+<p>학습된 게이트의 동작은 다음과 같습니다.</p>
+<ul>
+<li>게이트 로짓 분포가 <em>모든 양의 임계 아래</em> 에 놓입니다.</li>
+<li>결과적으로 모든 임계에서 <strong>호출률 0%</strong> 로 유지됩니다.</li>
+<li>결합 LER은 MWPM 단독 수준인 0.00095로 회복되고, 신경망 비용은 100% 절약됩니다.</li>
+</ul>
+<p>별도 if-else 규칙을 넣은 게 아닙니다. 학습이 끝난 시점의 게이트 가중치 자체가 이 영역의 신드롬에 대해 모두 음수 로짓을 출력합니다. 즉 <em>“여기서는 NN을 부르지 마”</em> 가 데이터로부터 학습된 결과입니다. 그리고 이 회피는 비학습 밀도 기준선(=양성 비율과 동일한 호출률을 임의 표본에 적용)에 비해 약 <strong>4배 더 선택적</strong> 입니다.</p>
+<hr>
+</section>
+<section id="결과-2-이득-영역에서의-선택적-호출" class="level2">
+<h2 class="anchored" data-anchor-id="결과-2-이득-영역에서의-선택적-호출">5. 결과 2: 이득 영역에서의 선택적 호출</h2>
+<p>거리 5/<span class="math inline">\(p=6{\times}10^{-3}\)</span> 조건은 5주차 표에서 비율 1.29로 NN 이득이 가장 큰 셀 중 하나였습니다. 이 영역에서는 게이트가 <em>기각이 아니라 선택적 호출</em> 모드로 동작해야 합니다.</p>
+<div id="fig-pareto" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pareto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/fig_gate_alt.png" class="img-fluid figure-img" style="width:88.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pareto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: 임계 스윕에 따른 호출률–LER Pareto 곡선. 좌하단 모서리(낮은 호출률, 낮은 LER)가 운용점으로 가장 매력적인 영역입니다.
+</figcaption>
+</figure>
+</div>
+<p>수치를 정리하면 다음과 같습니다.</p>
 <table class="caption-top table">
 <thead>
 <tr class="header">
-<th>브랜치</th>
-<th>용도</th>
-<th>특징</th>
+<th>운용점</th>
+<th>호출률</th>
+<th>결합 LER</th>
+<th>NN 비용</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>main</code></td>
-<td>배포용 최종 코드</td>
-<td>직접 커밋 금지, PR로만 병합</td>
+<td>MWPM 단독 (<span class="math inline">\(\tau \to +\infty\)</span>)</td>
+<td>0%</td>
+<td>0.0746</td>
+<td>0</td>
 </tr>
 <tr class="even">
-<td><code>dev</code></td>
-<td>개발용 통합 코드</td>
-<td><code>feature/</code> 브랜치들을 합치는 기준 브랜치</td>
+<td>게이트, <span class="math inline">\(\tau = -1.0\)</span></td>
+<td>22.8%</td>
+<td>0.0654</td>
+<td>≈ 23%</td>
 </tr>
 <tr class="odd">
-<td><code>feature/*</code></td>
-<td>기능 개발</td>
-<td><code>dev</code>에서 브랜치를 만들어 작업</td>
+<td>게이트, <span class="math inline">\(\tau = -2.0\)</span></td>
+<td>27.7%</td>
+<td>0.0641</td>
+<td>≈ 28%</td>
 </tr>
 <tr class="even">
-<td><code>hotfix/*</code></td>
-<td>긴급 버그 수정</td>
-<td><code>main</code>에서 바로 브랜치를 따서 수정</td>
+<td>상시 호출 (<span class="math inline">\(\tau \to -\infty\)</span>)</td>
+<td>100%</td>
+<td>0.0563</td>
+<td>100%</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="간단한-작업-흐름" class="level3">
-<h3 class="anchored" data-anchor-id="간단한-작업-흐름">간단한 작업 흐름</h3>
-<p>실제로는 <code>dev</code>를 기준으로 작업하는 경우가 많지만, 여기서는 예시를 위해 <code>main</code> 기준으로 보여줍니다.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. 최신 코드로 업데이트</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout main</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> pull origin main</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. 기능 브랜치 만들기</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> checkout <span class="at">-b</span> feature/12-login-ui</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. 코드 짜고 커밋</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> add .</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> commit <span class="at">-m</span> <span class="st">"feat: 로그인 폼 UI 구현"</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. 내 브랜치에 푸시</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> push <span class="at">-u</span> origin feature/12-login-ui</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>팀이 <code>dev</code> 브랜치를 운영한다면, 위 예시에서 <code>main</code>을 <code>dev</code>로 바꿔서 사용하면 됩니다.</p>
-</section>
-<section id="좋은-커밋-메시지-작성하기" class="level3">
-<h3 class="anchored" data-anchor-id="좋은-커밋-메시지-작성하기">좋은 커밋 메시지 작성하기</h3>
-<p>커밋 메시지는 “나중에 이력이 이해되느냐”를 좌우하는 중요한 기록입니다.<br>
-팀원들이 변경 내용을 빠르게 파악할 수 있도록, 아래처럼 최소한의 규칙을 맞춰 두는 걸 추천합니다.</p>
-<section id="커밋-유형type-명시" class="level4">
-<h4 class="anchored" data-anchor-id="커밋-유형type-명시">1. 커밋 유형(Type) 명시</h4>
-<table class="caption-top table">
+<p>핵심 한 줄: <strong>27.7% 호출만으로 결합 LER이 MWPM 단독(<span class="math inline">\(0.0746\)</span>)보다 낮은 <span class="math inline">\(0.0641\)</span>에 도달합니다.</strong> 신경망 호출 비용은 약 72% 감소합니다. 상시 호출의 LER 0.0563에는 못 미치지만, <em>Pareto 우위</em> 운용점이 분명히 형성됩니다. “가장 낮은 LER” 만을 목표로 한다면 상시 호출이 여전히 최적이지만, “한 µs라도 신경망 호출을 줄이고 싶다” 는 운용 제약 아래에서는 게이트가 명확한 선택지가 됩니다.</p>
+<div id="cell-pareto-points" class="cell" data-execution_count="1">
+<div id="pareto-points" class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
 <thead>
 <tr class="header">
-<th>유형</th>
-<th>설명</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">운용점</th>
+<th data-quarto-table-cell-role="th">호출률(%)</th>
+<th data-quarto-table-cell-role="th">결합 LER</th>
+<th data-quarto-table-cell-role="th">NN 비용 절감(%)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>feat</code></td>
-<td>새로운 기능 추가</td>
+<th data-quarto-table-cell-role="th">0</th>
+<td>MWPM 단독</td>
+<td>0.0</td>
+<td>0.0746</td>
+<td>100.0</td>
 </tr>
 <tr class="even">
-<td><code>fix</code></td>
-<td>버그 수정</td>
+<th data-quarto-table-cell-role="th">1</th>
+<td>게이트 τ=-1.0</td>
+<td>22.8</td>
+<td>0.0654</td>
+<td>77.2</td>
 </tr>
 <tr class="odd">
-<td><code>docs</code></td>
-<td>문서만 수정</td>
+<th data-quarto-table-cell-role="th">2</th>
+<td>게이트 τ=-2.0</td>
+<td>27.7</td>
+<td>0.0641</td>
+<td>72.3</td>
 </tr>
 <tr class="even">
-<td><code>style</code></td>
-<td>코드 포맷팅, 세미콜론 누락 등 (동작 변화 없음)</td>
-</tr>
-<tr class="odd">
-<td><code>refactor</code></td>
-<td>기능 변화 없이 코드 구조 개선</td>
-</tr>
-<tr class="even">
-<td><code>test</code></td>
-<td>테스트 코드 추가/수정</td>
-</tr>
-<tr class="odd">
-<td><code>chore</code></td>
-<td>빌드/배포 설정, 패키지 관리 등 (프로덕션 코드 변화 없음)</td>
+<th data-quarto-table-cell-role="th">3</th>
+<td>상시 호출</td>
+<td>100.0</td>
+<td>0.0563</td>
+<td>0.0</td>
 </tr>
 </tbody>
 </table>
+
+</div>
+</div>
+</div>
+<hr>
 </section>
-<section id="제목과-본문-분리" class="level4">
-<h4 class="anchored" data-anchor-id="제목과-본문-분리">2. 제목과 본문 분리</h4>
+<section id="결과-3-분포-외-거리에서의-일반화" class="level2">
+<h2 class="anchored" data-anchor-id="결과-3-분포-외-거리에서의-일반화">6. 결과 3: 분포 외 거리에서의 일반화</h2>
+<p>이번 회차에서 가장 인상적인 결과입니다. 게이트는 학습 분포 <span class="math inline">\(d \in \{5, 9, 13\}\)</span>만으로 학습되었습니다. 거리 15와 17 조건(<span class="math inline">\(p=3{\times}10^{-3}\)</span>, 두 기저, 조건당 50,000 샷)은 학습에 <em>한 번도 등장하지 않은</em> 거리입니다. 5주차에서 확인했듯 이 영역은 LER 비율 0.41~0.61로 손해가 가장 깊은 영역이기도 합니다.</p>
+<p>같은 가중치를 적용한 결과는 다음과 같습니다.</p>
 <ul>
-<li><strong>제목</strong>: 50자 이내, 가능한 한 “무엇을 했는지” 한 줄로 요약합니다. (예: <code>feat: 로그인 기능 추가</code>)</li>
-<li><strong>본문</strong>: 필요시 작성하고, 구현의 세부 사항보다는 “무엇을, 왜 바꿨는지”에 초점을 맞춰 적어야 합니다.</li>
+<li>두 거리 모두에서 게이트 로짓 분포가 <strong>−3 이하</strong> 에 놓입니다.</li>
+<li>임계 <span class="math inline">\(\tau \in [-3, 1]\)</span>의 어느 점에서도 <strong>호출률 0%</strong> 로 유지됩니다.</li>
+<li>따라서 손해 영역의 LER 증가가 <em>자동으로</em> 회피됩니다.</li>
 </ul>
-<p>예시:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">feat:</span> 로그인 폼 UI 구현</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 이메일/비밀번호 입력 필드 추가</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 폼 유효성 검사 로직 적용</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">-</span> 잘못된 입력 시 에러 메시지 표시</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>이 정도 규칙만 팀에서 맞춰도, 나중에 <code>git log</code>를 보면서 “이 커밋이 뭘 바꾼 건지”를 훨씬 덜 고생하면서 파악할 수 있습니다.</p>
-
-
+<p>이게 학습된 일반화의 신기한 부분입니다. 학습 데이터에는 거리 15/17이 없으므로 게이트는 “이 거리에서는 NN을 쓰지 마” 라고 <em>명시적으로</em> 배운 적이 없습니다. 그럼에도 학습된 가중치가 “낮은 양성 비율” 패턴을 신드롬 텐서로부터 일반화하면서, 학습 분포 밖의 손해 영역까지 함께 기각합니다. 즉 <em>“NN이 도움 되는 신드롬은 어떻게 생겼는가”</em> 를 게이트가 충분히 좁게 학습한 결과, 그 외 모든 신드롬을 자연스럽게 회피하는 형태로 수렴한 것입니다.</p>
+<p>이 결과의 운용적 함의는 분명합니다. 표면 부호는 거리를 늘려가며 운용되므로, 학습 시점의 거리 분포가 향후 운용 거리 분포의 <em>부분 집합</em> 일 가능성이 높습니다. 게이트가 이 외삽 영역에서 안전 측으로 동작한다는 사실은, 분포 외 환경에서 신경망이 잠재적으로 위험 요인이 되는 운용 시나리오에서 <em>기본 안전망</em> 역할을 할 수 있음을 시사합니다.</p>
+<hr>
 </section>
+<section id="지연-비용을-솔직하게" class="level2">
+<h2 class="anchored" data-anchor-id="지연-비용을-솔직하게">7. 지연 비용을 솔직하게</h2>
+<div id="fig-latency" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-latency-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="figs/latency_comparison-1.png" class="img-fluid figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-latency-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: 게이트가 추가될 때의 지연 비용 회계. 배치 평균과 단일 샷 지연시간을 분리해 표시합니다.
+</figcaption>
+</figure>
+</div>
+<p>게이트의 비용도 정직하게 적어야 합니다. RTX 5090 FP16, 배치 256, 거리 5, <span class="math inline">\(T=9\)</span> 환경에서 측정한 결과:</p>
+<ul>
+<li><strong>게이트 자체 비용</strong>: 한 샷당 0.67 µs</li>
+<li><strong>호출률 5% 수준의 무이득 영역에서 배치 평균 비용</strong>: 0.87 µs</li>
+<li><strong>호출이 결정된 샷의 단일 지연시간</strong>: 4.73 µs</li>
+</ul>
+<p>배치 평균 관점에서는 명확한 이득입니다. 무이득 영역에서 4 µs를 100% 절약하면서 게이트 비용 0.87 µs만 더하면, 순 절감이 약 3 µs 수준입니다. 다만 <em>단일 샷 마감 보장</em> 관점에서는 4.73 µs가 1 µs 사이클 한계를 초과하므로, 호출 샷의 마감 보장은 게이트만으로는 해결되지 않습니다. 본 회차는 이 한계를 <em>기록</em> 하는 데 그치고, speculative execution 같은 추가 파이프라인 설계는 향후 과제로 남깁니다.</p>
+<hr>
+</section>
+<section id="회고-roqet-본-줄기와-사이드-트랙" class="level2">
+<h2 class="anchored" data-anchor-id="회고-roqet-본-줄기와-사이드-트랙">8. 회고: ROQET 본 줄기와 사이드 트랙</h2>
+<p>이번 5/6주차는 같은 QEC 도메인이지만 ROQET 본 줄기(GNN 디코더 vs MWPM)와는 다른 <em>사이드 트랙</em> 입니다. 본 줄기는 <em>디코더 자체</em> 를 신경망으로 대체해 MWPM이 잡지 못하는 정보를 잡으려는 방향이고, 사이드 트랙은 <em>기존 신경망 사전 디코더의 운용 정책</em> 을 학습된 게이트로 흡수하려는 방향입니다. 두 줄기는 서로를 대체하지 않고 보완합니다.</p>
+<p>7주차부터는 4주차 마지막에 약속드린 본 줄기 — <em>상관 잡음</em> 또는 <em>soft 신드롬</em> 으로 GNN이 우위를 가질 수 있는 regime을 만드는 실험 — 으로 돌아갑니다. 이번 회차의 게이트가 이미 학습된 신경망의 <em>호출 시점</em> 을 다뤘다면, 7주차는 신경망 <em>디코더 자체</em> 가 MWPM을 이길 수 있는 입력 조건을 만드는 작업이 됩니다.</p>
+<hr>
+</section>
+<section id="정리" class="level2">
+<h2 class="anchored" data-anchor-id="정리">9. 정리</h2>
+<ul>
+<li><strong>게이트 설계</strong>: 5층 3D Conv, 58,881 파라미터, 신드롬 직접 입력 → 사전 디코더와 병렬 실행, 단일 샷 지연시간에 추가 비용 0.</li>
+<li><strong>무이득 영역(거리 9)</strong>: 호출률 0%로 자동 회피, MWPM 단독 LER 회복, 4 µs/샷 100% 절약.</li>
+<li><strong>이득 영역(거리 5)</strong>: 27.7% 호출만으로 결합 LER이 MWPM 단독보다 낮은 운용점 형성, NN 비용 약 72% 절감.</li>
+<li><strong>분포 외 일반화(거리 15/17)</strong>: 학습에 등장하지 않은 거리에서도 호출률 0% 유지, 손해 영역 자동 회피.</li>
+<li><strong>지연 회계</strong>: 배치 평균 0.87 µs(이득), 단일 샷 4.73 µs(1 µs 한계 초과 → 향후 과제).</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="다음 주차 예고">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>다음 주차 예고
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>7주차에서는 ROQET 본 줄기로 복귀합니다. 4주차 마지막에 약속드린 <em>상관 잡음 추가</em> 또는 <em>soft 신드롬</em> 셋업 중 하나를 우선 도입해, MWPM이 표현하지 못하는 정보가 들어왔을 때 GNN 디코더의 격차가 어떻게 변하는지 측정해 보겠습니다.</p>
+</div>
+</div>
+<hr>
+<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>참고 문헌
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Chamberland, C. et al.&nbsp;(2026). <em>Ising-Decoding: A Hardware-Aware Neural Pre-Decoder for Surface Codes.</em> NVIDIA Research.</li>
+<li>Bausch, J. et al.&nbsp;(2024). <em>Learning to decode the surface code with a recurrent, transformer-based neural network.</em> Nature.</li>
+<li>Higgott, O. &amp; Gidney, C. (2025). <em>PyMatching v2: Sparse Blossom for fast minimum-weight perfect matching.</em> <a href="https://github.com/oscarhiggott/PyMatching">github.com/oscarhiggott/PyMatching</a></li>
+<li>Gidney, C. (2021). <em>Stim: a fast stabilizer circuit simulator.</em> Quantum 5, 497.</li>
+<li>Fowler, A. G. et al.&nbsp;(2012). <em>Surface codes: Towards practical large-scale quantum computation.</em> Phys. Rev.&nbsp;A 86, 032324.</li>
+</ul>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/project-roqet-06-dispatch-gate/index.html",
+      "/posts/project-roqet-05-predecoder-helpfulness/index.html",
       "/posts/project-roqet-04-edge-aware-decoder/index.html",
       "/posts/project-roqet-03-detector-graph-gnn/index.html",
       "/posts/project-roqet-02-qec-stim-stabilizer/index.html",
