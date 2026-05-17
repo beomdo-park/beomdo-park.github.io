@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2026-05-17">
+<meta name="description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
+
+<title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-8ea72dc5fed832574809a9c94082fbbb.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-45c608602f814da7ec23cb0d3e74b47c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-5c105add7fe5ff08ab0b52673d7b11ba.min.css" rel="prefetch" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
+<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 17, 2026","datePublished":"May 17, 2026","description":"ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업QEC"],"url":"https://beomdo-park.github.io"}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog">
+<meta property="og:description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
+<meta property="og:site_name" content="beomdo's ML-DL blog">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">beomdo’s ML-DL blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-my-tech-stacks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">My Tech Stacks</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-my-tech-stacks">    
+        <li class="dropdown-header">Python</li>
+        <li class="dropdown-header">Machine Learning</li>
+    </ul>
+  </li>
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합</h1>
+                  <div>
+        <div class="description">
+          ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">ABC프로젝트멘토링</div>
+                <div class="quarto-category">유클리드소프트</div>
+                <div class="quarto-category">고용노동부</div>
+                <div class="quarto-category">대한상공회의소</div>
+                <div class="quarto-category">미래내일일경험사업</div>
+                <div class="quarto-category">QEC</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 17, 2026</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">May 17, 2026</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#프로젝트-한눈에-보기" id="toc-프로젝트-한눈에-보기" class="nav-link active" data-scroll-target="#프로젝트-한눈에-보기">1. 프로젝트 한눈에 보기</a></li>
+  <li><a href="#왜-온칩-디코딩인가" id="toc-왜-온칩-디코딩인가" class="nav-link" data-scroll-target="#왜-온칩-디코딩인가">2. 왜 온칩 디코딩인가</a></li>
+  <li><a href="#베이스-모델-qecct" id="toc-베이스-모델-qecct" class="nav-link" data-scroll-target="#베이스-모델-qecct">3. 베이스 모델 — QECCT</a></li>
+  <li><a href="#제안-방법-hybrid-kd-int8-ptq" id="toc-제안-방법-hybrid-kd-int8-ptq" class="nav-link" data-scroll-target="#제안-방법-hybrid-kd-int8-ptq">4. 제안 방법 — Hybrid KD + INT8 PTQ</a>
+  <ul class="collapse">
+  <li><a href="#hybrid-지식-증류" id="toc-hybrid-지식-증류" class="nav-link" data-scroll-target="#hybrid-지식-증류">4.1 Hybrid 지식 증류</a></li>
+  <li><a href="#int8-ptq" id="toc-int8-ptq" class="nav-link" data-scroll-target="#int8-ptq">4.2 INT8 PTQ</a></li>
+  </ul></li>
+  <li><a href="#실험-설정" id="toc-실험-설정" class="nav-link" data-scroll-target="#실험-설정">5. 실험 설정</a></li>
+  <li><a href="#결과" id="toc-결과" class="nav-link" data-scroll-target="#결과">6. 결과</a>
+  <ul class="collapse">
+  <li><a href="#오류율-ler-ber" id="toc-오류율-ler-ber" class="nav-link" data-scroll-target="#오류율-ler-ber">6.1 오류율 — LER / BER</a></li>
+  <li><a href="#경량화-단계별-자원-절감" id="toc-경량화-단계별-자원-절감" class="nav-link" data-scroll-target="#경량화-단계별-자원-절감">6.2 경량화 단계별 자원 절감</a></li>
+  <li><a href="#fpga-자원-적합성-zynq-7020" id="toc-fpga-자원-적합성-zynq-7020" class="nav-link" data-scroll-target="#fpga-자원-적합성-zynq-7020">6.3 FPGA 자원 적합성 — Zynq-7020</a></li>
+  <li><a href="#digital-twin-데모-목표-달성" id="toc-digital-twin-데모-목표-달성" class="nav-link" data-scroll-target="#digital-twin-데모-목표-달성">6.4 Digital Twin 데모 · 목표 달성</a></li>
+  </ul></li>
+  <li><a href="#결론-및-한계-향후-계획" id="toc-결론-및-한계-향후-계획" class="nav-link" data-scroll-target="#결론-및-한계-향후-계획">7. 결론 및 한계, 향후 계획</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
+
+
+
+
+<blockquote class="blockquote">
+<p>안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 일곱 번째이자 <strong>마지막 기술노트</strong>입니다. 내일(5/18) 최종 결과물 발표회를 앞두고, 7주에 걸쳐 진행한 프로젝트의 최종 산출물을 한 편으로 정리합니다. 4~6주차에는 사전 디코더 선택적 호출(dispatch gate)이라는 곁가지 실험을 다뤘지만, 이번 회차는 그 경로와 독립적으로 프로젝트의 <strong>최종 결과물</strong>인 <em>엣지 환경용 경량 QEC 디코더 파이프라인</em>과 이를 온칩에 올리기 위한 <em>SoC 설계 적합성</em>에 초점을 맞춥니다.</p>
+</blockquote>
+<div class="callout callout-style-default callout-tip callout-titled" title="이전 포스트">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+이전 포스트
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><a href="../../posts/project-roqet-01-gnn-quantization/">1주차 포스트</a> — GNN과 PTQ 개념 정리</li>
+<li><a href="../../posts/project-roqet-02-qec-stim-stabilizer/">2주차 포스트</a> — QEC 기본 동작과 Stim으로 신드롬 데이터 생성</li>
+<li><a href="../../posts/project-roqet-03-detector-graph-gnn/">3주차 포스트</a> — Annotated Detector Graph와 GNN 디코더 첫 학습</li>
+<li><a href="../../posts/project-roqet-04-edge-aware-decoder/">4주차 포스트</a> — 엣지 타입 분리 디코더와 MWPM 격차 측정</li>
+<li><a href="../../posts/project-roqet-05-predecoder-helpfulness/">5주차 포스트</a> — 사전 디코더 호출의 균일 가정 검증</li>
+<li><a href="../../posts/project-roqet-06-dispatch-gate/">6주차 포스트</a> — 선택적 호출 게이트와 분포 외 일반화</li>
+</ul>
+</div>
+</div>
+<hr>
+<section id="프로젝트-한눈에-보기" class="level2">
+<h2 class="anchored" data-anchor-id="프로젝트-한눈에-보기">1. 프로젝트 한눈에 보기</h2>
+<ul>
+<li><strong>팀명</strong>: ROQET (Robust On-device Quantum Electronics Technology)</li>
+<li><strong>팀원</strong>: 박범도(팀장) · 박준성 · 장현석 · 장여진</li>
+<li><strong>주제</strong>: 양자 오류 정정(QEC) AI 가속기를 위한 RTL 기반 SoC 설계 및 검증</li>
+<li><strong>최종 산출물</strong>: Transformer 기반 QEC 디코더 QECCT를 Teacher로 둔 <strong>Hybrid 지식 증류(KD) + INT8 Post-Training Quantization(PTQ) 경량화 파이프라인</strong>과, 이를 온칩에서 동작시키기 위한 FPGA 자원 적합성 분석</li>
+</ul>
+<p>핵심 메시지는 한 줄로 요약됩니다. <strong>대규모 환경용으로 설계된 QEC 디코더를, 정확도를 거의 잃지 않고 엣지 디바이스에 올릴 수 있는 크기·속도까지 줄였다</strong>는 것입니다.</p>
+<hr>
+</section>
+<section id="왜-온칩-디코딩인가" class="level2">
+<h2 class="anchored" data-anchor-id="왜-온칩-디코딩인가">2. 왜 온칩 디코딩인가</h2>
+<p>양자 시스템의 단일 물리 큐비트는 노이즈에 취약해 오류가 빈번하게 발생합니다. 이를 보완하기 위해 여러 물리 큐비트를 묶어 논리 큐비트를 구성하고, 큐비트를 직접 측정하면 중첩 상태가 붕괴되므로 패리티 기반의 <strong>신드롬(syndrome) 측정</strong>으로 오류 여부만 읽어냅니다. QEC 디코더는 이 신드롬으로부터 오류 위치를 추정하는데, 이 과정은 초전도 큐비트의 양자 상태가 붕괴되기 전, 즉 <strong>코히런스 시간 1 µs 이내</strong>에 끝나야 합니다.</p>
+<p>문제는 지연 시간입니다. 신드롬을 외부 서버로 보내 정정하면 왕복 지연이 10~100 µs 수준으로, 코히런스 한도를 가볍게 초과합니다. 결국 <strong>칩 안에서 직접 정정(On-Chip)</strong> 하는 길밖에 없고, 이는 디코더가 자원이 제한된 엣지 환경에서 1 µs 안에 추론을 마쳐야 한다는 제약으로 이어집니다. 대부분의 고성능 디코더는 대규모 하드웨어를 가정해 설계되어 있어 이 제약과 정면으로 충돌합니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>디코딩 위치</th>
+<th>정정 경로</th>
+<th>지연 시간</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>외부 서버 전송</td>
+<td>칩 → 서버 → 칩</td>
+<td>10 ~ 100 µs (코히런스 한도 초과)</td>
+</tr>
+<tr class="even">
+<td><strong>온칩 (본 프로젝트)</strong></td>
+<td>칩 내부에서 직접 정정</td>
+<td><strong>0.34 µs (한도 내 완료)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+<section id="베이스-모델-qecct" class="level2">
+<h2 class="anchored" data-anchor-id="베이스-모델-qecct">3. 베이스 모델 — QECCT</h2>
+<p>배경 부호로는 평면 격자 위에서 국소 측정만으로 오류를 검출할 수 있는 <strong>Surface Code</strong>를 사용합니다. 격자 길이 <span class="math inline">\(a\)</span>에 대해 물리 큐비트 <span class="math inline">\(n = a^2\)</span>, 측정기 <span class="math inline">\(n_s = a^2 - k\)</span>를 두어 <span class="math inline">\(k\)</span>개의 논리 큐비트를 보호합니다.</p>
+<p>디코더의 베이스 모델은 위상적 상관 관계를 모델 구조에 반영해 MWPM을 상회하는 LER을 보고한 Transformer 기반 디코더 <strong>QECCT(Quantum Error Correction Code Transformer)</strong>입니다. QECCT는 크게 세 단계로 동작합니다.</p>
+<ol type="1">
+<li><strong>초기 추정 및 임베딩</strong> — 신드롬 <span class="math inline">\(s\)</span>는 축퇴성이 있어 단독 입력 시 추론 부담이 큽니다. 노이즈 추정기 <span class="math inline">\(g_\omega(\cdot)\)</span>로 큐비트 초기값을 만들어 <span class="math inline">\(s\)</span>와 결합한 합성 시퀀스를 학습 가능한 임베딩 행렬과 Hadamard 연산으로 벡터화합니다.</li>
+<li><strong>Masked Self-Attention Transformer</strong> — 패리티 체크 행렬 <span class="math inline">\(H\)</span>로부터 유도된 마스크 <span class="math inline">\(M(H)\)</span>를 어텐션에 더해, 인접하지 않은 큐비트–측정기 쌍의 가중치를 차단합니다. 각 토큰은 인접 토큰의 정보만 흡수하며 <span class="math inline">\(N\)</span>개 블록에 걸쳐 누적됩니다.</li>
+<li><strong>큐비트 오류 위치 출력</strong> — 최종 은닉 상태를 두 FC 층과 Sigmoid를 거쳐 큐비트별 오류 확률 <span class="math inline">\(\hat{\epsilon} \in [0,1]^n\)</span>으로 환원합니다.</li>
+</ol>
+<p>이 QECCT가 강력하지만 무겁다는 점이 출발점입니다. 그대로는 엣지에 올릴 수 없습니다.</p>
+<hr>
+</section>
+<section id="제안-방법-hybrid-kd-int8-ptq" class="level2">
+<h2 class="anchored" data-anchor-id="제안-방법-hybrid-kd-int8-ptq">4. 제안 방법 — Hybrid KD + INT8 PTQ</h2>
+<p>경량화 파이프라인은 두 단계로 구성됩니다.</p>
+<section id="hybrid-지식-증류" class="level3">
+<h3 class="anchored" data-anchor-id="hybrid-지식-증류">4.1 Hybrid 지식 증류</h3>
+<p>Student는 Teacher와 동일한 구조를 유지하되 블록 수 <span class="math inline">\(N\)</span>, 임베딩 차원 <span class="math inline">\(d_{model}\)</span>, head 수를 줄인 축소판입니다. 전체 손실은 세 항의 가중합입니다.</p>
+<p><span class="math display">\[L_{Total} = \alpha_{task} \cdot L_{Task} + \alpha_{re} \cdot L_{re} + \alpha_{attn} \cdot L_{attn}\]</span></p>
+<ul>
+<li><span class="math inline">\(L_{Task}\)</span> — 정답에 정합되도록 유도하는 항으로, BER·노이즈 추정기·LER 손실의 가중합입니다. LER 손실은 논리 연산자에 미분 가능 근사 함수를 적용합니다.</li>
+<li><span class="math inline">\(L_{re}\)</span> — <strong>응답 기반 KD</strong>. Teacher와 Student 출력은 각각 독립적인 이진 분류라 KL 대신 온도 <span class="math inline">\(\tau\)</span>로 평탄화한 logit에 MSE를 적용하고, 그래디언트 감쇠를 <span class="math inline">\(\tau^2\)</span> 계수로 보정합니다.</li>
+<li><span class="math inline">\(L_{attn}\)</span> — <strong>특징 기반 KD</strong>. Teacher의 마지막 블록들과 Student 블록을 1:1로 대응시키고, 차원 불일치는 학습 가능한 선형 프로젝션 <span class="math inline">\(\mathcal{P}\)</span>로 사상합니다. 채널 제곱 평균과 L2 정규화로 추출한 어텐션 맵을 MSE로 정렬합니다.</li>
+</ul>
+<p>학습 초기에는 Student가 Teacher의 표현 공간으로 수렴하기 어려운데, 응답 기반과 특징 기반 KD를 결합한 Hybrid 구성으로 이 한계를 보완합니다. 실제 학습 곡선에서 <span class="math inline">\(L_{Task}\)</span>·<span class="math inline">\(L_{re}\)</span>는 초기에 빠르게 수렴하는 반면, <span class="math inline">\(L_{attn}\)</span>은 전 과정에 걸쳐 두 모델의 표현 공간을 미세 정렬하며 다른 수렴 양상을 보였습니다.</p>
+</section>
+<section id="int8-ptq" class="level3">
+<h3 class="anchored" data-anchor-id="int8-ptq">4.2 INT8 PTQ</h3>
+<p>KD로 구조를 줄인 Student의 가중치는 여전히 FP32 실수입니다. 부동소수점 연산이 제한되고 코히런스 시간 안에 추론을 끝내야 하는 엣지 환경에서는 정수 연산이 사실상 필수입니다. 그래서 학습이 끝난 Student에 INT8 PTQ를 적용합니다.</p>
+<pre class="text"><code>Algorithm 1  INT8 PTQ
+Require: 사전 학습된 Student 모델 S
+Ensure : 양자화된 모델 S_q
+ 1: S_q ← deepcopy(S).eval()
+ 2: for all 학습 가능한 파라미터 텐서 θ ∈ S_q do
+ 3:     Δ ← max(|θ|) / 127
+ 4:     if Δ &gt; 0 then
+ 5:         θ_q ← round(θ / Δ)
+ 6:         θ_q ← clamp(θ_q, -128, 127)
+ 7:     end if
+ 8: end for
+ 9: return S_q</code></pre>
+<p>가중치 분포가 INT8 격자 전체에 펼쳐지도록 스케일 팩터 <span class="math inline">\(\Delta = \max(|\theta|)/127\)</span>를 정의하고, 오버플로우를 막기 위해 정수 범위로 clamp합니다. 검증은 PyTorch Eager Mode의 Fake Quantization으로 수행해 실제 INT8 하드웨어 추론과 수치적으로 근사한 LER·BER을 얻습니다.</p>
+<hr>
+</section>
+</section>
+<section id="실험-설정" class="level2">
+<h2 class="anchored" data-anchor-id="실험-설정">5. 실험 설정</h2>
+<p>Syndrome 측정 자체에 오류가 섞이는 <strong>Faulty Syndrome</strong>을 가정하고, 다음과 같이 설정했습니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>파라미터</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(a, n, n_s, k\)</span></td>
+<td>3, 9, 8, 1</td>
+</tr>
+<tr class="even">
+<td>측정 라운드 <span class="math inline">\(T\)</span></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>노이즈 모델</td>
+<td>Independent bit-flip (<span class="math inline">\(p_{syn} = p_{큐비트}\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(p_{train}\)</span></td>
+<td>[0.005, 0.15]</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(p_{test}\)</span></td>
+<td>{0.01, 0.02, 0.03, 0.05, 0.08, 0.10, 0.12}</td>
+</tr>
+<tr class="even">
+<td>샘플 수</td>
+<td>50,000 / <span class="math inline">\(p\)</span></td>
+</tr>
+<tr class="odd">
+<td>Teacher 구조</td>
+<td><span class="math inline">\(N_T = 6\)</span>, <span class="math inline">\(d_T = 128\)</span>, 8 heads</td>
+</tr>
+<tr class="even">
+<td>Student 구조</td>
+<td><span class="math inline">\(N_{stu} = 2\)</span>, <span class="math inline">\(d_{stu} = 32\)</span>, 4 heads</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\alpha_{task}, \alpha_{re}, \alpha_{attn}\)</span></td>
+<td>0.5, 0.3, 0.2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\lambda_b, \lambda_l, \lambda_g\)</span></td>
+<td>0.5, 0.5, 1.0</td>
+</tr>
+<tr class="odd">
+<td>온도 <span class="math inline">\(\tau\)</span></td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+<p>17개 공간 토큰 그래프의 직경은 3 hop입니다. Teacher는 pooling 전후 각 3블록으로 격자 전체를 훑는 반면, Student는 각 1 hop의 국소 통합만 수행하는 최소 규모이며 부족한 context를 Hybrid KD로 메웁니다.</p>
+<hr>
+</section>
+<section id="결과" class="level2">
+<h2 class="anchored" data-anchor-id="결과">6. 결과</h2>
+<section id="오류율-ler-ber" class="level3">
+<h3 class="anchored" data-anchor-id="오류율-ler-ber">6.1 오류율 — LER / BER</h3>
+<p><span class="math inline">\(p_{test} = 0.12\)</span> 기준 핵심 결과입니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>디코더</th>
+<th>LER</th>
+<th>BER</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>전통 알고리즘 (Union-Find · MWPM)</td>
+<td>7.0%</td>
+<td>7.20%</td>
+<td>특정 노이즈 모델 가정</td>
+</tr>
+<tr class="even">
+<td><strong>Ours (KD + INT8 PTQ, 26.7 KB)</strong></td>
+<td><strong>≈ 0.9%</strong></td>
+<td><strong>3.54%</strong></td>
+<td>경량화 후에도 우위</td>
+</tr>
+</tbody>
+</table>
+<p>경량화한 Ours가 LER·BER 모두 전통 알고리즘 기반 디코더를 앞섭니다. LER은 Teacher와 0.001 미만의 오차로 근접했고, BER도 약 0.01 차이로 유지됐습니다. KD 없이 동일 구조로 학습한 Scratch는 LER 축퇴성 때문에 LER만 비슷해 보일 뿐, BER에서 Ours보다 약 0.02 뒤처져 Student가 KD로 Teacher의 어텐션을 효과적으로 흡수했음을 보여줍니다.</p>
+</section>
+<section id="경량화-단계별-자원-절감" class="level3">
+<h3 class="anchored" data-anchor-id="경량화-단계별-자원-절감">6.2 경량화 단계별 자원 절감</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>QECCT(Teacher)</th>
+<th>KD(Only)</th>
+<th><strong>Ours</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>가중치 정밀도</td>
+<td>FP32</td>
+<td>FP32</td>
+<td><strong>INT8</strong></td>
+</tr>
+<tr class="even">
+<td>파라미터 수 (K)</td>
+<td>1,193</td>
+<td>26.7</td>
+<td><strong>26.7</strong></td>
+</tr>
+<tr class="odd">
+<td>모델 크기 (KB)</td>
+<td>4,772</td>
+<td>106.8</td>
+<td><strong>26.7</strong></td>
+</tr>
+<tr class="even">
+<td>추론 시간 (µs)</td>
+<td>13.52</td>
+<td>0.68</td>
+<td><strong>0.34</strong></td>
+</tr>
+</tbody>
+</table>
+<p>KD만으로 파라미터를 약 97.8% 줄이고, INT8 양자화로 모델 크기를 KD 단독 대비 추가로 1/4 수준까지 압축해 <strong>최종 26.7 KB</strong>(Teacher 대비 약 99.4% 절감)에 도달했습니다. 추론 시간은 Teacher의 13.52 µs에서 0.34 µs로 97.5% 단축되어, 코히런스 1 µs 한도 대비 약 0.66 µs의 여유를 확보했습니다.</p>
+</section>
+<section id="fpga-자원-적합성-zynq-7020" class="level3">
+<h3 class="anchored" data-anchor-id="fpga-자원-적합성-zynq-7020">6.3 FPGA 자원 적합성 — Zynq-7020</h3>
+<p>26.7 KB·0.34 µs라는 수치가 실제 보드에 올라갈 수 있는지 점검했습니다. 선정 보드는 <strong>Xilinx XC7Z020 (PYNQ-Z2)</strong>입니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>요구 사항</th>
+<th>근거</th>
+<th>Zynq-7020 제공</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>INT8 MAC 병렬화</td>
+<td>Masked Self-Attention의 Q·K·V 곱 + Softmax</td>
+<td>DSP48 슬라이스 220</td>
+</tr>
+<tr class="even">
+<td>가중치 온칩 상주</td>
+<td>26.7 KB 모델 전체를 외부 RAM 없이</td>
+<td>Block RAM 630 KB</td>
+</tr>
+<tr class="odd">
+<td>신드롬 I/O · 제어</td>
+<td>측정 데이터 수신 · 정정 명령 송출</td>
+<td>ARM Cortex-A9 ×2</td>
+</tr>
+<tr class="even">
+<td>엣지 저전력 동작</td>
+<td>냉각 인접 배치 가능한 무팬 보드</td>
+<td>≈ 2 W (팬리스), 85K LUT, USD 249</td>
+</tr>
+</tbody>
+</table>
+<p>모델이 BRAM 안에 통째로 들어가고, DSP 슬라이스로 INT8 MAC를 병렬 처리하며, ARM 코어가 신드롬 I/O와 제어를 맡는 구성으로 온칩 디코딩 SoC의 자원 요건이 충족됨을 확인했습니다.</p>
+</section>
+<section id="digital-twin-데모-목표-달성" class="level3">
+<h3 class="anchored" data-anchor-id="digital-twin-데모-목표-달성">6.4 Digital Twin 데모 · 목표 달성</h3>
+<p>소프트웨어 Digital-Twin 환경에서 신드롬 입력 → 디코더 추론 → 오류 정정의 전 과정을 재현해, 위 수치가 단일 지표가 아니라 디코딩 파이프라인 전체에서 일관되게 성립함을 시연했습니다. 프로젝트 초기 목표였던 <em>코히런스 시간 내 온칩 추론</em>, <em>엣지 자원 내 상주</em>, <em>전통 알고리즘 대비 정확도 우위</em>를 모두 달성했습니다.</p>
+<hr>
+</section>
+</section>
+<section id="결론-및-한계-향후-계획" class="level2">
+<h2 class="anchored" data-anchor-id="결론-및-한계-향후-계획">7. 결론 및 한계, 향후 계획</h2>
+<p>대규모 환경용 QEC 디코더 QECCT를 Teacher로 두고 Hybrid KD와 INT8 PTQ를 결합해, <strong>모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER 0.001 미만·BER 약 0.01 수준의 차이로 디코딩 성능을 유지</strong>했습니다. KD를 통한 표현 공간 전이와 PTQ를 통한 가중치 축소가 상보적으로 작동할 때, 정확도를 지킨 채 경량화가 가능함을 확인한 것이 핵심 성과입니다.</p>
+<p>한계도 분명합니다. 실험 격자 길이가 <span class="math inline">\(a=3\)</span>이라 격자 확장에 따른 어텐션 마스크 희소도 변화와 KD 전이 효율의 일반화 검증이 부족하고, 결과가 소프트웨어 시뮬레이션이라는 점도 남는 과제입니다. 향후에는 <span class="math inline">\(a \ge 5\)</span> 격자에서 FPGA에 직접 합성·실장해 실측 검증을 수행할 계획입니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="결과물 및 발표 자료">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+결과물 및 발표 자료
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>본 프로젝트의 최종 발표는 <em>2기 ROQET 발표자료</em>(QEC AI 가속기를 위한 RTL 기반 SoC 설계 및 검증)로 진행합니다.</li>
+<li>경량화 파이프라인의 상세 설계는 별도 논문 <em>「엣지 환경에서의 QEC를 위한 Hybrid 지식 증류 기반의 PTQ 경량화 파이프라인 설계」</em>(장현석 · 박준성 · 박범도 · 정훈 · 허태욱 · 이상금)에 정리되어 있으며, 학회 제출은 팀원 장현석이 담당합니다.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+참고 문헌
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Battistel, F. et al.&nbsp;(2023). <em>Real-time decoding for fault-tolerant quantum computing: progress, challenges and outlook.</em> Nano Futures.</li>
+<li>Fowler, A. G. et al.&nbsp;(2012). <em>Surface codes: Towards practical large-scale quantum computation.</em> Phys. Rev.&nbsp;A 86, 032324.</li>
+<li>Higgott, O. (2022). <em>PyMatching: A Python package for decoding quantum codes with minimum-weight perfect matching.</em> ACM Trans. Quantum Comput.</li>
+<li>Choukroun, Y. &amp; Wolf, L. (2024). <em>Deep quantum error correction.</em> AAAI.</li>
+<li>Hinton, G. et al.&nbsp;(2015). <em>Distilling the knowledge in a neural network.</em> arXiv:1503.02531.</li>
+<li>Zagoruyko, S. &amp; Komodakis, N. (2017). <em>Paying more attention to attention: Improving the performance of CNNs via attention transfer.</em> ICLR.</li>
+<li>Yao, Z. et al.&nbsp;(2022). <em>ZeroQuant: Efficient and affordable post-training quantization for large-scale transformers.</em> NeurIPS.</li>
+</ul>
+</div>
+</div>
+<hr>
+<p>7주에 걸친 ABC 프로젝트 멘토링 2기 ROQET 팀의 기술노트는 이 글로 마무리합니다. 양자 오류 정정이라는 낯선 주제에서 출발해, GNN·Stim·디텍터 그래프·사전 디코더 게이트를 거쳐, 결국 <em>엣지에서 1 µs 안에 도는 26.7 KB 디코더</em>라는 손에 잡히는 결과물까지 닿았습니다. 함께해 주신 멘토님과 팀원들께 감사드립니다.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+    const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+    const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+    let newTheme = '';
+    if(darkModeDefault) {
+      newTheme = isAlternate ? baseTheme : alternateTheme;
+    } else {
+      newTheme = isAlternate ? alternateTheme : baseTheme;
+    }
+    const changeGiscusTheme = () => {
+      // From: https://github.com/giscus/giscus/issues/336
+      const sendMessage = (message) => {
+        const iframe = document.querySelector('iframe.giscus-frame');
+        if (!iframe) return;
+        iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+      }
+      sendMessage({
+        setConfig: {
+          theme: newTheme
+        }
+      });
+    }
+    const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+    if (isGiscussLoaded) {
+      changeGiscusTheme();
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  const darkModeDefault = false;
+  let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+    toggleGiscusIfUsed(toAlternate, darkModeDefault);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/beomdo-park\.github\.io");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2025, Beomdo-Park. Powered by Quarto.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://beomdo-park.github.io/sitemap.xml">
+<p>Sitemap</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
