@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Beomdo Park">
-<meta name="dcterms.date" content="2026-04-06">
-<meta name="description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
+<meta name="dcterms.date" content="2026-05-17">
+<meta name="description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
 
-<title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog</title>
+<title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -78,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 17, 2026","datePublished":"April 6, 2026","description":"GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 1주차 - GNN과 Post-Training Quantization 개요","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업PyTorch"],"url":"https://beomdo-park.github.io"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 17, 2026","datePublished":"May 17, 2026","description":"ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업QEC"],"url":"https://beomdo-park.github.io"}</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -111,8 +111,8 @@ window.Quarto = {
 </script>
 
 <link rel="stylesheet" href="../../styles.css">
-<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 1주차 - GNN과 Post-Training Quantization 개요 – beomdo’s ML-DL blog">
-<meta property="og:description" content="GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.">
+<meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog">
+<meta property="og:description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
 <meta property="og:site_name" content="beomdo’s ML-DL blog">
 </head>
 
@@ -340,10 +340,10 @@ window.Quarto = {
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-left">
-      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 1주차 - GNN과 Post-Training Quantization 개요</h1>
+      <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합</h1>
                   <div>
         <div class="description">
-          GNN 기반 양자 오류 정정 디코더 프로젝트의 방법론인 Graph Neural Network와 Post-Training Quantization의 개념을 정리합니다.
+          ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -352,7 +352,7 @@ window.Quarto = {
                 <div class="quarto-category">고용노동부</div>
                 <div class="quarto-category">대한상공회의소</div>
                 <div class="quarto-category">미래내일일경험사업</div>
-                <div class="quarto-category">PyTorch</div>
+                <div class="quarto-category">QEC</div>
               </div>
                   </div>
   </div>
@@ -370,7 +370,7 @@ window.Quarto = {
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">April 6, 2026</p>
+        <p class="date">May 17, 2026</p>
       </div>
     </div>
     
@@ -392,22 +392,23 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#프로젝트-배경" id="toc-프로젝트-배경" class="nav-link active" data-scroll-target="#프로젝트-배경">프로젝트 배경</a></li>
-  <li><a href="#graph-neural-network-gnn" id="toc-graph-neural-network-gnn" class="nav-link" data-scroll-target="#graph-neural-network-gnn">1. Graph Neural Network (GNN)</a>
+  <li><a href="#프로젝트-한눈에-보기" id="toc-프로젝트-한눈에-보기" class="nav-link active" data-scroll-target="#프로젝트-한눈에-보기">1. 프로젝트 한눈에 보기</a></li>
+  <li><a href="#왜-온칩-디코딩인가" id="toc-왜-온칩-디코딩인가" class="nav-link" data-scroll-target="#왜-온칩-디코딩인가">2. 왜 온칩 디코딩인가</a></li>
+  <li><a href="#베이스-모델-qecct" id="toc-베이스-모델-qecct" class="nav-link" data-scroll-target="#베이스-모델-qecct">3. 베이스 모델 — QECCT</a></li>
+  <li><a href="#제안-방법-hybrid-kd-int8-ptq" id="toc-제안-방법-hybrid-kd-int8-ptq" class="nav-link" data-scroll-target="#제안-방법-hybrid-kd-int8-ptq">4. 제안 방법 — Hybrid KD + INT8 PTQ</a>
   <ul class="collapse">
-  <li><a href="#gnn이란" id="toc-gnn이란" class="nav-link" data-scroll-target="#gnn이란">1-1. GNN이란?</a></li>
-  <li><a href="#메시지-패싱-message-passing" id="toc-메시지-패싱-message-passing" class="nav-link" data-scroll-target="#메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</a></li>
-  <li><a href="#graphconv-레이어" id="toc-graphconv-레이어" class="nav-link" data-scroll-target="#graphconv-레이어">1-3. GraphConv 레이어</a></li>
-  <li><a href="#프로젝트에서의-gnn-아키텍처" id="toc-프로젝트에서의-gnn-아키텍처" class="nav-link" data-scroll-target="#프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</a></li>
+  <li><a href="#hybrid-지식-증류" id="toc-hybrid-지식-증류" class="nav-link" data-scroll-target="#hybrid-지식-증류">4.1 Hybrid 지식 증류</a></li>
+  <li><a href="#int8-ptq" id="toc-int8-ptq" class="nav-link" data-scroll-target="#int8-ptq">4.2 INT8 PTQ</a></li>
   </ul></li>
-  <li><a href="#post-training-quantization-ptq" id="toc-post-training-quantization-ptq" class="nav-link" data-scroll-target="#post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</a>
+  <li><a href="#실험-설정" id="toc-실험-설정" class="nav-link" data-scroll-target="#실험-설정">5. 실험 설정</a></li>
+  <li><a href="#결과" id="toc-결과" class="nav-link" data-scroll-target="#결과">6. 결과</a>
   <ul class="collapse">
-  <li><a href="#양자화란" id="toc-양자화란" class="nav-link" data-scroll-target="#양자화란">2-1. 양자화란?</a></li>
-  <li><a href="#ptq의-동작-원리" id="toc-ptq의-동작-원리" class="nav-link" data-scroll-target="#ptq의-동작-원리">2-2. PTQ의 동작 원리</a></li>
-  <li><a href="#saturated-relu" id="toc-saturated-relu" class="nav-link" data-scroll-target="#saturated-relu">2-3. Saturated ReLU</a></li>
-  <li><a href="#프로젝트에서의-양자화-전략" id="toc-프로젝트에서의-양자화-전략" class="nav-link" data-scroll-target="#프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</a></li>
+  <li><a href="#오류율-ler-ber" id="toc-오류율-ler-ber" class="nav-link" data-scroll-target="#오류율-ler-ber">6.1 오류율 — LER / BER</a></li>
+  <li><a href="#경량화-단계별-자원-절감" id="toc-경량화-단계별-자원-절감" class="nav-link" data-scroll-target="#경량화-단계별-자원-절감">6.2 경량화 단계별 자원 절감</a></li>
+  <li><a href="#fpga-자원-적합성-zynq-7020" id="toc-fpga-자원-적합성-zynq-7020" class="nav-link" data-scroll-target="#fpga-자원-적합성-zynq-7020">6.3 FPGA 자원 적합성 — Zynq-7020</a></li>
+  <li><a href="#digital-twin-데모-목표-달성" id="toc-digital-twin-데모-목표-달성" class="nav-link" data-scroll-target="#digital-twin-데모-목표-달성">6.4 Digital Twin 데모 · 목표 달성</a></li>
   </ul></li>
-  <li><a href="#정리" id="toc-정리" class="nav-link" data-scroll-target="#정리">정리</a></li>
+  <li><a href="#결론-및-한계-향후-계획" id="toc-결론-및-한계-향후-계획" class="nav-link" data-scroll-target="#결론-및-한계-향후-계획">7. 결론 및 한계, 향후 계획</a></li>
   </ul>
 </nav>
     </div>
@@ -420,269 +421,321 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p>전년도에 이어 2년 연속으로 유클리드소프트에서 진행하는 <a href="https://abcbootcamp.kr/abc_mentor/">ABC 프로젝트 멘토링</a>에 2기로 참여하게 되었습니다. <br><br> <strong>[(주)플랜아이] 클라우드 서비스 구축 및 AI/데이터 응용 서비스 개발 프로젝트</strong>를 주제로, GNN 기반 양자 오류 정정(QEC) 디코더를 설계하고 FPGA에 온디바이스 구현하는 프로젝트를 진행합니다.</p>
+<p>안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 일곱 번째이자 <strong>마지막 기술노트</strong>입니다. 내일(5/18) 최종 결과물 발표회를 앞두고, 7주에 걸쳐 진행한 프로젝트의 최종 산출물을 한 편으로 정리합니다. 4~6주차에는 사전 디코더 선택적 호출(dispatch gate)이라는 곁가지 실험을 다뤘지만, 이번 회차는 그 경로와 독립적으로 프로젝트의 <strong>최종 결과물</strong>인 <em>엣지 환경용 경량 QEC 디코더 파이프라인</em>과 이를 온칩에 올리기 위한 <em>SoC 설계 적합성</em>에 초점을 맞춥니다.</p>
 </blockquote>
-<div class="callout callout-style-default callout-tip callout-titled" title="">
+<div class="callout callout-style-default callout-tip callout-titled" title="이전 포스트">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Tip
+<span class="screen-reader-only">Tip</span>이전 포스트
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>1주차에는 프로젝트의 핵심 AI 기법인 <strong>Graph Neural Network(GNN)</strong>와 <strong>Post-Training Quantization(PTQ)</strong>의 개념을 선행 학습 차원에서 정리했습니다. 이 두 기법은 각각 디코더의 추론 모델과 FPGA 경량화 전략의 근간이 됩니다.</p>
+<ul>
+<li><a href="../../posts/project-roqet-01-gnn-quantization/">1주차 포스트</a> — GNN과 PTQ 개념 정리</li>
+<li><a href="../../posts/project-roqet-02-qec-stim-stabilizer/">2주차 포스트</a> — QEC 기본 동작과 Stim으로 신드롬 데이터 생성</li>
+<li><a href="../../posts/project-roqet-03-detector-graph-gnn/">3주차 포스트</a> — Annotated Detector Graph와 GNN 디코더 첫 학습</li>
+<li><a href="../../posts/project-roqet-04-edge-aware-decoder/">4주차 포스트</a> — 엣지 타입 분리 디코더와 MWPM 격차 측정</li>
+<li><a href="../../posts/project-roqet-05-predecoder-helpfulness/">5주차 포스트</a> — 사전 디코더 호출의 균일 가정 검증</li>
+<li><a href="../../posts/project-roqet-06-dispatch-gate/">6주차 포스트</a> — 선택적 호출 게이트와 분포 외 일반화</li>
+</ul>
 </div>
 </div>
-<section id="프로젝트-배경" class="level2">
-<h2 class="anchored" data-anchor-id="프로젝트-배경">프로젝트 배경</h2>
-<p>양자 컴퓨팅에서 물리적 큐비트는 높은 오류율(~10⁻³)을 가지며, 이를 보정하기 위해 <strong>양자 오류 정정(Quantum Error Correction, QEC)</strong>이 필수적입니다. 현재 가장 유망한 방식인 <strong>Surface Code</strong>는 큐비트들을 2D 격자 형태로 배치하고, 주변 큐비트의 측정 결과(신드롬)를 통해 오류를 추론합니다.</p>
-<p>기존 주류 디코더인 MWPM(Minimum Weight Perfect Matching)은 O(n³)의 시간복잡도로 인해 실시간 디코딩이 어렵습니다. 큐비트의 결맞음 시간(~1μs) 내에 디코딩을 완료해야 하므로, 더 빠르고 정확한 디코더가 필요합니다.</p>
-<p>본 프로젝트에서는 <strong>GNN 기반 디코더</strong>를 설계하여 Surface Code의 신드롬 그래프를 직접 처리하고, <strong>INT8 양자화</strong>를 통해 FPGA에서 1μs 이내 실시간 추론을 달성하는 것을 목표로 합니다.</p>
+<hr>
+<section id="프로젝트-한눈에-보기" class="level2">
+<h2 class="anchored" data-anchor-id="프로젝트-한눈에-보기">1. 프로젝트 한눈에 보기</h2>
+<ul>
+<li><strong>팀명</strong>: ROQET (Robust On-device Quantum Electronics Technology)</li>
+<li><strong>팀원</strong>: 박범도(팀장) · 박준성 · 장현석 · 장여진</li>
+<li><strong>주제</strong>: 양자 오류 정정(QEC) AI 가속기를 위한 RTL 기반 SoC 설계 및 검증</li>
+<li><strong>최종 산출물</strong>: Transformer 기반 QEC 디코더 QECCT를 Teacher로 둔 <strong>Hybrid 지식 증류(KD) + INT8 Post-Training Quantization(PTQ) 경량화 파이프라인</strong>과, 이를 온칩에서 동작시키기 위한 FPGA 자원 적합성 분석</li>
+</ul>
+<p>핵심 메시지는 한 줄로 요약됩니다. <strong>대규모 환경용으로 설계된 QEC 디코더를, 정확도를 거의 잃지 않고 엣지 디바이스에 올릴 수 있는 크기·속도까지 줄였다</strong>는 것입니다.</p>
 <hr>
 </section>
-<section id="graph-neural-network-gnn" class="level2">
-<h2 class="anchored" data-anchor-id="graph-neural-network-gnn">1. Graph Neural Network (GNN)</h2>
-<section id="gnn이란" class="level3">
-<h3 class="anchored" data-anchor-id="gnn이란">1-1. GNN이란?</h3>
-<p>Graph Neural Network(GNN)는 <strong>그래프 구조 데이터</strong>를 직접 입력으로 처리할 수 있는 딥러닝 모델입니다. 일반적인 CNN이 이미지의 격자(grid) 구조를, RNN이 시퀀스 구조를 다루는 것과 달리, GNN은 <strong>노드(node)</strong>와 <strong>엣지(edge)</strong>로 구성된 비정형 그래프를 처리합니다.</p>
-<p>그래프 데이터는 다양한 영역에서 자연스럽게 등장합니다:</p>
+<section id="왜-온칩-디코딩인가" class="level2">
+<h2 class="anchored" data-anchor-id="왜-온칩-디코딩인가">2. 왜 온칩 디코딩인가</h2>
+<p>양자 시스템의 단일 물리 큐비트는 노이즈에 취약해 오류가 빈번하게 발생합니다. 이를 보완하기 위해 여러 물리 큐비트를 묶어 논리 큐비트를 구성하고, 큐비트를 직접 측정하면 중첩 상태가 붕괴되므로 패리티 기반의 <strong>신드롬(syndrome) 측정</strong>으로 오류 여부만 읽어냅니다. QEC 디코더는 이 신드롬으로부터 오류 위치를 추정하는데, 이 과정은 초전도 큐비트의 양자 상태가 붕괴되기 전, 즉 <strong>코히런스 시간 1 µs 이내</strong>에 끝나야 합니다.</p>
+<p>문제는 지연 시간입니다. 신드롬을 외부 서버로 보내 정정하면 왕복 지연이 10~100 µs 수준으로, 코히런스 한도를 가볍게 초과합니다. 결국 <strong>칩 안에서 직접 정정(On-Chip)</strong> 하는 길밖에 없고, 이는 디코더가 자원이 제한된 엣지 환경에서 1 µs 안에 추론을 마쳐야 한다는 제약으로 이어집니다. 대부분의 고성능 디코더는 대규모 하드웨어를 가정해 설계되어 있어 이 제약과 정면으로 충돌합니다.</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
 <thead>
 <tr class="header">
-<th>도메인</th>
-<th>노드</th>
-<th>엣지</th>
+<th>디코딩 위치</th>
+<th>정정 경로</th>
+<th>지연 시간</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>소셜 네트워크</td>
-<td>사용자</td>
-<td>친구 관계</td>
+<td>외부 서버 전송</td>
+<td>칩 → 서버 → 칩</td>
+<td>10 ~ 100 µs (코히런스 한도 초과)</td>
 </tr>
 <tr class="even">
-<td>분자 구조</td>
-<td>원자</td>
-<td>화학 결합</td>
-</tr>
-<tr class="odd">
-<td>추천 시스템</td>
-<td>유저/아이템</td>
-<td>상호작용</td>
-</tr>
-<tr class="even">
-<td><strong>양자 오류 정정</strong></td>
-<td><strong>신드롬 이벤트</strong></td>
-<td><strong>인접 관계</strong></td>
+<td><strong>온칩 (본 프로젝트)</strong></td>
+<td>칩 내부에서 직접 정정</td>
+<td><strong>0.34 µs (한도 내 완료)</strong></td>
 </tr>
 </tbody>
 </table>
-<p>본 프로젝트에서 Surface Code의 신드롬 데이터는 본질적으로 그래프 구조를 가지므로, GNN이 자연스러운 선택이 됩니다.</p>
+<hr>
 </section>
-<section id="메시지-패싱-message-passing" class="level3">
-<h3 class="anchored" data-anchor-id="메시지-패싱-message-passing">1-2. 메시지 패싱 (Message Passing)</h3>
-<p>GNN의 핵심 연산은 <strong>메시지 패싱(Message Passing)</strong> 메커니즘입니다. 각 노드는 이웃 노드들로부터 정보를 수집하고 자신의 표현(representation)을 업데이트합니다. 이 과정을 수식으로 표현하면 다음과 같습니다:</p>
-<p><span class="math display">\[
-h_v^{(l+1)} = \text{UPDATE}\left(h_v^{(l)},\; \text{AGGREGATE}\left(\{h_u^{(l)} : u \in \mathcal{N}(v)\}\right)\right)
-\]</span></p>
-<p>여기서:</p>
-<ul>
-<li><span class="math inline">\(h_v^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어에서 노드 <span class="math inline">\(v\)</span>의 특성 벡터</li>
-<li><span class="math inline">\(\mathcal{N}(v)\)</span>: 노드 <span class="math inline">\(v\)</span>의 이웃 노드 집합</li>
-<li><strong>AGGREGATE</strong>: 이웃 노드들의 정보를 모으는 함수 (합산, 평균, 최대값 등)</li>
-<li><strong>UPDATE</strong>: 집약된 정보와 자신의 정보를 결합하여 새로운 표현을 생성하는 함수</li>
-</ul>
-<p>직관적으로 설명하면, 각 노드가 “주변에 무슨 일이 일어나고 있는지”를 이웃들에게 물어보고, 그 답변을 종합하여 자신의 상태를 갱신하는 과정입니다. 레이어를 여러 층 쌓으면 더 먼 노드의 정보까지 전파됩니다.</p>
+<section id="베이스-모델-qecct" class="level2">
+<h2 class="anchored" data-anchor-id="베이스-모델-qecct">3. 베이스 모델 — QECCT</h2>
+<p>배경 부호로는 평면 격자 위에서 국소 측정만으로 오류를 검출할 수 있는 <strong>Surface Code</strong>를 사용합니다. 격자 길이 <span class="math inline">\(a\)</span>에 대해 물리 큐비트 <span class="math inline">\(n = a^2\)</span>, 측정기 <span class="math inline">\(n_s = a^2 - k\)</span>를 두어 <span class="math inline">\(k\)</span>개의 논리 큐비트를 보호합니다.</p>
+<p>디코더의 베이스 모델은 위상적 상관 관계를 모델 구조에 반영해 MWPM을 상회하는 LER을 보고한 Transformer 기반 디코더 <strong>QECCT(Quantum Error Correction Code Transformer)</strong>입니다. QECCT는 크게 세 단계로 동작합니다.</p>
+<ol type="1">
+<li><strong>초기 추정 및 임베딩</strong> — 신드롬 <span class="math inline">\(s\)</span>는 축퇴성이 있어 단독 입력 시 추론 부담이 큽니다. 노이즈 추정기 <span class="math inline">\(g_\omega(\cdot)\)</span>로 큐비트 초기값을 만들어 <span class="math inline">\(s\)</span>와 결합한 합성 시퀀스를 학습 가능한 임베딩 행렬과 Hadamard 연산으로 벡터화합니다.</li>
+<li><strong>Masked Self-Attention Transformer</strong> — 패리티 체크 행렬 <span class="math inline">\(H\)</span>로부터 유도된 마스크 <span class="math inline">\(M(H)\)</span>를 어텐션에 더해, 인접하지 않은 큐비트–측정기 쌍의 가중치를 차단합니다. 각 토큰은 인접 토큰의 정보만 흡수하며 <span class="math inline">\(N\)</span>개 블록에 걸쳐 누적됩니다.</li>
+<li><strong>큐비트 오류 위치 출력</strong> — 최종 은닉 상태를 두 FC 층과 Sigmoid를 거쳐 큐비트별 오류 확률 <span class="math inline">\(\hat{\epsilon} \in [0,1]^n\)</span>으로 환원합니다.</li>
+</ol>
+<p>이 QECCT가 강력하지만 무겁다는 점이 출발점입니다. 그대로는 엣지에 올릴 수 없습니다.</p>
+<hr>
 </section>
-<section id="graphconv-레이어" class="level3">
-<h3 class="anchored" data-anchor-id="graphconv-레이어">1-3. GraphConv 레이어</h3>
-<p>본 프로젝트에서 사용할 <strong>GraphConv</strong>(Graph Convolution) 레이어는 Kipf &amp; Welling (2017)이 제안한 GCN(Graph Convolutional Network)의 핵심 구성 요소입니다. 각 레이어의 연산은 다음과 같습니다:</p>
-<p><span class="math display">\[
-H^{(l+1)} = \sigma\left(\tilde{D}^{-\frac{1}{2}} \tilde{A} \tilde{D}^{-\frac{1}{2}} H^{(l)} W^{(l)}\right)
-\]</span></p>
-<p>여기서:</p>
+<section id="제안-방법-hybrid-kd-int8-ptq" class="level2">
+<h2 class="anchored" data-anchor-id="제안-방법-hybrid-kd-int8-ptq">4. 제안 방법 — Hybrid KD + INT8 PTQ</h2>
+<p>경량화 파이프라인은 두 단계로 구성됩니다.</p>
+<section id="hybrid-지식-증류" class="level3">
+<h3 class="anchored" data-anchor-id="hybrid-지식-증류">4.1 Hybrid 지식 증류</h3>
+<p>Student는 Teacher와 동일한 구조를 유지하되 블록 수 <span class="math inline">\(N\)</span>, 임베딩 차원 <span class="math inline">\(d_{model}\)</span>, head 수를 줄인 축소판입니다. 전체 손실은 세 항의 가중합입니다.</p>
+<p><span class="math display">\[L_{Total} = \alpha_{task} \cdot L_{Task} + \alpha_{re} \cdot L_{re} + \alpha_{attn} \cdot L_{attn}\]</span></p>
 <ul>
-<li><span class="math inline">\(\tilde{A} = A + I\)</span>: 자기 연결(self-loop)이 추가된 인접 행렬</li>
-<li><span class="math inline">\(\tilde{D}\)</span>: <span class="math inline">\(\tilde{A}\)</span>의 차수 행렬 (degree matrix)</li>
-<li><span class="math inline">\(H^{(l)}\)</span>: <span class="math inline">\(l\)</span>번째 레이어의 노드 특성 행렬</li>
-<li><span class="math inline">\(W^{(l)}\)</span>: 학습 가능한 가중치 행렬</li>
-<li><span class="math inline">\(\sigma\)</span>: 활성화 함수 (ReLU 등)</li>
+<li><span class="math inline">\(L_{Task}\)</span> — 정답에 정합되도록 유도하는 항으로, BER·노이즈 추정기·LER 손실의 가중합입니다. LER 손실은 논리 연산자에 미분 가능 근사 함수를 적용합니다.</li>
+<li><span class="math inline">\(L_{re}\)</span> — <strong>응답 기반 KD</strong>. Teacher와 Student 출력은 각각 독립적인 이진 분류라 KL 대신 온도 <span class="math inline">\(\tau\)</span>로 평탄화한 logit에 MSE를 적용하고, 그래디언트 감쇠를 <span class="math inline">\(\tau^2\)</span> 계수로 보정합니다.</li>
+<li><span class="math inline">\(L_{attn}\)</span> — <strong>특징 기반 KD</strong>. Teacher의 마지막 블록들과 Student 블록을 1:1로 대응시키고, 차원 불일치는 학습 가능한 선형 프로젝션 <span class="math inline">\(\mathcal{P}\)</span>로 사상합니다. 채널 제곱 평균과 L2 정규화로 추출한 어텐션 맵을 MSE로 정렬합니다.</li>
 </ul>
-<p>핵심 아이디어는 인접 행렬을 정규화하여 이웃 노드 수에 따른 스케일 차이를 보정하고, 가중치 행렬을 통해 특성을 선형 변환한 뒤 비선형 활성화를 적용하는 것입니다.</p>
+<p>학습 초기에는 Student가 Teacher의 표현 공간으로 수렴하기 어려운데, 응답 기반과 특징 기반 KD를 결합한 Hybrid 구성으로 이 한계를 보완합니다. 실제 학습 곡선에서 <span class="math inline">\(L_{Task}\)</span>·<span class="math inline">\(L_{re}\)</span>는 초기에 빠르게 수렴하는 반면, <span class="math inline">\(L_{attn}\)</span>은 전 과정에 걸쳐 두 모델의 표현 공간을 미세 정렬하며 다른 수렴 양상을 보였습니다.</p>
 </section>
-<section id="프로젝트에서의-gnn-아키텍처" class="level3">
-<h3 class="anchored" data-anchor-id="프로젝트에서의-gnn-아키텍처">1-4. 프로젝트에서의 GNN 아키텍처</h3>
-<p>본 프로젝트의 GNN 디코더는 다음과 같은 구조를 가집니다:</p>
-<pre><code>입력 (신드롬 그래프, 노드 특성 5차원)
-    ↓
-GraphConv Layer 1: 5 → 32
-    ↓ ReLU
-GraphConv Layer 2: 32 → 128
-    ↓ ReLU
-GraphConv Layer 3: 128 → 256
-    ↓ ReLU
-Global Mean Pooling
-    ↓
-Dense Layer: 256 → 2 (λX, λZ 논리 오류 확률)</code></pre>
-<ul>
-<li><strong>3-layer Pruned GraphConv</strong>: 경량화된 3층 구조로 신드롬 그래프의 지역~전역 패턴을 포착</li>
-<li><strong>Global Mean Pooling</strong>: 가변 크기 그래프를 고정 크기 벡터로 변환</li>
-<li><strong>Dense Layer</strong>: 최종적으로 X/Z 논리 오류 확률을 출력</li>
-</ul>
-<p>이 구조는 Cicero et al.&nbsp;(2026)의 Pruned 모델을 기반으로 하며, MWPM 대비 낮은 논리 오류율을 달성하면서도 FPGA 구현에 적합한 경량 구조를 갖추고 있습니다.</p>
+<section id="int8-ptq" class="level3">
+<h3 class="anchored" data-anchor-id="int8-ptq">4.2 INT8 PTQ</h3>
+<p>KD로 구조를 줄인 Student의 가중치는 여전히 FP32 실수입니다. 부동소수점 연산이 제한되고 코히런스 시간 안에 추론을 끝내야 하는 엣지 환경에서는 정수 연산이 사실상 필수입니다. 그래서 학습이 끝난 Student에 INT8 PTQ를 적용합니다.</p>
+<pre class="text"><code>Algorithm 1  INT8 PTQ
+Require: 사전 학습된 Student 모델 S
+Ensure : 양자화된 모델 S_q
+ 1: S_q ← deepcopy(S).eval()
+ 2: for all 학습 가능한 파라미터 텐서 θ ∈ S_q do
+ 3:     Δ ← max(|θ|) / 127
+ 4:     if Δ &gt; 0 then
+ 5:         θ_q ← round(θ / Δ)
+ 6:         θ_q ← clamp(θ_q, -128, 127)
+ 7:     end if
+ 8: end for
+ 9: return S_q</code></pre>
+<p>가중치 분포가 INT8 격자 전체에 펼쳐지도록 스케일 팩터 <span class="math inline">\(\Delta = \max(|\theta|)/127\)</span>를 정의하고, 오버플로우를 막기 위해 정수 범위로 clamp합니다. 검증은 PyTorch Eager Mode의 Fake Quantization으로 수행해 실제 INT8 하드웨어 추론과 수치적으로 근사한 LER·BER을 얻습니다.</p>
 <hr>
 </section>
 </section>
-<section id="post-training-quantization-ptq" class="level2">
-<h2 class="anchored" data-anchor-id="post-training-quantization-ptq">2. Post-Training Quantization (PTQ)</h2>
-<section id="양자화란" class="level3">
-<h3 class="anchored" data-anchor-id="양자화란">2-1. 양자화란?</h3>
-<p>딥러닝 모델의 <strong>양자화(Quantization)</strong>는 모델의 가중치와 활성화 값을 높은 정밀도(FP32)에서 낮은 정밀도(INT8, INT16 등)로 변환하는 기법입니다. 이를 통해:</p>
-<ul>
-<li><strong>메모리 사용량 감소</strong>: FP32 → INT8로 약 4배 절감</li>
-<li><strong>연산 속도 향상</strong>: 정수 연산은 부동소수점 연산보다 빠르고 하드웨어 효율적</li>
-<li><strong>전력 소비 감소</strong>: 특히 FPGA, ASIC 등 엣지 디바이스에서 유리</li>
-</ul>
-<p>양자화 방식은 크게 두 가지로 나뉩니다:</p>
+<section id="실험-설정" class="level2">
+<h2 class="anchored" data-anchor-id="실험-설정">5. 실험 설정</h2>
+<p>Syndrome 측정 자체에 오류가 섞이는 <strong>Faulty Syndrome</strong>을 가정하고, 다음과 같이 설정했습니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>파라미터</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(a, n, n_s, k\)</span></td>
+<td>3, 9, 8, 1</td>
+</tr>
+<tr class="even">
+<td>측정 라운드 <span class="math inline">\(T\)</span></td>
+<td>3</td>
+</tr>
+<tr class="odd">
+<td>노이즈 모델</td>
+<td>Independent bit-flip (<span class="math inline">\(p_{syn} = p_{큐비트}\)</span>)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(p_{train}\)</span></td>
+<td>[0.005, 0.15]</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(p_{test}\)</span></td>
+<td>{0.01, 0.02, 0.03, 0.05, 0.08, 0.10, 0.12}</td>
+</tr>
+<tr class="even">
+<td>샘플 수</td>
+<td>50,000 / <span class="math inline">\(p\)</span></td>
+</tr>
+<tr class="odd">
+<td>Teacher 구조</td>
+<td><span class="math inline">\(N_T = 6\)</span>, <span class="math inline">\(d_T = 128\)</span>, 8 heads</td>
+</tr>
+<tr class="even">
+<td>Student 구조</td>
+<td><span class="math inline">\(N_{stu} = 2\)</span>, <span class="math inline">\(d_{stu} = 32\)</span>, 4 heads</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\alpha_{task}, \alpha_{re}, \alpha_{attn}\)</span></td>
+<td>0.5, 0.3, 0.2</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\lambda_b, \lambda_l, \lambda_g\)</span></td>
+<td>0.5, 0.5, 1.0</td>
+</tr>
+<tr class="odd">
+<td>온도 <span class="math inline">\(\tau\)</span></td>
+<td>3.0</td>
+</tr>
+</tbody>
+</table>
+<p>17개 공간 토큰 그래프의 직경은 3 hop입니다. Teacher는 pooling 전후 각 3블록으로 격자 전체를 훑는 반면, Student는 각 1 hop의 국소 통합만 수행하는 최소 규모이며 부족한 context를 Hybrid KD로 메웁니다.</p>
+<hr>
+</section>
+<section id="결과" class="level2">
+<h2 class="anchored" data-anchor-id="결과">6. 결과</h2>
+<section id="오류율-ler-ber" class="level3">
+<h3 class="anchored" data-anchor-id="오류율-ler-ber">6.1 오류율 — LER / BER</h3>
+<p><span class="math inline">\(p_{test} = 0.12\)</span> 기준 핵심 결과입니다.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 8%">
-<col style="width: 45%">
-<col style="width: 45%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
 </colgroup>
+<thead>
+<tr class="header">
+<th>디코더</th>
+<th>LER</th>
+<th>BER</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>전통 알고리즘 (Union-Find · MWPM)</td>
+<td>7.0%</td>
+<td>7.20%</td>
+<td>특정 노이즈 모델 가정</td>
+</tr>
+<tr class="even">
+<td><strong>Ours (KD + INT8 PTQ, 26.7 KB)</strong></td>
+<td><strong>≈ 0.9%</strong></td>
+<td><strong>3.54%</strong></td>
+<td>경량화 후에도 우위</td>
+</tr>
+</tbody>
+</table>
+<p>경량화한 Ours가 LER·BER 모두 전통 알고리즘 기반 디코더를 앞섭니다. LER은 Teacher와 0.001 미만의 오차로 근접했고, BER도 약 0.01 차이로 유지됐습니다. KD 없이 동일 구조로 학습한 Scratch는 LER 축퇴성 때문에 LER만 비슷해 보일 뿐, BER에서 Ours보다 약 0.02 뒤처져 Student가 KD로 Teacher의 어텐션을 효과적으로 흡수했음을 보여줍니다.</p>
+</section>
+<section id="경량화-단계별-자원-절감" class="level3">
+<h3 class="anchored" data-anchor-id="경량화-단계별-자원-절감">6.2 경량화 단계별 자원 절감</h3>
+<table class="caption-top table">
 <thead>
 <tr class="header">
 <th>구분</th>
-<th>QAT (Quantization-Aware Training)</th>
-<th>PTQ (Post-Training Quantization)</th>
+<th>QECCT(Teacher)</th>
+<th>KD(Only)</th>
+<th><strong>Ours</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>시점</td>
-<td>학습 중 양자화 시뮬레이션 포함</td>
-<td>학습 완료 후 양자화 적용</td>
+<td>가중치 정밀도</td>
+<td>FP32</td>
+<td>FP32</td>
+<td><strong>INT8</strong></td>
 </tr>
 <tr class="even">
-<td>정확도</td>
-<td>상대적으로 높음</td>
-<td>QAT 대비 약간 낮을 수 있음</td>
+<td>파라미터 수 (K)</td>
+<td>1,193</td>
+<td>26.7</td>
+<td><strong>26.7</strong></td>
 </tr>
 <tr class="odd">
-<td>비용</td>
-<td>재학습 필요 (시간/자원 소모)</td>
-<td>재학습 불필요 (빠른 적용)</td>
+<td>모델 크기 (KB)</td>
+<td>4,772</td>
+<td>106.8</td>
+<td><strong>26.7</strong></td>
 </tr>
 <tr class="even">
-<td>적용 난이도</td>
-<td>학습 코드 수정 필요</td>
-<td>기존 모델에 바로 적용 가능</td>
+<td>추론 시간 (µs)</td>
+<td>13.52</td>
+<td>0.68</td>
+<td><strong>0.34</strong></td>
 </tr>
 </tbody>
 </table>
+<p>KD만으로 파라미터를 약 97.8% 줄이고, INT8 양자화로 모델 크기를 KD 단독 대비 추가로 1/4 수준까지 압축해 <strong>최종 26.7 KB</strong>(Teacher 대비 약 99.4% 절감)에 도달했습니다. 추론 시간은 Teacher의 13.52 µs에서 0.34 µs로 97.5% 단축되어, 코히런스 1 µs 한도 대비 약 0.66 µs의 여유를 확보했습니다.</p>
 </section>
-<section id="ptq의-동작-원리" class="level3">
-<h3 class="anchored" data-anchor-id="ptq의-동작-원리">2-2. PTQ의 동작 원리</h3>
-<p>Post-Training Quantization은 이미 학습이 완료된 모델에 양자화를 적용하는 방식입니다. 재학습 없이 빠르게 경량화할 수 있어 실용적입니다.</p>
-<p><strong>기본 양자화 공식:</strong></p>
-<p><span class="math display">\[
-q = \text{round}\left(\frac{x}{s}\right) + z
-\]</span></p>
-<p>여기서:</p>
-<ul>
-<li><span class="math inline">\(x\)</span>: 원래의 FP32 값</li>
-<li><span class="math inline">\(s\)</span>: 스케일 팩터 (scale factor)</li>
-<li><span class="math inline">\(z\)</span>: 제로 포인트 (zero point)</li>
-<li><span class="math inline">\(q\)</span>: 양자화된 정수 값</li>
-</ul>
-<p><strong>역양자화 (Dequantization):</strong></p>
-<p><span class="math display">\[
-\hat{x} = s \cdot (q - z)
-\]</span></p>
-<p>스케일 팩터와 제로 포인트는 가중치의 최솟값과 최댓값으로부터 계산됩니다:</p>
-<p><span class="math display">\[
-s = \frac{x_{\max} - x_{\min}}{q_{\max} - q_{\min}}, \quad z = q_{\min} - \text{round}\left(\frac{x_{\min}}{s}\right)
-\]</span></p>
-<p>INT8의 경우 <span class="math inline">\(q_{\min} = -128\)</span>, <span class="math inline">\(q_{\max} = 127\)</span>이 됩니다.</p>
-</section>
-<section id="saturated-relu" class="level3">
-<h3 class="anchored" data-anchor-id="saturated-relu">2-3. Saturated ReLU</h3>
-<p>양자화 시 활성화 함수도 정수 연산에 맞게 조정이 필요합니다. 일반적인 ReLU는 출력 범위가 <span class="math inline">\([0, +\infty)\)</span>로 제한이 없어 양자화에 불리합니다. 이를 해결하기 위해 <strong>Saturated ReLU</strong>를 사용합니다:</p>
-<p><span class="math display">\[
-\text{SaturatedReLU}(x) = \min(\max(x, 0),\; C)
-\]</span></p>
-<p>여기서 <span class="math inline">\(C\)</span>는 클리핑 상한값입니다. 출력 범위를 <span class="math inline">\([0, C]\)</span>로 제한함으로써 양자화 해상도를 높이고, FPGA에서 고정 비트폭 연산으로 구현할 수 있습니다.</p>
-</section>
-<section id="프로젝트에서의-양자화-전략" class="level3">
-<h3 class="anchored" data-anchor-id="프로젝트에서의-양자화-전략">2-4. 프로젝트에서의 양자화 전략</h3>
-<p>본 프로젝트에서는 다음과 같은 양자화 전략을 적용할 예정입니다:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>대상</th>
-<th>비트폭</th>
-<th>설명</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>가중치 (Weight)</td>
-<td>INT8</td>
-<td>GraphConv 레이어의 가중치 행렬</td>
-</tr>
-<tr class="even">
-<td>바이어스 (Bias)</td>
-<td>INT16</td>
-<td>누적 오차 방지를 위해 높은 정밀도 유지</td>
-</tr>
-<tr class="odd">
-<td>중간 특성 (Feature)</td>
-<td>18-bit</td>
-<td>레이어 간 전달되는 활성화 값</td>
-</tr>
-<tr class="even">
-<td>활성화 함수</td>
-<td>Saturated ReLU</td>
-<td>출력 범위 제한으로 양자화 효율 향상</td>
-</tr>
-</tbody>
-</table>
-<p>양자화된 가중치는 HEX 포맷으로 추출하여 FPGA의 Weight Memory ROM에 저장되며, 소프트웨어(PyTorch)와 하드웨어(Verilog RTL) 간 패리티 검증을 통해 양자화 과정의 정확성을 보장합니다.</p>
-<hr>
-</section>
-</section>
-<section id="정리" class="level2">
-<h2 class="anchored" data-anchor-id="정리">정리</h2>
+<section id="fpga-자원-적합성-zynq-7020" class="level3">
+<h3 class="anchored" data-anchor-id="fpga-자원-적합성-zynq-7020">6.3 FPGA 자원 적합성 — Zynq-7020</h3>
+<p>26.7 KB·0.34 µs라는 수치가 실제 보드에 올라갈 수 있는지 점검했습니다. 선정 보드는 <strong>Xilinx XC7Z020 (PYNQ-Z2)</strong>입니다.</p>
 <table class="caption-top table">
 <colgroup>
-<col style="width: 24%">
-<col style="width: 24%">
-<col style="width: 52%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>기법</th>
-<th>역할</th>
-<th>프로젝트 적용</th>
+<th>요구 사항</th>
+<th>근거</th>
+<th>Zynq-7020 제공</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>GNN (GraphConv)</strong></td>
-<td>그래프 구조 데이터의 패턴 학습</td>
-<td>Surface Code 신드롬 그래프에서 오류 패턴 추론</td>
+<td>INT8 MAC 병렬화</td>
+<td>Masked Self-Attention의 Q·K·V 곱 + Softmax</td>
+<td>DSP48 슬라이스 220</td>
 </tr>
 <tr class="even">
-<td><strong>PTQ (INT8)</strong></td>
-<td>학습된 모델의 경량화</td>
-<td>FPGA 온디바이스 구현을 위한 가중치/활성화 양자화</td>
+<td>가중치 온칩 상주</td>
+<td>26.7 KB 모델 전체를 외부 RAM 없이</td>
+<td>Block RAM 630 KB</td>
+</tr>
+<tr class="odd">
+<td>신드롬 I/O · 제어</td>
+<td>측정 데이터 수신 · 정정 명령 송출</td>
+<td>ARM Cortex-A9 ×2</td>
+</tr>
+<tr class="even">
+<td>엣지 저전력 동작</td>
+<td>냉각 인접 배치 가능한 무팬 보드</td>
+<td>≈ 2 W (팬리스), 85K LUT, USD 249</td>
 </tr>
 </tbody>
 </table>
-<p>1주차에는 프로젝트의 두 핵심 기법을 개념적으로 정리했습니다. 다음 주차부터는 Stim과 PyMatching을 활용한 Surface Code 데이터셋 생성과 GNN 모델 학습 파이프라인 구축을 진행할 예정입니다.</p>
+<p>모델이 BRAM 안에 통째로 들어가고, DSP 슬라이스로 INT8 MAC를 병렬 처리하며, ARM 코어가 신드롬 I/O와 제어를 맡는 구성으로 온칩 디코딩 SoC의 자원 요건이 충족됨을 확인했습니다.</p>
+</section>
+<section id="digital-twin-데모-목표-달성" class="level3">
+<h3 class="anchored" data-anchor-id="digital-twin-데모-목표-달성">6.4 Digital Twin 데모 · 목표 달성</h3>
+<p>소프트웨어 Digital-Twin 환경에서 신드롬 입력 → 디코더 추론 → 오류 정정의 전 과정을 재현해, 위 수치가 단일 지표가 아니라 디코딩 파이프라인 전체에서 일관되게 성립함을 시연했습니다. 프로젝트 초기 목표였던 <em>코히런스 시간 내 온칩 추론</em>, <em>엣지 자원 내 상주</em>, <em>전통 알고리즘 대비 정확도 우위</em>를 모두 달성했습니다.</p>
 <hr>
+</section>
+</section>
+<section id="결론-및-한계-향후-계획" class="level2">
+<h2 class="anchored" data-anchor-id="결론-및-한계-향후-계획">7. 결론 및 한계, 향후 계획</h2>
+<p>대규모 환경용 QEC 디코더 QECCT를 Teacher로 두고 Hybrid KD와 INT8 PTQ를 결합해, <strong>모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER 0.001 미만·BER 약 0.01 수준의 차이로 디코딩 성능을 유지</strong>했습니다. KD를 통한 표현 공간 전이와 PTQ를 통한 가중치 축소가 상보적으로 작동할 때, 정확도를 지킨 채 경량화가 가능함을 확인한 것이 핵심 성과입니다.</p>
+<p>한계도 분명합니다. 실험 격자 길이가 <span class="math inline">\(a=3\)</span>이라 격자 확장에 따른 어텐션 마스크 희소도 변화와 KD 전이 효율의 일반화 검증이 부족하고, 결과가 소프트웨어 시뮬레이션이라는 점도 남는 과제입니다. 향후에는 <span class="math inline">\(a \ge 5\)</span> 격자에서 FPGA에 직접 합성·실장해 실측 검증을 수행할 계획입니다.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="결과물 및 발표 자료">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>결과물 및 발표 자료
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>본 프로젝트의 최종 발표는 <em>2기 ROQET 발표자료</em>(QEC AI 가속기를 위한 RTL 기반 SoC 설계 및 검증)로 진행합니다.</li>
+<li>경량화 파이프라인의 상세 설계는 별도 논문 <em>「엣지 환경에서의 QEC를 위한 Hybrid 지식 증류 기반의 PTQ 경량화 파이프라인 설계」</em>(장현석 · 박준성 · 박범도 · 정훈 · 허태욱 · 이상금)에 정리되어 있으며, 학회 제출은 팀원 장현석이 담당합니다.</li>
+</ul>
+</div>
+</div>
 <div class="callout callout-style-default callout-tip callout-titled" title="참고 문헌">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -694,12 +747,18 @@ s = \frac{x_{\max} - x_{\min}}{q_{\max} - q_{\min}}, \quad z = q_{\min} - \text{
 </div>
 <div class="callout-body-container callout-body">
 <ul>
-<li>Kipf, T.N. &amp; Welling, M. (2017). Semi-Supervised Classification with Graph Convolutional Networks. <em>ICLR 2017</em>.</li>
-<li>Cicero, D. et al.&nbsp;(2026). Pruned GNN Decoders for Quantum Error Correction.</li>
-<li>Lange, M. et al.&nbsp;(2025). Graph Neural Network Decoders for Surface Codes.</li>
+<li>Battistel, F. et al.&nbsp;(2023). <em>Real-time decoding for fault-tolerant quantum computing: progress, challenges and outlook.</em> Nano Futures.</li>
+<li>Fowler, A. G. et al.&nbsp;(2012). <em>Surface codes: Towards practical large-scale quantum computation.</em> Phys. Rev.&nbsp;A 86, 032324.</li>
+<li>Higgott, O. (2022). <em>PyMatching: A Python package for decoding quantum codes with minimum-weight perfect matching.</em> ACM Trans. Quantum Comput.</li>
+<li>Choukroun, Y. &amp; Wolf, L. (2024). <em>Deep quantum error correction.</em> AAAI.</li>
+<li>Hinton, G. et al.&nbsp;(2015). <em>Distilling the knowledge in a neural network.</em> arXiv:1503.02531.</li>
+<li>Zagoruyko, S. &amp; Komodakis, N. (2017). <em>Paying more attention to attention: Improving the performance of CNNs via attention transfer.</em> ICLR.</li>
+<li>Yao, Z. et al.&nbsp;(2022). <em>ZeroQuant: Efficient and affordable post-training quantization for large-scale transformers.</em> NeurIPS.</li>
 </ul>
 </div>
 </div>
+<hr>
+<p>7주에 걸친 ABC 프로젝트 멘토링 2기 ROQET 팀의 기술노트는 이 글로 마무리합니다. 양자 오류 정정이라는 낯선 주제에서 출발해, GNN·Stim·디텍터 그래프·사전 디코더 게이트를 거쳐, 결국 <em>엣지에서 1 µs 안에 도는 26.7 KB 디코더</em>라는 손에 잡히는 결과물까지 닿았습니다. 함께해 주신 멘토님과 팀원들께 감사드립니다.</p>
 
 
 </section>
