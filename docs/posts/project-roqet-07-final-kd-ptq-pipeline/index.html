@@ -8,7 +8,7 @@
 
 <meta name="author" content="Beomdo Park">
 <meta name="dcterms.date" content="2026-05-17">
-<meta name="description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
+<meta name="description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성을 다룹니다.">
 
 <title>[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog</title>
 <style>
@@ -72,7 +72,7 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
 <meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 17, 2026","datePublished":"May 17, 2026","description":"ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업QEC"],"url":"https://beomdo-park.github.io"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"May 17, 2026","datePublished":"May 17, 2026","description":"ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성을 다룹니다.","headline":"[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합","keywords":["ABC프로젝트멘토링유클리드소프트고용노동부대한상공회의소미래내일일경험사업QEC"],"url":"https://beomdo-park.github.io"}</script>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
@@ -106,7 +106,7 @@ window.Quarto = {
 
 <link rel="stylesheet" href="../../styles.css">
 <meta property="og:title" content="[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합 – beomdo’s ML-DL blog">
-<meta property="og:description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.">
+<meta property="og:description" content="ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성을 다룹니다.">
 <meta property="og:image" content="https://beomdo-park.github.io/posts/project-roqet-07-final-kd-ptq-pipeline/figs/fig-ler-ber.png">
 <meta property="og:site_name" content="beomdo's ML-DL blog">
 <meta property="og:image:height" content="1895">
@@ -169,7 +169,7 @@ window.Quarto = {
       <h1 class="title">[2026 ABC 프로젝트 멘토링 2기] 프로젝트 7주차 - 최종 결과물: Hybrid 지식 증류 + INT8 PTQ 경량화 디코더와 SoC 설계 종합</h1>
                   <div>
         <div class="description">
-          ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성까지 한 편에 묶었습니다.
+          ROQET 팀의 ABC 프로젝트 멘토링 최종 산출물을 정리합니다. QECCT를 Teacher로 한 Hybrid 지식 증류와 INT8 PTQ를 결합해 모델 크기 99.4%·추론 시간 97.5%를 절감하면서 LER/BER을 유지한 경량 QEC 디코더, 그리고 Zynq-7020 기반 온칩 디코딩 SoC 설계 적합성을 다룹니다.
         </div>
       </div>
                           <div class="quarto-categories">
@@ -246,7 +246,7 @@ window.Quarto = {
 
 
 <blockquote class="blockquote">
-<p>안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 일곱 번째이자 <strong>마지막 기술노트</strong>입니다. 내일(5/18) 최종 결과물 발표회를 앞두고, 7주에 걸쳐 진행한 프로젝트의 최종 산출물을 한 편으로 정리합니다. 4~6주차에는 사전 디코더 선택적 호출(dispatch gate)이라는 곁가지 실험을 다뤘지만, 이번 회차는 그 경로와 독립적으로 프로젝트의 <strong>최종 결과물</strong>인 <em>엣지 환경용 경량 QEC 디코더 파이프라인</em>과 이를 온칩에 올리기 위한 <em>SoC 설계 적합성</em>에 초점을 맞춥니다.</p>
+<p>안녕하세요, ABC 프로젝트 멘토링 2기 ROQET 팀의 일곱 번째 기술노트입니다. 내일(5/18) 최종 결과물 발표회를 앞두고, 7주에 걸쳐 진행한 프로젝트의 최종 산출물을 정리했습니다. 4~6주차에는 사전 디코더 선택적 호출(dispatch gate)이라는 곁가지 실험을 다뤘지만, 이번 회차는 그 경로와 독립적으로 프로젝트의 <strong>최종 결과물</strong>인 <em>엣지 환경용 경량 QEC 디코더 파이프라인</em>과 이를 온칩에 올리기 위한 <em>SoC 설계 적합성</em>에 초점을 맞춥니다.</p>
 </blockquote>
 <div class="callout callout-style-default callout-tip callout-titled" title="이전 포스트">
 <div class="callout-header d-flex align-content-center">
@@ -283,7 +283,7 @@ window.Quarto = {
 <section id="왜-온칩-디코딩인가" class="level2">
 <h2 class="anchored" data-anchor-id="왜-온칩-디코딩인가">2. 왜 온칩 디코딩인가</h2>
 <p>양자 시스템의 단일 물리 큐비트는 노이즈에 취약해 오류가 빈번하게 발생합니다. 이를 보완하기 위해 여러 물리 큐비트를 묶어 논리 큐비트를 구성하고, 큐비트를 직접 측정하면 중첩 상태가 붕괴되므로 패리티 기반의 <strong>신드롬(syndrome) 측정</strong>으로 오류 여부만 읽어냅니다. QEC 디코더는 이 신드롬으로부터 오류 위치를 추정하는데, 이 과정은 초전도 큐비트의 양자 상태가 붕괴되기 전, 즉 <strong>코히런스 시간 1 µs 이내</strong>에 끝나야 합니다.</p>
-<p>문제는 지연 시간입니다. 신드롬을 외부 서버로 보내 정정하면 왕복 지연이 10~100 µs 수준으로, 코히런스 한도를 가볍게 초과합니다. 결국 <strong>칩 안에서 직접 정정(On-Chip)</strong> 하는 길밖에 없고, 이는 디코더가 자원이 제한된 엣지 환경에서 1 µs 안에 추론을 마쳐야 한다는 제약으로 이어집니다. 대부분의 고성능 디코더는 대규모 하드웨어를 가정해 설계되어 있어 이 제약과 정면으로 충돌합니다.</p>
+<p>문제는 지연 시간입니다. 신드롬을 외부 서버로 보내 정정하면 왕복 지연이 10~100 µs 수준으로, 코히런스 한도를 가볍게 초과합니다. 결국 <strong>칩 안에서 직접 정정(On-Chip)</strong> 하는 길밖에 없고, 이는 디코더가 자원이 제한된 엣지 환경에서 1 µs 안에 추론을 마쳐야 한다는 제약으로 이어집니다. 대부분의 고성능 디코더는 대규모 하드웨어를 가정해 설계되어 있어 이 제약과 충돌합니다.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -321,7 +321,7 @@ window.Quarto = {
 <li><strong>Masked Self-Attention Transformer</strong> — 패리티 체크 행렬 <span class="math inline">\(H\)</span>로부터 유도된 마스크 <span class="math inline">\(M(H)\)</span>를 어텐션에 더해, 인접하지 않은 큐비트–측정기 쌍의 가중치를 차단합니다. 각 토큰은 인접 토큰의 정보만 흡수하며 <span class="math inline">\(N\)</span>개 블록에 걸쳐 누적됩니다.</li>
 <li><strong>큐비트 오류 위치 출력</strong> — 최종 은닉 상태를 두 FC 층과 Sigmoid를 거쳐 큐비트별 오류 확률 <span class="math inline">\(\hat{\epsilon} \in [0,1]^n\)</span>으로 환원합니다.</li>
 </ol>
-<p>이 QECCT가 강력하지만 무겁다는 점이 출발점입니다. 그대로는 엣지에 올릴 수 없습니다.</p>
+<p>이 QECCT가 강력하지만 무겁기 때문에, 그대로는 엣지에 올릴 수 없습니다.</p>
 <hr>
 </section>
 <section id="제안-방법-hybrid-kd-int8-ptq" class="level2">
@@ -334,7 +334,7 @@ window.Quarto = {
 <ul>
 <li><span class="math inline">\(L_{Task}\)</span> — 정답에 정합되도록 유도하는 항으로, BER·노이즈 추정기·LER 손실의 가중합입니다. LER 손실은 논리 연산자에 미분 가능 근사 함수를 적용합니다.</li>
 <li><span class="math inline">\(L_{re}\)</span> — <strong>응답 기반 KD</strong>. Teacher와 Student 출력은 각각 독립적인 이진 분류라 KL 대신 온도 <span class="math inline">\(\tau\)</span>로 평탄화한 logit에 MSE를 적용하고, 그래디언트 감쇠를 <span class="math inline">\(\tau^2\)</span> 계수로 보정합니다.</li>
-<li><span class="math inline">\(L_{attn}\)</span> — <strong>특징 기반 KD</strong>. Teacher의 마지막 블록들과 Student 블록을 1:1로 대응시키고, 차원 불일치는 학습 가능한 선형 프로젝션 <span class="math inline">\(\mathcal{P}\)</span>로 사상합니다. 채널 제곱 평균과 L2 정규화로 추출한 어텐션 맵을 MSE로 정렬합니다.</li>
+<li><span class="math inline">\(L_{attn}\)</span> — <strong>특징 기반 KD</strong>. Teacher의 마지막 블록들과 Student 블록을 1:1로 대응시키고, 차원 불일치는 학습 가능한 선형 프로젝션 <span class="math inline">\(\mathcal{P}\)</span>로 맞춥니다. 채널 제곱 평균과 L2 정규화로 추출한 어텐션 맵을 MSE로 정렬합니다.</li>
 </ul>
 <p>학습 초기에는 Student가 Teacher의 표현 공간으로 수렴하기 어려운데, 응답 기반과 특징 기반 KD를 결합한 Hybrid 구성으로 이 한계를 보완합니다. 실제 학습 곡선에서 <span class="math inline">\(L_{Task}\)</span>·<span class="math inline">\(L_{re}\)</span>는 초기에 빠르게 수렴하는 반면, <span class="math inline">\(L_{attn}\)</span>은 전 과정에 걸쳐 두 모델의 표현 공간을 미세 정렬하며 다른 수렴 양상을 보였습니다.</p>
 </section>
