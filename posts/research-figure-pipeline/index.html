@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Beomdo Park">
+<meta name="dcterms.date" content="2026-10-14">
+<meta name="description" content="Nano Banana MCP로 논문 Figure의 레이아웃 시안을 생성하고, 실제 그림은 데이터에서 계산하는 matplotlib/TikZ 코드로 빌드해 LaTeX에서 관리하는 제작 파이프라인을 정리했습니다.">
+
+<title>Nano Banana MCP와 LaTeX를 활용한 논문용 Figure 제작 파이프라인 – beomdo’s ML-DL blog</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-2a6013dcdbcaebb2fad9f218f7cf1d4a.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-55617497126496852ff9f5a59253c640.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><meta name="google-site-verification" content="tQV_UbBEk_vL_s9vxCne2Yd0GPHJ4vn8s2pPhfV0PYo">
+<meta name="naver-site-verification" content="6c1006d6edf85b99c51f1f82aabd2a4fd68ec739">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","author":{"@type":"Person","name":"Beomdo Park"},"dateModified":"October 14, 2026","datePublished":"October 14, 2026","description":"Nano Banana MCP로 논문 Figure의 레이아웃 시안을 생성하고, 실제 그림은 데이터에서 계산하는 matplotlib/TikZ 코드로 빌드해 LaTeX에서 관리하는 제작 파이프라인을 정리했습니다.","headline":"Nano Banana MCP와 LaTeX를 활용한 논문용 Figure 제작 파이프라인","image":"https://beomdo-park.github.io/figs/qec_decoder_concept.png","keywords":["ResearchVisualization생성형AIQEC"],"url":"https://beomdo-park.github.io"}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+<meta property="og:title" content="Nano Banana MCP와 LaTeX를 활용한 논문용 Figure 제작 파이프라인 – beomdo’s ML-DL blog">
+<meta property="og:description" content="Nano Banana MCP로 논문 Figure의 레이아웃 시안을 생성하고, 실제 그림은 데이터에서 계산하는 matplotlib/TikZ 코드로 빌드해 LaTeX에서 관리하는 제작 파이프라인을 정리했습니다.">
+<meta property="og:image" content="https://beomdo-park.github.io/posts/research-figure-pipeline/figs/qec_decoder_concept.png">
+<meta property="og:site_name" content="beomdo’s ML-DL blog">
+<meta property="og:image:height" content="553">
+<meta property="og:image:width" content="1696">
+</head>
+
+<body class="nav-fixed quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const queryPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    const darkModeDefault = queryPrefersDark.matches;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    queryPrefersDark.addEventListener("change", e => {
+      if(window.localStorage.getItem("quarto-color-scheme") !== null)
+        return;
+      const alternate = e.matches
+      toggleColorMode(alternate);
+      localAlternateSentinel = e.matches ? 'alternate' : 'default'; // this is used alongside local storage!
+      toggleGiscusIfUsed(alternate, darkModeDefault);
+    });
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">beomdo’s ML-DL blog</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/beomdo-park/QEnvS"> 
+<span class="menu-text">QEnvS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/beomdo-park/Portfolio"> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">Nano Banana MCP와 LaTeX를 활용한 논문용 Figure 제작 파이프라인</h1>
+                  <div>
+        <div class="description">
+          Nano Banana MCP로 논문 Figure의 레이아웃 시안을 생성하고, 실제 그림은 데이터에서 계산하는 matplotlib/TikZ 코드로 빌드해 LaTeX에서 관리하는 제작 파이프라인을 정리했습니다.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">Research</div>
+                <div class="quarto-category">Visualization</div>
+                <div class="quarto-category">생성형AI</div>
+                <div class="quarto-category">QEC</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Beomdo Park </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 14, 2026</p>
+      </div>
+    </div>
+    
+      <div>
+      <div class="quarto-title-meta-heading">Modified</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date-modified">October 14, 2026</p>
+      </div>
+    </div>
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#실험은-끝났는데-그림이-따라오지-않을-때" id="toc-실험은-끝났는데-그림이-따라오지-않을-때" class="nav-link active" data-scroll-target="#실험은-끝났는데-그림이-따라오지-않을-때">1. 실험은 끝났는데, 그림이 따라오지 않을 때</a></li>
+  <li><a href="#생성형-ai가-그린-그림을-그대로-쓸-수-없는-이유" id="toc-생성형-ai가-그린-그림을-그대로-쓸-수-없는-이유" class="nav-link" data-scroll-target="#생성형-ai가-그린-그림을-그대로-쓸-수-없는-이유">2. 생성형 AI가 그린 그림을 그대로 쓸 수 없는 이유</a></li>
+  <li><a href="#파이프라인-한눈에-보기" id="toc-파이프라인-한눈에-보기" class="nav-link" data-scroll-target="#파이프라인-한눈에-보기">3. 파이프라인 한눈에 보기</a></li>
+  <li><a href="#시안-생성-구도는-참고하되-세부-의미는-걸러내기" id="toc-시안-생성-구도는-참고하되-세부-의미는-걸러내기" class="nav-link" data-scroll-target="#시안-생성-구도는-참고하되-세부-의미는-걸러내기">4. 시안 생성: 구도는 참고하되 세부 의미는 걸러내기</a></li>
+  <li><a href="#코드-빌드-데이터에서-직접-계산해-그리기" id="toc-코드-빌드-데이터에서-직접-계산해-그리기" class="nav-link" data-scroll-target="#코드-빌드-데이터에서-직접-계산해-그리기">5. 코드 빌드: 데이터에서 직접 계산해 그리기</a></li>
+  <li><a href="#검증-렌더를-직접-봐야-보이는-것들" id="toc-검증-렌더를-직접-봐야-보이는-것들" class="nav-link" data-scroll-target="#검증-렌더를-직접-봐야-보이는-것들">6. 검증: 렌더를 직접 봐야 보이는 것들</a></li>
+  <li><a href="#latex에-넣고-계속-유지보수하기" id="toc-latex에-넣고-계속-유지보수하기" class="nav-link" data-scroll-target="#latex에-넣고-계속-유지보수하기">7. LaTeX에 넣고, 계속 유지보수하기</a></li>
+  <li><a href="#마치며" id="toc-마치며" class="nav-link" data-scroll-target="#마치며">8. 마치며</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
+
+
+
+
+
+
+<blockquote class="blockquote">
+<p>실험이 끝나고 표를 정리할 때까지는 괜찮은데, 그 결과를 한 장의 그림으로 압축해 보여줘야 할 때 막막해지곤 합니다. 이 글은 그 과정을 조금 수월하게 처리하기 위해 제가 쓰고 있는 파이프라인과, 생성형 AI를 쓰면서 지키고 있는 기준을 정리한 기록입니다.</p>
+</blockquote>
+<hr>
+<section id="실험은-끝났는데-그림이-따라오지-않을-때" class="level2">
+<h2 class="anchored" data-anchor-id="실험은-끝났는데-그림이-따라오지-않을-때">1. 실험은 끝났는데, 그림이 따라오지 않을 때</h2>
+<p>연구를 하다 보면 실험과 시각화 사이의 불균형을 자주 느낍니다. 몇 주 동안 실험을 설계하고, 노이즈 모델을 바꿔가며 수백 번 돌리고, 수치를 검증하는 데는 시간을 아끼지 않습니다. 그런데 정작 그 결과를 보여주는 그림은 마감 직전에 기본 설정 그대로 뽑아낸 플롯인 경우가 많습니다.</p>
+<p>축 라벨은 작아서 인쇄하면 잘 읽히지 않고, 개념도는 파워포인트 도형을 이어 붙인 티가 나며, 정작 하고 싶은 말은 캡션 세 줄에 숨어 있습니다. 탑티어 학회 논문들을 보면 한 장의 그림이 캡션 없이도 핵심 주장을 전달하는데, 그 차이가 실험의 질보다 표현 방식에서 오는 경우가 생각보다 많습니다.</p>
+<p>저도 이 부분이 늘 아쉬워서 그림을 만드는 과정을 하나의 파이프라인으로 정리했고, 그 안에 생성형 AI를 일부 도입했습니다. 다만 AI가 개입하는 위치는 명확하게 제한했습니다.</p>
+</section>
+<section id="생성형-ai가-그린-그림을-그대로-쓸-수-없는-이유" class="level2">
+<h2 class="anchored" data-anchor-id="생성형-ai가-그린-그림을-그대로-쓸-수-없는-이유">2. 생성형 AI가 그린 그림을 그대로 쓸 수 없는 이유</h2>
+<p>요즘 이미지 생성 모델은 꽤 그럴듯한 과학 일러스트를 그려냅니다. “이 실험 결과를 깔끔한 그래프로 그려줘”라고 하면 보기 좋은 이미지가 바로 나옵니다. 하지만 연구자에게 이건 논문에 쓸 수 없는 그림입니다. <strong>생성 모델이 그린 숫자와 곡선은 실제 데이터에서 계산된 것이 아니기 때문입니다.</strong> 아무리 깔끔해 보여도 실험 결과를 담는 그림에 데이터와 무관하게 생성된 요소가 들어가면, 그것은 시각화가 아니라 왜곡에 가까워집니다.</p>
+<p>그래서 기준을 단순하게 잡았습니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>역할</th>
+<th>담당</th>
+<th>이유</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>배치, 구도, 시각적 표현 탐색</td>
+<td><strong>생성형 AI</strong> (시안)</td>
+<td>빈 화면에서 구도를 고민하는 시간을 줄여 줌</td>
+</tr>
+<tr class="even">
+<td>그림에 들어가는 모든 수치와 의미</td>
+<td><strong>코드</strong> (matplotlib / TikZ)</td>
+<td>데이터에서 직접 계산되어야 재현과 검증이 가능함</td>
+</tr>
+<tr class="odd">
+<td>최종 판단 및 교차 확인</td>
+<td><strong>연구자</strong></td>
+<td>라벨의 의미와 수치 일치 여부는 사람이 직접 대조해야 함</td>
+</tr>
+</tbody>
+</table>
+<p>AI는 구도를 잡는 초안 용도로만 쓰고, 실제 그림은 전부 코드가 그립니다.</p>
+</section>
+<section id="파이프라인-한눈에-보기" class="level2">
+<h2 class="anchored" data-anchor-id="파이프라인-한눈에-보기">3. 파이프라인 한눈에 보기</h2>
+<p>저는 이 과정을 Claude Code의 스킬로 묶어 두고, 피규어를 만들 때마다 동일한 순서를 밟습니다. 사용하는 도구는 아래와 같습니다.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>구분</th>
+<th>도구</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>레이아웃 시안</td>
+<td>Nano Banana (Gemini 이미지 모델)</td>
+<td>이번 예시는 <code>gemini-3-pro-image-preview</code>로 생성</td>
+</tr>
+<tr class="even">
+<td>MCP 서버</td>
+<td><a href="https://github.com/shinpr/mcp-image">shinpr/mcp-image</a></td>
+<td>Claude Code에서 이미지 모델을 호출하는 MCP 서버 (MIT 라이선스, <code>npx -y mcp-image</code>로 실행)</td>
+</tr>
+<tr class="odd">
+<td>Figure 빌드</td>
+<td>matplotlib, TikZ</td>
+<td>데이터 플롯은 matplotlib, 개념도는 TikZ</td>
+</tr>
+<tr class="even">
+<td>문서 조판</td>
+<td>LaTeX</td>
+<td>빌드된 PDF를 <code>\includegraphics</code>로 삽입</td>
+</tr>
+<tr class="odd">
+<td>오케스트레이션</td>
+<td>Claude Code 스킬</td>
+<td>시안 생성부터 검증까지 단계를 고정</td>
+</tr>
+</tbody>
+</table>
+<p>단계별 흐름은 다음과 같습니다.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>단계</th>
+<th>하는 일</th>
+<th>핵심 체크포인트</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0. 질문 정의</td>
+<td>이 그림이 답할 질문을 한 문장으로 정리</td>
+<td>그림이 전달할 핵심 메시지 고정</td>
+</tr>
+<tr class="even">
+<td>1. 진단</td>
+<td>기존 그림의 정보 밀도, 폰트, 라벨 의미 점검</td>
+<td>캡션에만 적힌 주요 조건을 그림 안으로 이동</td>
+</tr>
+<tr class="odd">
+<td>2. 시안 생성</td>
+<td>Nano Banana로 배치가 다른 시안 2~3개 생성</td>
+<td>전체 레이아웃과 구도만 참고, 내부 텍스트와 수치는 무시</td>
+</tr>
+<tr class="even">
+<td>3. 코드 빌드</td>
+<td>데이터 플롯은 matplotlib, 개념도는 TikZ로 작성</td>
+<td>모든 색상과 수치는 원본 데이터 파일에서 직접 계산</td>
+</tr>
+<tr class="odd">
+<td>4. 시각 검증</td>
+<td>렌더링된 PNG를 열어 라벨, 수치, 겹침, 폰트 확인</td>
+<td>컴파일 성공 여부와 별개로 눈으로 직접 결함 확인</td>
+</tr>
+<tr class="even">
+<td>5. 캡션 작성</td>
+<td>첫 문장에 그림의 핵심 결론을 굵게 요약</td>
+<td>그림 안에 다 넣지 못한 실험 조건만 캡션에 보충</td>
+</tr>
+</tbody>
+</table>
+<p>이번 글에서는 제 연구 주제인 <strong>표면 부호(surface code) 양자 오류 정정 디코더</strong>의 개념도를 예시로 이 과정을 처음부터 끝까지 돌려 보겠습니다. 그림이 답해야 할 질문은 아래와 같이 정했습니다.</p>
+<blockquote class="blockquote">
+<p><em>“학습된 Transformer 디코더는 거리 3 표면 부호의 신드롬 측정값을 어떻게 큐비트 보정값으로 바꾸는가?”</em></p>
+</blockquote>
+</section>
+<section id="시안-생성-구도는-참고하되-세부-의미는-걸러내기" class="level2">
+<h2 class="anchored" data-anchor-id="시안-생성-구도는-참고하되-세부-의미는-걸러내기">4. 시안 생성: 구도는 참고하되 세부 의미는 걸러내기</h2>
+<p>프롬프트는 그때그때 즉흥적으로 쓰지 않고 정해둔 템플릿을 채워서 씁니다. 역할, 핵심 질문, 레이아웃, 패널별 요소, 스타일 토큰, 금지 조건을 항목별로 명시해 두면 비슷한 톤의 시안을 일관되게 얻을 수 있습니다.</p>
+<pre class="text"><code>[ROLE]     Scientific figure designer for a top-tier ML venue (NeurIPS/ICLR).
+[QUESTION] How does a learned Transformer decoder turn noisy stabilizer
+           measurements on a distance-3 surface code into a qubit correction?
+[LAYOUT]   Three panels left-to-right connected by bold arrows:
+           (1) lattice with errors and syndromes, (2) decoder, (3) corrected lattice.
+[ELEMENTS] Panel 1: 3x3 data qubits, 8 stabilizers, two errors, three syndromes ...
+[STYLE]    Flat vector, white background, thin #333 outlines,
+           colorblind-safe palette (teal #1b9e77, orange #d95f02) ...
+[FORBID]   No photorealism, no 3D, no gradients, no tiny unreadable text ...</code></pre>
+<p>레이아웃 조건만 바꿔 시안을 두 개 뽑았습니다. 아래는 그중 좌우 3패널 구성입니다.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/ai_draft_A.jpg" class="img-fluid figure-img" style="width:85.0%"></p>
+<figcaption>Nano Banana 시안 A. 배치는 좋지만, 의미를 대조하면 여러 곳이 맞지 않습니다.</figcaption>
+</figure>
+</div>
+<p>얼핏 보면 구도도 깔끔하고 색상도 절제되어 있어 그럴듯해 보입니다. 하지만 도메인 지식을 기준으로 하나씩 대조해 보면 맞지 않는 부분이 바로 드러납니다.</p>
+<ul>
+<li>발생한 오류는 <strong>2개</strong>인데, 보정된 큐비트는 <strong>5개</strong>로 표시되어 있습니다.</li>
+<li>출력 마스크에는 보정이 2칸만 칠해져 있는데, 오른쪽 격자에는 5개가 표시되어 앞뒤가 맞지 않습니다.</li>
+<li>신드롬 벡터가 실제 안정자 개수인 8칸이 아니라 <strong>9칸</strong>으로 그려져 있습니다.</li>
+</ul>
+<p>다른 레이아웃의 시안 역시 격자 자체가 거리 3 구조가 아니었고, 오류 위치와 보정 위치가 어긋나 있었습니다. 어느 쪽도 그대로 논문에 쓸 수 없는 그림입니다. 생성 모델은 시각적으로 그럴듯한 형태를 만들 뿐, 물리적 의미나 수학적 정합성까지 보장하지는 않기 때문입니다.</p>
+<p>따라서 시안에서는 코드로 구현할 때 참고할 시각적 아이디어만 추려냅니다.</p>
+<ul>
+<li>좌에서 우로 이어지는 3패널 흐름과, 반복 측정 라운드를 겹친 카드로 표현한 구도</li>
+<li>디코더 내부를 아래에서 위로 쌓인 레이어 블록으로 도식화한 방식</li>
+<li>입출력을 1차원 비트 띠로 보여주는 표현과, 다른 시안의 색상 범례 구성</li>
+</ul>
+</section>
+<section id="코드-빌드-데이터에서-직접-계산해-그리기" class="level2">
+<h2 class="anchored" data-anchor-id="코드-빌드-데이터에서-직접-계산해-그리기">5. 코드 빌드: 데이터에서 직접 계산해 그리기</h2>
+<p>이제 추려낸 구도를 바탕으로 코드로 다시 그립니다. 핵심은 손으로 직접 색칠하지 않는 것입니다. 각 안정자가 어떤 큐비트를 검사하는지, 몇 번 큐비트에 오류가 발생했는지만 JSON 파일에 정의하고, 실제로 어떤 안정자에 불이 켜지는지는 스크립트가 패리티(parity) 연산으로 계산하게 합니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode json code-with-copy"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"stabilizers"</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">"name"</span><span class="fu">:</span> <span class="st">"B00"</span><span class="fu">,</span> <span class="dt">"kind"</span><span class="fu">:</span> <span class="st">"bulk"</span><span class="fu">,</span>     <span class="dt">"support"</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">0</span><span class="ot">,</span> <span class="dv">1</span><span class="ot">,</span> <span class="dv">3</span><span class="ot">,</span> <span class="dv">4</span><span class="ot">]</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">"name"</span><span class="fu">:</span> <span class="st">"T"</span><span class="fu">,</span>   <span class="dt">"kind"</span><span class="fu">:</span> <span class="st">"boundary"</span><span class="fu">,</span> <span class="dt">"support"</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">0</span><span class="ot">,</span> <span class="dv">1</span><span class="ot">]</span><span class="fu">,</span> <span class="dt">"side"</span><span class="fu">:</span> <span class="st">"top"</span><span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"..."</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"errors"</span><span class="fu">:</span> <span class="ot">[</span><span class="dv">0</span><span class="ot">,</span> <span class="dv">8</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">"rounds"</span><span class="fu">:</span> <span class="dv">3</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> <span class="bu">set</span>(DATA[<span class="st">"errors"</span>])      <span class="co"># JSON의 리스트를 집합으로 읽어 둠</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>correction <span class="op">=</span> <span class="bu">set</span>(errors)          <span class="co"># 개념 예시: 복호가 성공했다고 가정</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parity(stab, flips):</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(q <span class="kw">in</span> flips <span class="cf">for</span> q <span class="kw">in</span> stab[<span class="st">"support"</span>]) <span class="op">%</span> <span class="dv">2</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>syndrome <span class="op">=</span> [parity(s, errors) <span class="cf">for</span> s <span class="kw">in</span> STABS]               <span class="co"># 켜지는 안정자 계산</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>residual <span class="op">=</span> [parity(s, errors <span class="op">^</span> correction) <span class="cf">for</span> s <span class="kw">in</span> STABS]  <span class="co"># 보정 후 잔여 신드롬</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(syndrome) <span class="op">==</span> <span class="dv">8</span> <span class="kw">and</span> <span class="bu">sum</span>(residual) <span class="op">==</span> <span class="dv">0</span>            <span class="co"># 보정 후 잔여 신드롬이 0인지 검증</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>이렇게 구성해 두면 예시 오류 위치를 바꾸더라도 신드롬, 비트 띠, 보정 큐비트 표시가 함께 바뀝니다. 그림의 일부만 수동으로 고치다가 앞뒤가 안 맞게 되는 실수가 생기지 않습니다. 마지막 <code>assert</code> 구문은 “보정 후 모든 안정자가 만족된다”는 조건이 깨지면 그림이 아예 저장되지 않도록 막는 안전장치입니다.</p>
+<p>그림 크기도 처음부터 학회 인쇄 폭에 맞춥니다. NeurIPS나 ICLR의 단일 컬럼(1단) 본문 폭인 5.5인치로 캔버스를 잡고 폰트를 8pt 이상으로 고정하면, LaTeX에 <code>width=\linewidth</code>로 넣었을 때 1:1 비율로 들어가 글씨가 작아지지 않습니다. 피규어 글씨가 작아 읽히지 않는 문제는 대부분 큰 캔버스에 그린 뒤 본문 폭에 맞춰 축소할 때 생깁니다.</p>
+</section>
+<section id="검증-렌더를-직접-봐야-보이는-것들" class="level2">
+<h2 class="anchored" data-anchor-id="검증-렌더를-직접-봐야-보이는-것들">6. 검증: 렌더를 직접 봐야 보이는 것들</h2>
+<p>스크립트가 에러 없이 실행됐다고 끝은 아닙니다. 렌더링된 PNG 파일을 직접 열어 눈으로 확인해야 합니다. 이번 작업에서도 첫 렌더링 결과물에는 시각적 결함이 있었습니다. 데이터의 의미는 다 맞았지만, 레이어 이름이 어텐션 도식과 겹치고, 패널 하단 설명이 테두리 밖으로 삐져나왔으며, 범례 텍스트가 옆 아이콘에 바짝 붙어 있었습니다. 모두 코드 실행 단계에서는 에러로 잡히지 않는 문제들입니다.</p>
+<p>화살표 위에 있던 비트 띠를 패널 안쪽으로 옮겨 아예 겹치지 않게 하고, 화살표 모서리의 미세한 끊김까지 수정해 최종본을 완성했습니다.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figs/qec_decoder_concept.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>최종본. 오류 2개가 안정자 4개를 켜고(a), 디코더가 8비트 신드롬을 받아 9비트 보정 마스크를 내며(b), 보정 후 모든 안정자가 만족됩니다(c). 모든 색은 데이터에서 계산되었으며, 보정은 복호 성공을 가정한 개념 예시입니다.</figcaption>
+</figure>
+</div>
+<p>초기 AI 시안과 나란히 놓고 보면 전체적인 배치는 가져왔지만, 최종본에서는 <strong>오류 2개 → 켜진 안정자 4개 → 8비트 신드롬 → 9비트 보정 마스크 → 잔여 신드롬 0</strong>까지 모든 수치가 맞아떨어집니다. 그림 안에 비트 수와 범례를 직접 배치해 캡션을 길게 읽지 않아도 흐름을 파악할 수 있게 했습니다.</p>
+</section>
+<section id="latex에-넣고-계속-유지보수하기" class="level2">
+<h2 class="anchored" data-anchor-id="latex에-넣고-계속-유지보수하기">7. LaTeX에 넣고, 계속 유지보수하기</h2>
+<p>빌드 스크립트는 논문 삽입용 벡터 파일(PDF)과 시각 검증용 이미지(PNG)를 동시에 출력합니다. LaTeX 문서에는 아래처럼 불러오기만 하면 됩니다.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode latex code-with-copy"><code class="sourceCode latex"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">\begin</span>{<span class="ex">figure</span>}[t]</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">\centering</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="bu">\includegraphics</span>[width=<span class="fu">\linewidth</span>]{<span class="ex">figs/qec_decoder_concept.pdf</span>}</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">\caption</span>{<span class="fu">\textbf</span>{A learned decoder maps an 8-bit syndrome to a 9-bit correction.}</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>           (a) Two errors trigger four stabilizers. (b) ... (c) ...}</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">\end</span>{<span class="ex">figure</span>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>이 방식을 계속 쓰는 가장 큰 이유는 유지보수가 편하기 때문입니다. 리뷰어가 다른 오류 패턴에 대한 예시를 요청하면 JSON 파일에서 <code>errors</code> 한 줄만 고치고 스크립트를 다시 실행하면 됩니다. 목표 학회가 바뀌어 색상 톤을 조정해야 할 때도 팔레트 딕셔너리만 수정하면 일괄 반영됩니다. 피규어가 데이터와 코드로 남아 있으니 몇 달 뒤의 저나 공동 저자도 같은 그림을 다시 만들 수 있습니다. 파워포인트나 일러스트레이터로 직접 그린 그림은 이런 식의 관리가 어렵습니다.</p>
+</section>
+<section id="마치며" class="level2">
+<h2 class="anchored" data-anchor-id="마치며">8. 마치며</h2>
+<p>생성형 AI를 연구에 활용하는 방법은 다양하지만, 적어도 논문 피규어를 만들 때는 역할 분담이 명확해야 한다고 생각합니다. AI가 잘하는 일은 빈 화면 앞에서 “어떻게 배치할까?”를 고민하는 초기 탐색 시간을 줄여 주는 것이고, 못하는 일은 데이터와 수식의 정합성을 끝까지 지키는 것입니다. 그렇다면 구도와 표현 아이디어는 AI에게서 얻고, 정확성과 재현성은 코드로 보장하면 됩니다.</p>
+<p>이번 예시 그림 하나를 만드는 동안에도 AI 시안에서 의미 오류 3가지를 걸러냈고, 첫 코드 렌더링에서 레이아웃 겹침 3가지를 수정했습니다. 어느 것도 자동으로 해결되지 않았고, 결국 사람이 직접 눈으로 대조하며 잡아야 했습니다. 도구가 아무리 발전해도 파이프라인의 마지막 단계는 연구자의 직접 검토여야 하는 이유입니다.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="요약">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>요약
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>생성형 AI는 초기 배치와 구도 시안을 잡는 용도로만 쓰고, 실제 그림 속 수치와 요소는 데이터에서 계산하는 코드로 그립니다.</li>
+<li>프롬프트는 템플릿화하고, 그림은 학회 인쇄 폭과 8pt 이상 폰트 기준으로 작성하며, 결과물은 PDF + 스크립트 + 데이터 형태로 남겨 유지보수합니다.</li>
+<li>코드가 에러 없이 실행된 후에도 렌더링된 이미지를 직접 열어 텍스트 겹침과 수치 일치 여부를 검토합니다.</li>
+</ul>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled" title="연구 윤리 및 사용 범위에 관한 고지">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>연구 윤리 및 사용 범위에 관한 고지
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>본 글에서 다루는 생성형 AI 활용은 <strong>연구 결과를 생성하거나 대체하기 위한 것이 아니라</strong>, 이미 확보하고 검증한 연구 내용을 보다 명료하게 전달하기 위한 <strong>시각화와 발표 효율 향상 도구</strong>로서의 활용입니다.</p>
+<ul>
+<li>그림에 표시되는 모든 수치와 의미는 연구자가 직접 확보한 데이터와 정의로부터 <strong>코드로 계산</strong>되며, 생성형 AI는 배치와 구도의 <strong>시안</strong>에만 관여합니다.</li>
+<li>생성형 AI가 제안한 시안, 코드, 문구는 최종 반영 전에 반드시 <strong>연구자의 검토와 검증</strong>을 거치며, 그 결과물에 대한 책임은 전적으로 <strong>저자</strong>에게 있습니다.</li>
+<li>학술지나 학회에 투고할 때에는 해당 기관의 생성형 AI 활용 정책을 확인하고, 요구되는 경우 사용 사실을 명시해야 합니다.</li>
+</ul>
+<p>본문의 예시 그림은 개념 설명용이며, 실제 실험 결과를 나타내지 않습니다.</p>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/beomdo-park\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© 2026, Beomdo-Park. Powered by Quarto.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/beomdo-park/">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+    <li class="nav-item">
+    <a class="nav-link" href="https://beomdo-park.github.io/sitemap.xml">
+<p>Sitemap</p>
+</a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
