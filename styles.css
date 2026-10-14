@@ -240,3 +240,22 @@ body.quarto-dark .sourceCode .at {
   color: #fe91a5;
 }
 
+/* ---- grid 리스팅 카드 커스터마이징 ---- */
+/* 썸네일 세로 높이 키우기 (조금 더 크게) */
+.quarto-grid-item .card-img-top,
+.quarto-grid-item img.thumbnail-image {
+  height: 245px;
+  object-fit: cover;
+}
+
+/* 설명(description) 최대 3줄로 제한 — 길면 … 처리 */
+.quarto-grid-item .listing-description,
+.quarto-grid-item .card-text.listing-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
