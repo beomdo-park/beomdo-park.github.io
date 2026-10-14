@@ -1,3 +1,10 @@
 /.quarto/
 .venv
 site_libs/
+# Quarto build artifacts
+/_site/
+/docs/
+/.quarto/
+*_scss_error.scss
+_quarto_internal_*.scss
+__pycache__/

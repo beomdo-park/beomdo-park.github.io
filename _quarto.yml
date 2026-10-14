@@ -1,6 +1,6 @@
 project:
   type: website
-  output-dir: docs
+  output-dir: _site
   pre-render:
     - python scripts/update_profile_readme.py
 
@@ -17,18 +17,16 @@ website:
         text: Home
       - href: about.qmd
         text: About
-      - text: "My Tech Stacks" # 드롭다운 메뉴 예시
-        menu: # "My Tech Stacks"의 하위 메뉴로 들여쓰기
-          - text: "Python"
-            # href: "/posts/index.html?category=Python" # 카테고리별 필터링 링크 예시 (Quarto 1.4+ 스타일)
-          - text: "Machine Learning"
-            # href: "/posts/index.html?category=MachineLearning" # 카테고리별 필터링 링크 예시
     right:
+      - text: QEnvS
+        href: https://github.com/beomdo-park/QEnvS
+      - text: Portfolio
+        href: https://github.com/beomdo-park/Portfolio
       - icon: github
         href: https://github.com/beomdo-park
 
   page-footer:
-    left: "© 2025, Beomdo-Park. Powered by Quarto."
+    left: "© 2026, Beomdo-Park. Powered by Quarto."
     right:
       - icon: github
         href: https://github.com/beomdo-park/
@@ -46,7 +44,4 @@ format:
       dark: [cosmo, theme-dark.scss]
     css: styles.css
     toc: true
-
-    respect-user-color-scheme: true # 사용자 시스템 설정 존중
-
-# editor: visual
+    respect-user-color-scheme: true
