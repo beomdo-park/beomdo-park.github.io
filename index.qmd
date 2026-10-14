@@ -8,6 +8,8 @@ listing:
   sort: "date desc"
   type: grid
   grid-columns: 2
+  image-height: 205px
+  image-placeholder: assets/thumb-placeholder.png
   categories: true
   sort-ui: false
   filter-ui: true

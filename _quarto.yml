@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: _site
+  resources:
+    - assets/thumb-placeholder.png
   pre-render:
     - python scripts/update_profile_readme.py
 

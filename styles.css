@@ -241,11 +241,12 @@ body.quarto-dark .sourceCode .at {
 }
 
 /* ---- grid 리스팅 카드 커스터마이징 ---- */
-/* 썸네일 세로 높이 키우기 (조금 더 크게) */
-.quarto-grid-item .card-img-top,
-.quarto-grid-item img.thumbnail-image {
-  height: 245px;
-  object-fit: cover;
+/* 썸네일 높이는 index.qmd의 listing image-height로 지정 (Quarto가 img에 인라인으로 넣음) */
+.quarto-grid-item p.card-img-top > img.thumbnail-image {
+  object-fit: contain;      /* 그림이 잘리지 않게 전체 표시 */
+  background: #ffffff;      /* 대부분 흰 배경 figure라 여백이 자연스럽게 이어짐 */
+  padding: 8px;
+  box-sizing: border-box;
 }
 
 /* 설명(description) 최대 3줄로 제한 — 길면 … 처리 */

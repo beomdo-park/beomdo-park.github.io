@@ -5,7 +5,7 @@ date: "2026-10-14"
 author: "Beomdo Park"
 categories: ["Research", "Visualization", "생성형AI", "QEC"]
 tags: ["논문피규어", "NanoBanana", "matplotlib", "TikZ", "LaTeX", "연구윤리"]
-image: "figs/qec_decoder_concept.png"
+image: "figs/thumbnail.png"
 page-layout: full
 freeze: true
 ---
