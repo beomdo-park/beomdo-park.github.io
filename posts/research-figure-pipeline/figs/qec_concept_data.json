@@ -1,0 +1,16 @@
+{
+  "_note": "d=3 surface code concept figure source. Qubit index q = 3*row + col. Stabilizer supports are the single source of truth; syndrome and correction are computed from them in the script.",
+  "n_data": 9,
+  "stabilizers": [
+    {"name": "B00", "kind": "bulk",     "support": [0, 1, 3, 4]},
+    {"name": "B01", "kind": "bulk",     "support": [1, 2, 4, 5]},
+    {"name": "B10", "kind": "bulk",     "support": [3, 4, 6, 7]},
+    {"name": "B11", "kind": "bulk",     "support": [4, 5, 7, 8]},
+    {"name": "T",   "kind": "boundary", "support": [0, 1], "side": "top"},
+    {"name": "R",   "kind": "boundary", "support": [2, 5], "side": "right"},
+    {"name": "Bt",  "kind": "boundary", "support": [7, 8], "side": "bottom"},
+    {"name": "L",   "kind": "boundary", "support": [3, 6], "side": "left"}
+  ],
+  "errors": [0, 8],
+  "rounds": 3
+}
