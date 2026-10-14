@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.9.38">
+<meta name="generator" content="quarto-1.10.19">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -12,10 +12,13 @@
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
 */
-code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
-div.columns{display: flex; gap: min(4vw, 1.5em);}
-div.column{flex: auto; overflow-x: auto;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
 div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
@@ -39,14 +42,14 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-0a6b7249c26820e032cb0bd839ff02b1.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b626d73c4c936ccc3cb08be7d45d1df6.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-449398c54e7bcb67529d72fd4cd6dde9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-f1c89de65a87d86550558ad15b9487db.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-449398c54e7bcb67529d72fd4cd6dde9.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-8dc96f8f5064c7c551e5af5f0142611b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-c98f6326236142c3f9f3f0258749c8fb.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-8dc96f8f5064c7c551e5af5f0142611b.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -280,17 +283,16 @@ ul.task-list li input[type="checkbox"] {
     <a class="nav-link active" href="./about.html" aria-current="page"> 
 <span class="menu-text">About</span></a>
   </li>  
-  <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-my-tech-stacks" role="link" data-bs-toggle="dropdown" aria-expanded="false">
- <span class="menu-text">My Tech Stacks</span>
-    </a>
-    <ul class="dropdown-menu" aria-labelledby="nav-menu-my-tech-stacks">    
-        <li class="dropdown-header">Python</li>
-        <li class="dropdown-header">Machine Learning</li>
-    </ul>
-  </li>
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/beomdo-park/QEnvS"> 
+<span class="menu-text">QEnvS</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/beomdo-park/Portfolio"> 
+<span class="menu-text">Portfolio</span></a>
+  </li>  
   <li class="nav-item compact">
     <a class="nav-link" href="https://github.com/beomdo-park"> <i class="bi bi-github" role="img">
 </i> 
@@ -336,15 +338,52 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 4th-year Computer Engineering Student, <b>Hanbat National University (HBNU)</b>.
 </li>
 </ul>
-<b>📂 You can check out my portfolios:</b>&nbsp; <a href="https://beomdo-park.github.io"><b>Blog</b></a> |&nbsp; <a href="https://github.com/beomdo-park/Portfolio"><b>Repository</b></a>
+<b>📂 You can check out my portfolios:</b><br> <a href="https://beomdo-park.github.io"><img src="https://img.shields.io/badge/Blog-222831?style=flat-square&amp;logo=githubpages&amp;logoColor=white"></a> <a href="https://github.com/beomdo-park/Portfolio"><img src="https://img.shields.io/badge/Repository-181717?style=flat-square&amp;logo=github&amp;logoColor=white"></a> <a href="https://orcid.org/0009-0005-9994-6369"><img src="https://img.shields.io/badge/ORCID-A6CE39?style=flat-square&amp;logo=orcid&amp;logoColor=white"></a> <a href="https://scholar.google.com/citations?user=MHh0xpwAAAAJ&amp;hl=ko"><img src="https://img.shields.io/badge/Scholar-4285F4?style=flat-square&amp;logo=googlescholar&amp;logoColor=white"></a> <a href="https://www.dbpia.co.kr/author/authorDetail?ancId=535212349"><img src="https://img.shields.io/badge/DBpia-1E64C8?style=flat-square&amp;logo=readme&amp;logoColor=white"></a>
 </td>
 <td width="30%" align="center" style="vertical-align: middle;">
 <a href="https://sites.google.com/view/ecoai/introduction"> <img src="https://github.com/user-attachments/assets/98519fd4-3bb6-4e5a-a831-2561cbfc41d3" width="260" alt="EcoAI Lab Logo"> </a> <br> <a href="https://sites.google.com/view/ecoai/introduction"><b>[Link]</b></a>
 </td>
 </tr>
 </tbody></table>
+<div data-align="center">
+<p><code>Quantum Batteries</code>&nbsp;·&nbsp;<code>Reinforcement Learning</code>&nbsp;·&nbsp;<code>Quantum Error Correction</code>&nbsp;·&nbsp;<code>Quantum AI</code></p>
+<section id="at-a-glance" class="level2">
+<h2 class="anchored" data-anchor-id="at-a-glance">📊 At a Glance</h2>
+<!-- STATS:START -->
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: center;">Journal</th>
+<th style="text-align: center;">Conference</th>
+<th style="text-align: center;">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">International</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;"><strong>8</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Domestic</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;"><strong>11</strong></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Total</td>
+<td style="text-align: center;"><strong>2</strong></td>
+<td style="text-align: center;"><strong>17</strong></td>
+<td style="text-align: center;"><strong>19</strong></td>
+</tr>
+</tbody>
+</table>
+<!-- STATS:END -->
+</section>
 <section id="tech-stack" class="level2">
-<h2 class="anchored" data-anchor-id="tech-stack">Tech Stack</h2>
+<h2 class="anchored" data-anchor-id="tech-stack">🛠️ Tech Stack</h2>
 <section id="languages" class="level3">
 <h3 class="anchored" data-anchor-id="languages">Languages</h3>
 <p>
@@ -354,23 +393,72 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 <section id="ai-quantum-sciences" class="level3">
 <h3 class="anchored" data-anchor-id="ai-quantum-sciences">AI &amp; Quantum Sciences</h3>
 <p>
-<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&amp;logo=PyTorch&amp;logoColor=white"> <img src="https://img.shields.io/badge/IBM_Qiskit-6929C4?style=flat-square&amp;logo=Qiskit&amp;logoColor=white"> <img src="https://img.shields.io/badge/Reinforcement_Learning-448C8A?style=flat-square"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&amp;logo=scikit-learn&amp;logoColor=white">
+<img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=flat-square&amp;logo=PyTorch&amp;logoColor=white"> <img src="https://img.shields.io/badge/IBM_Qiskit-6929C4?style=flat-square&amp;logo=Qiskit&amp;logoColor=white"> <img src="https://img.shields.io/badge/Reinforcement_Learning-448C8A?style=flat-square"> <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&amp;logo=scikit-learn&amp;logoColor=white"> <img src="https://img.shields.io/badge/Stable--Baselines3-6A5ACD?style=flat-square"> <img src="https://img.shields.io/badge/Gymnasium-2E8B57?style=flat-square"> <img src="https://img.shields.io/badge/Stim-5C2D91?style=flat-square"> <img src="https://img.shields.io/badge/QuTiP-009688?style=flat-square">
 </p>
 </section>
 <section id="data-tools" class="level3">
 <h3 class="anchored" data-anchor-id="data-tools">Data &amp; Tools</h3>
 <p>
-<img src="https://img.shields.io/badge/Pandas-150458?style=flat-square&amp;logo=pandas&amp;logoColor=white"> <img src="https://img.shields.io/badge/Matplotlib-000000?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/Seaborn-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&amp;logo=PostgreSQL&amp;logoColor=white"> <img src="https://img.shields.io/badge/Selenium-43B02A?style=flat-square&amp;logo=Selenium&amp;logoColor=white"> <img src="https://img.shields.io/badge/Quarto-4B4B8A?style=flat-square&amp;logo=Quarto&amp;logoColor=white">
+<img src="https://img.shields.io/badge/NumPy-013243?style=flat-square&amp;logo=numpy&amp;logoColor=white"> <img src="https://img.shields.io/badge/Pandas-150458?style=flat-square&amp;logo=pandas&amp;logoColor=white"> <img src="https://img.shields.io/badge/Matplotlib-000000?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/Seaborn-3776AB?style=flat-square&amp;logo=python&amp;logoColor=white"> <img src="https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&amp;logo=PostgreSQL&amp;logoColor=white"> <img src="https://img.shields.io/badge/Selenium-43B02A?style=flat-square&amp;logo=Selenium&amp;logoColor=white"> <img src="https://img.shields.io/badge/Quarto-4B4B8A?style=flat-square&amp;logo=Quarto&amp;logoColor=white"> <img src="https://img.shields.io/badge/Vivado-E80022?style=flat-square&amp;logo=amd&amp;logoColor=white">
 </p>
 </section>
 </section>
-<section id="activities" class="level2">
-<h2 class="anchored" data-anchor-id="activities">Activities</h2>
+<section id="featured-project" class="level2">
+<h2 class="anchored" data-anchor-id="featured-project">🚀 Featured Project</h2>
+<p><strong><a href="https://github.com/beomdo-park/QEnvS">QEnvS</a> — Quantum Control Environments</strong> &nbsp;<sub>(오픈소스)</sub><br>
+강화학습과 최적제어를 위한 <strong>물리 검증 양자 제어 환경</strong> 라이브러리. 양자 배터리, 상태 전송, open system 모델을 해석해와 QuTiP로 교차검증한 JAX 기반 패키지.</p>
+<p><strong>ROQET — On-Device QEC Decoder SoC</strong> &nbsp;<sub>(Capstone 2026)</sub><br>
+Surface-code 양자오류정정용 <strong>Transformer 디코더(지식증류 student 모델)</strong> 를 <strong>RTL→FPGA</strong>로 구현하는 온디바이스 AI 가속기 SoC.</p>
+</section>
+<section id="research-timeline" class="level2">
+<h2 class="anchored" data-anchor-id="research-timeline">🔬 Research Timeline</h2>
+<section id="section" class="level3">
+<h3 class="anchored" data-anchor-id="section">🗓️ <code>2026</code></h3>
+<ul>
+<li><p><img src="https://img.shields.io/badge/AAAI-1f6feb?style=flat-square.png" class="img-fluid" alt="AAAI"> <strong>Multi-Stage Reinforcement Learning for Robust Charging of Quantum Batteries</strong> — <em>Student Abstract &amp; Poster Program</em><br>
+<sub><strong>Beomdo Park</strong>, H. Jang, J. Park, M. Baek, et al.&nbsp;· AAAI-26, Singapore · <code>1st author</code></sub></p></li>
+<li><p><img src="https://img.shields.io/badge/IEEE_T--QE-00629b?style=flat-square.png" class="img-fluid" alt="IEEE"> &nbsp;<code>SCIE</code> <strong>Measurement-Informed Safe RL for Quantum Battery Charging via Harmonic-Syndrome Diagnostics &amp; BMS Constraints</strong><br>
+<sub>S. Lee, <strong>Beomdo Park</strong>, J. Park, H. Jang, et al.&nbsp;· IEEE Transactions on Quantum Engineering · <code>2nd author</code></sub></p></li>
+<li><p><img src="https://img.shields.io/badge/IEIE-2da44e?style=flat-square.png" class="img-fluid" alt="IEIE"> <strong>긍정·부정 기여 분석과 선택적 호출 게이트 기반 표면 부호 AI 사전 디코더의 호출 보정</strong> &nbsp;<code>Poster</code><br>
+<sub><strong>Beomdo Park</strong>, H. Jang, J. Park, S. Lee · 대한전자공학회 하계종합학술대회 · <code>1st author</code></sub></p></li>
+<li><p><img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> <strong>물리 지식 기반 그래프 트랜스포머 강화학습을 이용한 강건한 양자 배터리 충전 최적화</strong> &nbsp;<code>Talk</code><br>
+<sub><strong>Beomdo Park</strong>, J. Park, H. Jang, et al.&nbsp;· 한국통신학회 동계종합학술발표회 · 용평리조트 · <code>1st author</code></sub></p></li>
+</ul>
+</section>
+<section id="section-1" class="level3">
+<h3 class="anchored" data-anchor-id="section-1">🗓️ <code>2025</code></h3>
+<ul>
+<li><p>🏆 <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> <strong>그래프 신경망 기반 강화학습을 통한 양자 배터리 초흡수 이득 활용</strong> — 학부생 캡스톤디자인 경진대회 <strong>우수상</strong><br>
+<sub><strong>Beomdo Park</strong>, H. Jang, J. Park, et al.&nbsp;· 한국통신학회 추계종합학술발표회 · <code>1st author</code></sub></p></li>
+<li><p>🏆 <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> <strong>단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전</strong> — 우수논문상 <strong>장려상</strong><br>
+<sub>J. Park, <strong>Beomdo Park</strong>, H. Jang, et al.&nbsp;· 한국통신학회 추계종합학술발표회 · <code>2nd author</code></sub></p></li>
+<li><p><img src="https://img.shields.io/badge/IEIE-2da44e?style=flat-square.png" class="img-fluid" alt="IEIE"> <strong>FFT 기반 주기 추출·윈도우 구성을 활용한 GELU CNN-GRU AE 산업 전력 시계열 이상치 탐지</strong> &nbsp;<a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference">📄</a><br>
+<sub><strong>Beomdo Park</strong>, W. Kwon, C. Lee, T. Heo, S. Lee · 대한전자공학회 하계종합학술대회 · 제주 · <code>1st author</code></sub></p></li>
+</ul>
+</section>
+<section id="patent" class="level3">
+<h3 class="anchored" data-anchor-id="patent">📝 Patent</h3>
+<ul>
+<li><img src="https://img.shields.io/badge/Patent-6e40c9?style=flat-square.png" class="img-fluid" alt="Patent"> <img src="https://img.shields.io/badge/등록-2ea043?style=flat-square.png" class="img-fluid" alt="등록"> <strong>커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템</strong><br>
+<sub>등록번호 10-3019388 (2026.09.09) · 출원 10-2025-0162492 · 국립한밭대학교 산학협력단 · 기여도 15%</sub></li>
+</ul>
+<details>
+<summary>
+<b>📑 Co-authored Papers (12) — 펼쳐보기</b>
+</summary>
+<p><br></p>
+<p><strong>2026</strong> - <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> 비마르코프 환경의 OQBs 충전 최적화를 위한 LSTM-SAC 프레임워크 · <code>2nd</code> - <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> 개방 양자계 환경에서의 양자 배터리 충전 프로토콜 최적화를 위한 커리큘럼 강화학습 프레임워크 · <code>3rd</code> - <img src="https://img.shields.io/badge/IEIE-2da44e?style=flat-square.png" class="img-fluid" alt="IEIE"> 회전 표면 부호 기반 양자 오류 정정을 위한 경량 MLP 디코더의 양자화·FPGA 매핑 적합성 분석 · <code>2nd</code> - <img src="https://img.shields.io/badge/IEIE-2da44e?style=flat-square.png" class="img-fluid" alt="IEIE"> 엣지 환경에서의 QEC를 위한 Hybrid 지식 증류 기반 PTQ 경량화 파이프라인 설계 · <code>3rd</code> - <img src="https://img.shields.io/badge/IJCAI%2FECAI-8957e5?style=flat-square.png" class="img-fluid" alt="IJCAI/ECAI"> DEPLOY-RL: Active Boundary Discovery &amp; Conservative Certification for Deployable RL in Safety-Critical Continuous Processes · <code>5th</code> - <img src="https://img.shields.io/badge/KDD-1f9e89?style=flat-square.png" class="img-fluid" alt="KDD"> Less Can Be Safer: Tail-Risk Reduction via Capacity-Constrained Policies in Industrial RL (Oral) · <code>5th</code> - <img src="https://img.shields.io/badge/IJCAI-8957e5?style=flat-square.png" class="img-fluid" alt="IJCAI"> When Curriculum Becomes Critical: Automated Physics-Grounded Task Progressions for Open Quantum Control · <code>3rd</code> - <img src="https://img.shields.io/badge/KDD-1f9e89?style=flat-square.png" class="img-fluid" alt="KDD"> Structured EXPLAIN Feedback Improves SQL Generation with a 4B SLM on Industrial Time-Series Data · <code>4th</code> - <img src="https://img.shields.io/badge/KDD-1f9e89?style=flat-square.png" class="img-fluid" alt="KDD"> LLM Priors for Sample-Efficient Industrial Control in Digital-Twin Simulation · <code>6th</code></p>
+<p><strong>2025</strong> - <img src="https://img.shields.io/badge/Energies-bf8700?style=flat-square.png" class="img-fluid" alt="Energies"> <code>SCIE</code> A Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data · <code>6th</code> - <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> 비마르코프 노이즈를 활용한 PPO 기반 양자 배터리 충전 프로토콜 최적화 · <code>3rd</code> - <img src="https://img.shields.io/badge/KICS-0b7285?style=flat-square.png" class="img-fluid" alt="KICS"> DBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지 · <code>2nd</code></p>
+</details>
+</section>
+</section>
+<section id="experience-activities" class="level2">
+<h2 class="anchored" data-anchor-id="experience-activities">💼 Experience &amp; Activities</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
 <th>기간</th>
-<th>활동명</th>
+<th>활동</th>
 <th>내용</th>
 <th>기관(장소)</th>
 </tr>
@@ -378,81 +466,21 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 <tbody>
 <tr class="odd">
 <td>2026.03.27 ~ 05.27</td>
-<td><strong>ABC 프로젝트 멘토링</strong></td>
-<td>양자오류정정(가주제)</td>
+<td><strong>2026 ABC 프로젝트 멘토링</strong></td>
+<td>양자 오류 정정(QEC) AI 가속기를 위한 RTL 기반 SoC 설계 및 검증</td>
 <td>유클리드 소프트</td>
 </tr>
 <tr class="even">
-<td>2026.03.01</td>
-<td><strong>Measurement-Informed Safe Reinforcement Learning for Quantum Battery Charging via Harmonic-Syndrome Diagnostics and BMS Constraints</strong></td>
-<td>2저자</td>
-<td>IEEE Transactions on Quantum Engineering, 2026</td>
-</tr>
-<tr class="odd">
 <td>2026.02.05</td>
-<td><strong>한국통신학회 동계종합학술발표회 아이디어 경진대회</strong></td>
-<td>실시간 네트워크 상태를 스스로 인지하고 서비스 품질을 능동적으로 최적화하는 통신 자율 Agentic AI 서비스</td>
-<td>강원도 용평리조트</td>
-</tr>
-<tr class="even">
-<td>2026.02.04</td>
-<td><strong>한국통신학회 동계종합학술발표회</strong></td>
-<td>물리 지식 기반 그래프 트랜스포머 강화학습을 이용한 강건한 양자 배터리 충전 최적화</td>
-<td>강원도 용평리조트</td>
+<td><strong>한국통신학회 동계 아이디어 경진대회</strong></td>
+<td>실시간 네트워크 상태를 인지·최적화하는 통신 자율 Agentic AI 서비스</td>
+<td>용평리조트</td>
 </tr>
 <tr class="odd">
-<td>2026.01.20 ~ 01.27</td>
-<td><strong>AAAI-26 Student Abstract and Poster Program</strong></td>
-<td><strong>Multi-Stage Reinforcement Learning for Robust Charging of Quantum Batteries</strong></td>
-<td>AAAI-26 (Singapore EXPO, Singapore)</td>
-</tr>
-<tr class="even">
-<td>2025.11.20</td>
-<td>한국통신학회 추계종합학술발표회 학부생 캡스톤 경진대회</td>
-<td><strong>(🏆우수상 수상)</strong> 양자배터리 초흡수 이득 극대화를 위한 그래프 기반 강화학습 충전 제어 [박준성, 박범도, 장현석]</td>
-<td>라한셀렉트 경주</td>
-</tr>
-<tr class="odd">
-<td>2025.11.19 ~ 11.21</td>
-<td>한국통신학회 추계종합학술발표회 우수논문상(학부생)</td>
-<td><strong>(🏆장려상 수상)</strong> 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전(2저자)</td>
-<td>라한셀렉트 경주</td>
-</tr>
-<tr class="even">
-<td>2025.11.01</td>
-<td>🪪 TOPCIT 정기평가 (수준 3 달성)</td>
-<td><strong>수준3</strong>: 기술 및 비즈니스 영역에 대한 지식과 스킬을 적용하여 과제를 해결할 수 있는 수준</td>
-<td><a href="https://topcit.or.kr/introduction/topcit.do">정보통신기획평가원(IITP)</a></td>
-</tr>
-<tr class="odd">
-<td>2025.10.31</td>
-<td>특허 출원</td>
-<td>커리큘럼 강화학습을 이용한 양자 배터리의 강건한 충전 시스템 / 기여도 15% (출원/심사중)</td>
-<td>국립한밭대학교 산학협력단</td>
-</tr>
-<tr class="even">
-<td>2025.10.30</td>
-<td>컴퓨터공학과 포트폴리오 경진대회</td>
-<td>🏆우수상</td>
-<td>국립한밭대학교 컴퓨터공학과</td>
-</tr>
-<tr class="odd">
-<td>2025.07.14</td>
-<td><a href="https://www.mdpi.com/1996-1073/18/14/3720">A Comparative Study of Customized Algorithms for Anomaly Detection in Industry-Specific Power Data</a>(SCIE)</td>
-<td>DBA K-Means 모델 부분(공저자)</td>
-<td>MDPI journal energies</td>
-</tr>
-<tr class="even">
 <td>2025.06.30 ~ 07.11</td>
-<td>기업 인턴십</td>
-<td>자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo 이용)</td>
+<td><strong>기업 인턴십</strong></td>
+<td>자율주행 로봇 시뮬레이션 및 경로 최적화 (Gazebo)</td>
 <td><a href="https://argoon.net">(주) 아군</a></td>
-</tr>
-<tr class="odd">
-<td>2025.06.24 ~ 06.27</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference"><strong>대한전자공학회 하계 종합학술대회</strong></a></td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0624_0627_IEIE_Conference">고속 푸리에 변환(FFT) 기반 주기 추출 및 윈도우 구성을 활용한 GELU CNN-GRU AE 모델의 산업 전력 시계열 이상치 탐지</a></td>
-<td>롯데호텔 제주(중문)</td>
 </tr>
 <tr class="even">
 <td>2025.05.20 ~ 06.30</td>
@@ -461,40 +489,28 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 <td>유클리드 소프트</td>
 </tr>
 <tr class="odd">
-<td>2025.06.13</td>
-<td>🪪 <a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/ADsP.pdf"><strong>데이터분석 준전문가(ADsP) 자격증 취득</strong></a></td>
-<td>데이터 분석 기획 및 수행 실무자 자격</td>
-<td>한국데이터산업진흥원</td>
-</tr>
-<tr class="even">
 <td>2025.05.01 ~ 2026.03.03</td>
-<td><strong><a href="https://sites.google.com/view/ecoai/introduction">Eco AI Lab</a> 랩장</strong></td>
-<td>커뮤니케이션 지원, 일정 조율, 행정 업무 등</td>
+<td><a href="https://sites.google.com/view/ecoai/introduction"><strong>Eco AI Lab 랩장</strong></a></td>
+<td>커뮤니케이션 지원, 일정 조율, 행정 업무</td>
 <td>국립한밭대학교 EcoAI Lab</td>
 </tr>
-<tr class="odd">
-<td>2025.04.07 ~</td>
+<tr class="even">
+<td>2025.04.07 ~ 2025.12.31</td>
 <td><strong>산학협력 프로젝트</strong></td>
-<td>자율주행 주차로봇 운영 소프트웨어 성능 테스트 및 최적화</td>
-<td>국립한밭대학교 SW중심대학사업단</td>
-</tr>
-<tr class="even">
-<td>2025.03.24 ~</td>
-<td><strong>소중한 JUMP-UP Labs</strong></td>
-<td>AI(인공지능)를 활용한 산업체 전력 사용량 이상치 탐지</td>
+<td>자율주행 주차로봇 운영 소프트웨어 성능 테스트·최적화</td>
 <td>국립한밭대학교 SW중심대학사업단</td>
 </tr>
 <tr class="odd">
-<td>2025.03.04 ~ 06.13</td>
-<td><strong>데이터사이언스(이상금 교수님) 실습조교 25-1학기</strong></td>
-<td>실습자료 제작 및 질의응답 관리</td>
-<td>국립한밭대학교 컴퓨터공학과</td>
+<td>2025.03.24 ~ 2025.12.31</td>
+<td><strong>소중한 JUMP-UP Labs</strong></td>
+<td>AI 활용 산업체 전력 사용량 이상치 탐지</td>
+<td>국립한밭대학교 SW중심대학사업단</td>
 </tr>
 <tr class="even">
-<td>2025.02.05 ~ 02.07</td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference"><strong>한국통신학회 동계종합학술발표회</strong></a></td>
-<td><a href="https://github.com/beomdo-park/Portfolio/tree/main/2025/0205_0207_KICS_Conference/%5B%EB%85%BC%EB%AC%B8%2CPPT%5DDBA%20K-Means%20%EA%B5%B0%EC%A7%91%ED%99%94%20%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98%20%EA%B8%B0%EB%B0%98%20%ED%99%94%EA%B3%B5%EC%82%B0%EC%97%85%20%EC%A0%84%EB%A0%A5%20%EC%82%AC%EC%9A%A9%EB%9F%89%20%EC%9D%B4%EC%83%81%EC%B9%98%20%ED%83%90%EC%A7%80">DBA K-Means 군집화 알고리즘 기반 화공산업 전력 사용량 이상치 탐지</a></td>
-<td>강원도 용평리조트</td>
+<td>2025.03.04 ~ 06.13</td>
+<td><strong>데이터사이언스 실습조교</strong> (25-1)</td>
+<td>실습자료 제작 및 질의응답 관리 (이상금 교수님)</td>
+<td>국립한밭대학교 컴퓨터공학과</td>
 </tr>
 <tr class="odd">
 <td>2025.01.16 ~ 01.21</td>
@@ -505,9 +521,21 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 </tbody>
 </table>
 </section>
+<section id="awards-certifications" class="level2">
+<h2 class="anchored" data-anchor-id="awards-certifications">🏅 Awards &amp; Certifications</h2>
+<ul>
+<li>🏆 <strong>한국통신학회 추계 우수논문상 장려상</strong> — 단계적 강화학습 프레임워크를 통한 강건한 양자 배터리 충전 <sub>(2025.11)</sub></li>
+<li>🏆 <strong>한국통신학회 학부생 캡스톤디자인 경진대회 우수상</strong> — 그래프 신경망 기반 강화학습 양자 배터리 초흡수 이득 활용 <sub>(2025.11)</sub></li>
+<li>🏆 <strong>컴퓨터공학과 포트폴리오 경진대회 우수상</strong> — 국립한밭대학교 <sub>(2025.10)</sub></li>
+<li>🪪 <strong>TOPCIT 정기평가 수준 3</strong> — 정보통신기획평가원(IITP) <sub>(2025.11)</sub></li>
+<li>🪪 <strong>데이터분석 준전문가(ADsP)</strong> — 한국데이터산업진흥원 <sub>(2025.06)</sub></li>
+</ul>
+<p>:::</p>
+
+
+</section>
 </div>
-
-
+</div>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -927,7 +955,7 @@ I aim to become a <b>Data Scientist</b> an AI-powered problem solver applying re
 <footer class="footer">
   <div class="nav-footer">
     <div class="nav-footer-left">
-<p>© 2025, Beomdo-Park. Powered by Quarto.</p>
+<p>© 2026, Beomdo-Park. Powered by Quarto.</p>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
